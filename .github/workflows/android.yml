@@ -1,8 +1,6 @@
 name: Android CI/CD
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -18,6 +16,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
+
+    - name: Create Google Services JSON File
+      env:
+        GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      run: echo $GOOGLE_SERVICES_JSON | base64 -di > ./src/fusion1-events/app/google-services.json
 
     - name: Build with Gradle
       working-directory: ./src/fusion1-events
@@ -39,6 +42,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
+
+      - name: Create Google Services JSON File
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $GOOGLE_SERVICES_JSON | base64 -di > ./src/fusion1-events/app/google-services.json
       
       - name: Unit Test
         working-directory: ./src/fusion1-events
@@ -63,9 +71,11 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Run Android Lint
-      uses: yutailang0119/action-android-lint@v4.0.0
-      with:
-        report-path: build/reports/*.xml
-        follow-symbolic-links: false
-        ignore-warnings: false
+    - name: Create Google Services JSON File
+      env:
+        GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      run: echo $GOOGLE_SERVICES_JSON | base64 -di > ./src/fusion1-events/app/google-services.json
+
+    - name: Run Linter
+      working-directory: ./src/fusion1-events
+      run: gradle lint
