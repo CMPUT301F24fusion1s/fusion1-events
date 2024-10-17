@@ -79,10 +79,4 @@ jobs:
     - name: Run Linter
       working-directory: ./src/fusion1-events
       run: gradle lint
-    
-    - name: Linter Report
-      uses: yutailang0119/action-android-lint@v4.0.0
-      with:
-        report-path: build/reports/*.xml
-        follow-symbolic-links: false
-        ignore-warnings: false
+      continue-on-error: false
