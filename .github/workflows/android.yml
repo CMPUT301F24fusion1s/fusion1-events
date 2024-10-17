@@ -80,3 +80,6 @@ jobs:
       working-directory: ./src/fusion1-events
       run: gradle lint
       continue-on-error: false
+
+    - name: Print Linter Results
+      run: echo /home/runner/work/fusion1-events/fusion1-events/src/fusion1-events/app/build/reports/lint-results-debug.html
