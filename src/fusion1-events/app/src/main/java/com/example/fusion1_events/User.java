@@ -3,9 +3,9 @@ package com.example.fusion1_events;
 import android.provider.ContactsContract;
 
 public class User {
-    private String name;
-    private ContactsContract.CommonDataKinds.Email email;
-    private String phoneNumber;
+    protected String name;
+    protected ContactsContract.CommonDataKinds.Email email;
+    protected String phoneNumber;
 
     public User(String name, ContactsContract.CommonDataKinds.Email email, String phoneNumber){
 
