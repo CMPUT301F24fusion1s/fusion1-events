@@ -1,4 +1,6 @@
 <resources>
+    <string name="app_name">fusion1-events</string>
+
     <!-- Registration Screen -->
     <string name="hello_title">Hello!</string>
     <string name="register_subtitle">Please register to get started.</string>
@@ -6,5 +8,4 @@
 
     <!-- Welcome Back Screen -->
     <string name="welcome_back_format">Welcome back, John Doe!</string>
-
 </resources>
