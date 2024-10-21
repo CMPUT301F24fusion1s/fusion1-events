@@ -11,7 +11,7 @@
         android:layout_height="88dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="414.5dp"
-        android:text="Welcome back,\nJohn Doe!"
+        android:text="@string/welcome_back_format"
         android:textColor="@android:color/black"
         android:textSize="36sp"
         android:lineHeight="44sp"
