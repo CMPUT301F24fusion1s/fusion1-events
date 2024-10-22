@@ -1,11 +1,21 @@
 package com.example.fusion1_events;
 
 import android.app.Notification;
+import android.location.Location;
+import android.media.Image;
 import android.provider.ContactsContract;
 
+import androidx.annotation.NonNull;
+
 public class Entrant extends User{
-    public Entrant(String name, ContactsContract.CommonDataKinds.Email email, String phoneNumber) {
+    protected Image profileImage;
+    protected Location location;
+    // By default user's notification is on.
+    protected boolean notificationEnabled = true;
+
+    public Entrant(String name, ContactsContract.CommonDataKinds.Email email, String phoneNumber, Image image) {
         super(name, email, phoneNumber);
+        uploadProfilePicture(image);
     }
 
     public void joinWaitlist(Event event){
@@ -20,4 +30,20 @@ public class Entrant extends User{
     public void rejectOrganizerInvitation(Event event){
         event.addToRejectionList(this);
     }
+    public void uploadProfilePicture(Image image){
+        if(image != null)
+            this.profileImage = image;
+    }
+    public void removeProfilePicture(){
+        // not sure if we should generate a default profile picture.
+        this.profileImage = null;
+    }
+    public void turnNotificationOn(){
+        this.notificationEnabled = true;
+    }
+    public void turnNotificationOff(){
+        this.notificationEnabled = false;
+    }
+
+
 }

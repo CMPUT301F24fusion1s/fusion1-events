@@ -40,10 +40,6 @@ public class User {
         }
     }
 
-    public void optOutOfNotification(Event event){
-        event.turnNotificationOff(this);
-    }
-
     public void updateInfo(String name, ContactsContract.CommonDataKinds.Email email, String phoneNumber){
         setName(name);
         setEmail(email);

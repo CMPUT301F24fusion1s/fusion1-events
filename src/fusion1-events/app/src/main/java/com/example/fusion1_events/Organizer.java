@@ -27,5 +27,7 @@ public class Organizer extends Entrant{
         eventList.add(new Event(capacity, facility, qrCode));
     }
 
-
+    public ArrayList<Event> getEventList() {
+        return eventList;
+    }
 }
