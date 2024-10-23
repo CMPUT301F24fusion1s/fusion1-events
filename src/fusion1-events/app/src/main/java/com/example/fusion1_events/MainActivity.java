@@ -81,6 +81,12 @@ public class MainActivity extends AppCompatActivity {
         user.put("userId", deviceId);
         user.put("name", "Default User");  // You can allow the user to input their name later
         user.put("role", "entrant");
+        //TODO
+        // Add flag for admin isAdmin
+        // Add email
+        // Phone number optional
+
+
 
         // Add user to Firestore
         db.collection("users").document(deviceId).set(user)
