@@ -101,27 +101,31 @@ public class FirebaseManager {
     public void storeNewEvent(Event event) {
         CollectionReference eventsCollection = db.collection("events");
 
-        // Convert the poster Bitmap to a Base64 string
-        String posterBase64 = encodeBitmapToBase64(event.getPoster());
-
-        // Convert the waitlist to a list of strings
-        List<String> waitlistStrings = convertUuidListToStringList(event.getWaitlist());
-
         // Create a map to store event data
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put("name", event.getName());
-        eventData.put("date", event.getDate());
-        eventData.put("location", event.getLocation());
-        eventData.put("description", event.getDescription());
-        eventData.put("qrCodeHash", event.getQrCodeHash());
-        eventData.put("poster", posterBase64);
-        eventData.put("capacity", event.getCapacity());
-        eventData.put("waitlist", waitlistStrings);
+        Map<String, Object> eventData =  event.toMap();
 
         // Add the event to Firestore
         eventsCollection.add(eventData)
                 .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + documentReference.getId()))
                 .addOnFailureListener(e -> Log.e("FirebaseManager", "Error adding event", e));
+    }
+
+    /**
+     * Updates an existing Event object in Firestore.
+     *
+     * @param event The Event object to update.
+     */
+    public void updateExistingEvent(Event event) {
+        CollectionReference eventsCollection = db.collection("events");
+
+        // Create a map to store event data
+        Map<String, Object> eventData =  event.toMap();
+
+        // Update the event in Firestore
+        eventsCollection.document(event.getId().toString())
+                .update(eventData)
+                .addOnSuccessListener(aVoid -> Log.d("FirebaseManager", "Event updated with ID: " + event.getId()))
+                .addOnFailureListener(e -> Log.e("FirebaseManager", "Error updating event", e));
     }
 
     /**
@@ -140,6 +144,7 @@ public class FirebaseManager {
 
                         if (document.exists()) {
                             // Extract data from document
+                            UUID organizerId = UUID.fromString(document.getString("organizerId"));
                             String name = document.getString("name");
                             Date date = document.getDate("date");
                             String location = document.getString("location");
@@ -158,7 +163,7 @@ public class FirebaseManager {
                             List<UUID> waitlist = convertStringListToUuidList(waitlistStrings);
 
                             // Create Event object
-                            Event event = new Event(name, date, location, description, poster, capacity);
+                            Event event = new Event(organizerId, name, date, location, description, poster, capacity);
                             event.setWaitlist(waitlist);
                             callback.onSuccess(event);
                         } else {
