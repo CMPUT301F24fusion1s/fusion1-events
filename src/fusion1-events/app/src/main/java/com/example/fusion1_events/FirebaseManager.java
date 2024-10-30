@@ -1,5 +1,11 @@
 package com.example.fusion1_events;
 
+import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
+import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
+import static com.example.fusion1_events.UtilityMethods.convertUuidListToStringList;
+import static com.example.fusion1_events.UtilityMethods.convertStringListToUuidList;
+
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,6 +16,13 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class FirebaseManager {
 
@@ -79,4 +92,89 @@ public class FirebaseManager {
         void onSuccess(User user);
         void onFailure(Exception e);
     }
+
+    /**
+     * Stores a new Event object in Firestore.
+     *
+     * @param event The Event object to store.
+     */
+    public void storeNewEvent(Event event) {
+        CollectionReference eventsCollection = db.collection("events");
+
+        // Convert the poster Bitmap to a Base64 string
+        String posterBase64 = encodeBitmapToBase64(event.getPoster());
+
+        // Convert the waitlist to a list of strings
+        List<String> waitlistStrings = convertUuidListToStringList(event.getWaitlist());
+
+        // Create a map to store event data
+        Map<String, Object> eventData = new HashMap<>();
+        eventData.put("name", event.getName());
+        eventData.put("date", event.getDate());
+        eventData.put("location", event.getLocation());
+        eventData.put("description", event.getDescription());
+        eventData.put("qrCodeHash", event.getQrCodeHash());
+        eventData.put("poster", posterBase64);
+        eventData.put("capacity", event.getCapacity());
+        eventData.put("waitlist", waitlistStrings);
+
+        // Add the event to Firestore
+        eventsCollection.add(eventData)
+                .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + documentReference.getId()))
+                .addOnFailureListener(e -> Log.e("FirebaseManager", "Error adding event", e));
+    }
+
+    /**
+     * Retrieves a list of Event objects from Firestore.
+     *
+     * @param callback A callback to return the list of Event objects asynchronously.
+     */
+    public void getEventById(String eventId, final EventCallback callback) {
+        CollectionReference eventsCollection = db.collection("events");
+
+        eventsCollection.document(eventId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+
+                        if (document.exists()) {
+                            // Extract data from document
+                            String name = document.getString("name");
+                            Date date = document.getDate("date");
+                            String location = document.getString("location");
+                            String description = document.getString("description");
+                            String posterBase64 = document.getString("poster");
+                            List<String> waitlistStrings = (List<String>) document.get("waitlist");
+                            int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
+
+                            // Convert Base64 string back to Bitmap
+                            Bitmap poster = null;
+                            if (posterBase64 != null) {
+                                poster = decodeBase64ToBitmap(posterBase64);
+                            }
+
+                            // Convert list of strings back to list of UUIDs
+                            List<UUID> waitlist = convertStringListToUuidList(waitlistStrings);
+
+                            // Create Event object
+                            Event event = new Event(name, date, location, description, poster, capacity);
+                            event.setWaitlist(waitlist);
+                            callback.onSuccess(event);
+                        } else {
+                            callback.onFailure(new Exception("Event not found."));
+                        }
+                    } else {
+                        callback.onFailure(task.getException() != null ? task.getException() : new Exception("Unknown error occurred."));
+                        Log.e("FirebaseManager", "Failed to retrieve event by eventId", task.getException());
+                    }
+                });
+    }
+
+    // Callback interface for asynchronous event retrieval
+    public interface EventCallback {
+        void onSuccess(Event event);
+        void onFailure(Exception e);
+    }
+
 }
