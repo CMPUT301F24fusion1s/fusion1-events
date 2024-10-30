@@ -3,25 +3,23 @@ package com.example.fusion1_events;
 import android.provider.ContactsContract;
 
 public class User {
-    protected String name;
+    private String email;
+    private String name;
+    private String role;
+    private String phoneNumber;
+    private String userId;
+    private String deviceId;
 
-    public String getUserId() {
-        return userId;
-    }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    protected String userId;
-    protected String email;
-
-    public User(String email, String name, String role, String phoneNumber) {
+    public User(String email, String name, String role, String phoneNumber, String userId, String deviceId) {
         this.email = email;
         this.name = name;
         this.role = role;
         this.phoneNumber = phoneNumber;
+        this.userId = userId;
+        this.deviceId = deviceId;
     }
+
 
     public String getRole() {
         return role;
@@ -39,9 +37,22 @@ public class User {
         this.email = email;
     }
 
-    protected String role;
-    protected String phoneNumber;
+    // Getters and setters for userId and deviceId
+    public String getUserId() {
+        return userId;
+    }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 
 
     public String getName() {

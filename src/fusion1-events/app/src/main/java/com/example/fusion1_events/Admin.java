@@ -7,7 +7,7 @@ import androidx.lifecycle.Lifecycle;
 public class Admin extends User{
 
 
-    public Admin(String email, String name, String role, String phoneNumber) {
-        super(email, name, role, phoneNumber);
+    public Admin(String email, String name, String role, String phoneNumber, String userId,String deviceId) {
+        super(email, name, role, phoneNumber,userId,deviceId);
     }
 }

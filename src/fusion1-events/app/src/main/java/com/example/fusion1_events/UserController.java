@@ -14,8 +14,9 @@ public class UserController {
         // TODO: Implement login logic
     }
 
-    public void signUpUser(User user) {
-        // TODO: Implement signup logic
+    public void signUpUser(Entrant entrant) {
+
+        firebaseManager.addUserToFirebase(entrant);
     }
 
     public void updateProfile(String userId, User updatedUser) {

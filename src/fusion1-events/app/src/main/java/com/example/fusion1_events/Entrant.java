@@ -13,8 +13,8 @@ public class Entrant extends User{
     // By default user's notification is on.
     protected boolean notificationEnabled = true;
 
-    public Entrant(String email, String name, String role, String phoneNumber, Image profileImage, Location location, boolean notificationEnabled) {
-        super(email, name, role, phoneNumber);
+    public Entrant(String email, String name, String role, String phoneNumber, String userId, String deviceId, Image profileImage, Location location, boolean notificationEnabled) {
+        super(email, name, role, phoneNumber, userId, deviceId);
         this.profileImage = profileImage;
         this.location = location;
         this.notificationEnabled = notificationEnabled;

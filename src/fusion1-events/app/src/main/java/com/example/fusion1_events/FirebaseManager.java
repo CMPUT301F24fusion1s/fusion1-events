@@ -21,6 +21,26 @@ public class FirebaseManager {
     }
 
     /**
+     * Add new user to user collection
+     */
+
+    public void addUserToFirebase(Entrant entrant)
+    {
+        // Add the entrant tot he 'user' collection in Firebase
+        db.collection("users")
+                .add(entrant)
+                .addOnSuccessListener(documentReference ->{
+                  // Log success or handle success scenario
+                    Log.d("FirebaseManager", "User added with ID: " + documentReference.getId());
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("FirebaseManager", "Error adding user",e);
+                });
+
+
+    }
+
+    /**
      * Retrieves a User object by the deviceId.
      * This method is a skeleton implementation and requires further handling for complete data validation.
      *

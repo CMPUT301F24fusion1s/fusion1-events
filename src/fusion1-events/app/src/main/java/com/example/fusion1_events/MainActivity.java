@@ -11,6 +11,9 @@ import androidx.core.view.WindowInsetsCompat;
 // This for the device ID
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,66 +34,67 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseFirestore db;
+    private DeviceManager deviceManager;
+    private FirebaseManager firebaseManager;
+    private UserController userController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.register_page);  // This the first layout
 
-        // Initialize Firestore
-        db = FirebaseFirestore.getInstance();
+        // Device manager and fire base
+        deviceManager = new DeviceManager(this);
+        firebaseManager = new FirebaseManager();
+        userController = new UserController(firebaseManager);  // Added UserController initialization
 
-        // Get Device ID
-        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        // Send an output log
+        String deviceId = deviceManager.getOrCreateDeviceId();  // getting the device ID which is used to sign in
+        // for testing could be commented or removed latter
         Log.d("DeviceID", "Device ID: " + deviceId);
 
-        // Check if user exists, otherwise add the user
-        checkAndAddUser(deviceId);
-    }
+        // Find the Register button my it's ID
+        Button registraitionbutton = findViewById(R.id.registerButton);
 
-    /**
-     *
-     * @param deviceId
-     */
-    private void checkAndAddUser(String deviceId) {
-        // Check if the user exists in Firestore
-        db.collection("users").document(deviceId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (!document.exists()) {
-                        // User doesn't exist, create a new user
-                        createUser(deviceId);
-                    } else {
-                        // User already exists
-                        Log.d("Firestore", "User already exists: " + document.getData());
-                    }
-                } else {
-                    Log.d("Firestore", "Error checking user", task.getException());
-                }
-            }
+        // implement click listner on button
+        registraitionbutton.setOnClickListener(v -> {
+            // Placeholder for checking if the user exists
+            // TODO: Add code here to check if the device ID already exists in the user collection
+
+            // Switch to the register new user layout if user is new
+            setContentView(R.layout.register_new_user);
+
+            setupNewUserRegistration(deviceId);
+
         });
     }
 
-    private void createUser(String deviceId) {
-        // Create user data
-        Map<String, Object> user = new HashMap<>();
-        user.put("userId", deviceId);
-        user.put("name", "Default User");  // You can allow the user to input their name later
-        user.put("role", "entrant");
-        //TODO
-        // Add flag for admin isAdmin
-        // Add email
-        // Phone number optional
+        private void setupNewUserRegistration(String deviceId){
+            // Find the input fields and Register button in the new layout
+            EditText nameField = findViewById(R.id.et_name);
+            EditText emailField = findViewById(R.id.et_email);
+            EditText phoneNumberField = findViewById(R.id.et_phone_number);
+            Button registerButton = findViewById(R.id.btn_register);
+
+            // Set click listener for the register button in the new layout
+            registerButton.setOnClickListener(v -> {
+                String name = nameField.getText().toString().trim();
+                String email = emailField.getText().toString().trim();
+                String phoneNumber = phoneNumberField.getText().toString().trim();
+
+                if (!name.isEmpty() && !email.isEmpty() && !phoneNumber.isEmpty()) {
+                    // Create an Entrant object with the collected data
+                    Entrant entrant = new Entrant(email, name, "entrant", phoneNumber, "1",deviceId,null, null, true);
 
 
-
-        // Add user to Firestore
-        db.collection("users").document(deviceId).set(user)
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "User added successfully with deviceId: " + deviceId))
-                .addOnFailureListener(e -> Log.w("Firestore", "Error adding user", e));
+                    // Use UserController to sign up the user
+                    userController.signUpUser(entrant);
+                    Toast.makeText(MainActivity.this, "User registration in progress", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
-}
+
+
+
