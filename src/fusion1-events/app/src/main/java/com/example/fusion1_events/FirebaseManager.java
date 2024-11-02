@@ -11,6 +11,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.UUID;
+
 public class FirebaseManager {
 
     // Initialize Firebase Firestore instance
@@ -48,51 +50,52 @@ public class FirebaseManager {
      * @param callback A callback to return the User object asynchronously.
      */
     public void getUserByDeviceId(String deviceId, final UserCallback callback) {
-        // Reference to the users collection
         CollectionReference usersCollection = db.collection("users");
 
-        // Query Firestore by deviceId
         usersCollection.whereEqualTo("deviceId", deviceId)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
-                            // Get the first document matching the query (assuming deviceId is unique)
-                            DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
+                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        String role = document.getString("role");
 
-                            // Extract data from document (requires further error handling)
-                            String userId = document.getId();
-                            String name = document.getString("name");
-                            String email = document.getString("email");
-                            String phoneNumber = document.getString("phoneNumber");
-                            String role = document.getString("role");
-                            String facilityName = document.getString("facilityName");
-                            String location = document.getString("location");
+                        if (role != null) {
+                            Log.d("FirebaseManager", "Role: " + role);
+                            User user = createUserFromRole(role, document);
 
-                            // TODO: Add proper null checks and data validation
-                            User user = null;
-                            if (role != null) {
-                                Log.d("FirebaseManager", "Role: " + role);
-                                // TODO: Add logic to create user based on role
-                            } else {
-                                callback.onFailure(new Exception("Role is missing."));
-                                return;
-                            }
-
-                            // Pass the user object to the callback (requires further handling)
                             if (user != null) {
                                 callback.onSuccess(user);
                             } else {
-                                callback.onFailure(new Exception("User creation failed."));
+                                callback.onFailure(new Exception("Failed to create user instance from document."));
                             }
                         } else {
-                            callback.onFailure(task.getException());
-                            Log.e("FirebaseManager", "Failed to retrieve user by deviceId", task.getException());
+                            callback.onFailure(new Exception("Role is missing in the user document."));
                         }
+                    } else {
+                        String errorMessage = (task.getException() != null) ? task.getException().getMessage() : "Unknown error retrieving user.";
+                        Log.e("FirebaseManager", "Error retrieving user by deviceId: " + errorMessage, task.getException());
+                        callback.onFailure(new Exception("User not found or task failed."));
                     }
                 });
     }
+
+    /**
+     * Creates a User object based on the role specified in the document.
+     */
+    private User createUserFromRole(String role, DocumentSnapshot document) {
+        switch (role) {
+            case "Admin":
+                return document.toObject(Admin.class);
+            case "Entrant":
+                return document.toObject(Entrant.class);
+            case "Organizer":
+                return document.toObject(Organizer.class);
+            default:
+                return document.toObject(User.class);
+        }
+    }
+
+
 
     // Callback interface for asynchronous user retrieval
     public interface UserCallback {

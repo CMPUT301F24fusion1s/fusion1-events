@@ -7,17 +7,27 @@ import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class Entrant extends User{
     protected Image profileImage;
     protected Location location;
+    private ArrayList<Event> eventList;
     // By default user's notification is on.
     protected boolean notificationEnabled = true;
 
-    public Entrant(String email, String name, String role, String phoneNumber, String userId, String deviceId, Image profileImage, Location location, boolean notificationEnabled) {
+    public Entrant(String email, String name, String role, String phoneNumber, UUID userId, String deviceId, Image profileImage, Location location, boolean notificationEnabled) {
         super(email, name, role, phoneNumber, userId, deviceId);
         this.profileImage = profileImage;
         this.location = location;
         this.notificationEnabled = notificationEnabled;
+    }
+
+    // no argument constractor
+    public Entrant()
+    {
+        super();
     }
 
 

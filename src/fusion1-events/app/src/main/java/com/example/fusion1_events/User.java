@@ -2,22 +2,33 @@ package com.example.fusion1_events;
 
 import android.provider.ContactsContract;
 
+/**
+ *  Each user can user one device because we are
+ */
+// TODO maybe change the email type so user does not input any value
+import java.util.UUID;
+
 public class User {
     private String email;
     private String name;
     private String role;
     private String phoneNumber;
-    private String userId;
+    private UUID userId;
     private String deviceId;
 
 
-    public User(String email, String name, String role, String phoneNumber, String userId, String deviceId) {
+    public User(String email, String name, String role, String phoneNumber, UUID userId, String deviceId) {
         this.email = email;
         this.name = name;
         this.role = role;
         this.phoneNumber = phoneNumber;
         this.userId = userId;
         this.deviceId = deviceId;
+    }
+    // no argument constructor for serialization
+    public User()
+    {
+
     }
 
 
@@ -38,11 +49,11 @@ public class User {
     }
 
     // Getters and setters for userId and deviceId
-    public String getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 

@@ -1,5 +1,6 @@
 package com.example.fusion1_events;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -27,9 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
-
-
-
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -55,17 +54,42 @@ public class MainActivity extends AppCompatActivity {
         // Find the Register button my it's ID
         Button registraitionbutton = findViewById(R.id.registerButton);
 
-        // implement click listner on button
+        // Set click listener for the button
         registraitionbutton.setOnClickListener(v -> {
-            // Placeholder for checking if the user exists
-            // TODO: Add code here to check if the device ID already exists in the user collection
+            // Call the userLogin method from UserController
+            Log.d("register button ", " pressed");
+            userController.userLogin(deviceId, new FirebaseManager.UserCallback() {
+                @Override
+                public void onSuccess(User user) {
+                    // User exists, check the type and navigate to the appropriate layout
+                    Log.d("MainActivity", "User found: " + user.toString());
+                    if (user instanceof Admin) {
+                        navigateToMainMenu(AdminMainMenuActivity.class);
+                    }
+//                    } else if (user instanceof Entrant) {
+//                        navigateToMainMenu(EntrantMainMenuActivity.class);
+//                    } else if (user instanceof Organizer) {
+//                        navigateToMainMenu(OrganizerMainMenuActivity.class);
+//                    }
+                }
 
-            // Switch to the register new user layout if user is new
-            setContentView(R.layout.register_new_user);
-
-            setupNewUserRegistration(deviceId);
-
+                @Override
+                public void onFailure(Exception e) {
+                    // User does not exist; switch to the registration layout
+                    Log.e("FirebaseManager", "User not found or error: " + e.getMessage(), e);
+                    // User does not exist; switch to the registration layout
+                    Log.d("MainActivity", "Navigating to register new user layout.");
+                    setContentView(R.layout.register_new_user);
+                    setupNewUserRegistration(deviceId);
+                }
+            });
         });
+    }
+
+    private void navigateToMainMenu(Class<?> activityClass) {
+        Intent intent = new Intent(MainActivity.this, activityClass);
+        startActivity(intent);
+        finish(); // Close the current activity to prevent going back to it
     }
 
         private void setupNewUserRegistration(String deviceId){
@@ -83,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!name.isEmpty() && !email.isEmpty() && !phoneNumber.isEmpty()) {
                     // Create an Entrant object with the collected data
-                    Entrant entrant = new Entrant(email, name, "entrant", phoneNumber, "1",deviceId,null, null, true);
+                    Entrant entrant = new Entrant(email, name, "entrant", phoneNumber, UUID.randomUUID(),deviceId,null, null, true);
 
 
                     // Use UserController to sign up the user

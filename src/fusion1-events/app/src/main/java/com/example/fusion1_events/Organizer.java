@@ -7,19 +7,25 @@ import android.provider.ContactsContract;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Organizer extends Entrant{
     private Facility facility;
     private ArrayList<Event> eventList;
 
     /// Updated constructor
-    public Organizer(String name, String email, String phoneNumber, String role, Image profileImage, String deviceId, String userId, Location location, boolean notificationEnabled, Facility facility, ArrayList<Event> eventList) {
+    public Organizer(String name, String email, String phoneNumber, String role, Image profileImage, String deviceId, UUID userId, Location location, boolean notificationEnabled, Facility facility, ArrayList<Event> eventList) {
         // Call the superclass constructor with parameters in the correct order
         super(email, name, role, phoneNumber, userId, deviceId, profileImage, location, notificationEnabled);
 
         // Assign specific fields for Organizer
         this.facility = facility;
         this.eventList = eventList;
+    }
+
+    // no argument constactor
+    public Organizer(){
+        super();
     }
 
 
