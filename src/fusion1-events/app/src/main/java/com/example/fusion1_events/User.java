@@ -7,11 +7,11 @@ public class User {
     private String name;
     private String role;
     private String phoneNumber;
-    private String userId;
+    private UUID userId;
     private String deviceId;
 
 
-    public User(String email, String name, String role, String phoneNumber, String userId, String deviceId) {
+    public User(String email, String name, String role, String phoneNumber, UUID userId, String deviceId) {
         this.email = email;
         this.name = name;
         this.role = role;
@@ -38,11 +38,11 @@ public class User {
     }
 
     // Getters and setters for userId and deviceId
-    public String getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
