@@ -13,11 +13,11 @@ public class User {
     private String name;
     private String role;
     private String phoneNumber;
-    private UUID userId;
+    private String userId;
     private String deviceId;
 
 
-    public User(String email, String name, String role, String phoneNumber, UUID userId, String deviceId) {
+    public User(String email, String name, String role, String phoneNumber, String userId, String deviceId) {
         this.email = email;
         this.name = name;
         this.role = role;
@@ -49,12 +49,12 @@ public class User {
     }
 
     // Getters and setters for userId and deviceId
-    public UUID getUserId() {
-        return userId;
+    public String getUserId() {
+        return userId; // Convert String back to UUID
     }
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
+    public void setUserId(String userId) {
+        this.userId = userId; // Convert UUID to String for storage
     }
 
     public String getDeviceId() {

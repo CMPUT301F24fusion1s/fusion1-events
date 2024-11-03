@@ -9,11 +9,11 @@ import java.util.UUID;
 public class Admin extends User{
 
 
-    public Admin(String email, String name, String role, String phoneNumber, UUID userId, String deviceId) {
-        super(email, name, role, phoneNumber,userId,deviceId);
+    public Admin(String email, String name, String role, String phoneNumber, String userId, String deviceId) {
+        super(email, name, role, phoneNumber, userId, deviceId);
     }
 
-    // no argument constractor
+    // no argument constructor
 
     public Admin() {
         super();

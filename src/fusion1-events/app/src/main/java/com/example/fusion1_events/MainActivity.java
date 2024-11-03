@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!name.isEmpty() && !email.isEmpty() && !phoneNumber.isEmpty()) {
                     // Create an Entrant object with the collected data
-                    Entrant entrant = new Entrant(email, name, "entrant", phoneNumber, UUID.randomUUID(),deviceId,null, null, true);
+                    Entrant entrant = new Entrant(email, name, "entrant", phoneNumber, UUID.randomUUID().toString(),deviceId,null, null, true);
 
 
                     // Use UserController to sign up the user
