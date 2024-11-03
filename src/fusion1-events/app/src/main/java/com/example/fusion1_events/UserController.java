@@ -1,5 +1,7 @@
 package com.example.fusion1_events;
 
+import android.util.Log;
+
 public class UserController {
     // Attributes for FirebaseManager reference
     private FirebaseManager firebaseManager;
@@ -35,6 +37,17 @@ public class UserController {
 
     public void updateProfile(String userId, User updatedUser) {
         // TODO: Implement update profile logic
+        firebaseManager.updateUserProfile(userId, updatedUser, new FirebaseManager.UpdateCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d("UserController", "Profile updated successfully.");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("UserController", "Failed to update profile: " + e.getMessage(), e);
+            }
+        });
     }
 
 

@@ -67,6 +67,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
+        android:id="@+id/tvProfileName"
         android:layout_width="199dp"
         android:layout_height="35dp"
         android:text="@string/user_name"
@@ -88,6 +89,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
+        android:id="@+id/tvProfileEmail"
         android:layout_width="199dp"
         android:layout_height="35dp"
         android:text="@string/user_email"
@@ -109,6 +111,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
+        android:id="@+id/tvProfilePhoneNumber"
         android:layout_width="199dp"
         android:layout_height="35dp"
         android:text="@string/user_phone"

@@ -64,10 +64,10 @@ public class MainActivity extends AppCompatActivity {
                     // User exists, check the type and navigate to the appropriate layout
                     Log.d("MainActivity", "User found: " + user.toString());
                     if (user instanceof Admin) {
-                        navigateToMainMenu(AdminMainMenuActivity.class);
+                        navigateToMainMenu(AdminMainMenuActivity.class, user);
                     }
                     else if (user instanceof Entrant) {
-                        navigateToMainMenu(MainMenuActivity.class);
+                        navigateToMainMenu(MainMenuActivity.class, user);
                     }
 //                    else if (user instanceof Organizer) {
 //                        navigateToMainMenu(OrganizerMainMenuActivity.class);
@@ -82,13 +82,18 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("MainActivity", "Navigating to register new user layout.");
                     setContentView(R.layout.register_new_user);
                     setupNewUserRegistration(deviceId);
+
                 }
             });
         });
     }
 
-    private void navigateToMainMenu(Class<?> activityClass) {
+    private void navigateToMainMenu(Class<?> activityClass, User user) {
         Intent intent = new Intent(MainActivity.this, activityClass);
+        intent.putExtra("userName", user.getName());
+        intent.putExtra("userEmail", user.getEmail());
+        intent.putExtra("userPhoneNumber", user.getPhoneNumber());
+        intent.putExtra("userDeviceId", user.getDeviceId());
         startActivity(intent);
         finish(); // Close the current activity to prevent going back to it
     }
@@ -108,15 +113,19 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!name.isEmpty() && !email.isEmpty() && !phoneNumber.isEmpty()) {
                     // Create an Entrant object with the collected data
-                    Entrant entrant = new Entrant(email, name, "entrant", phoneNumber, UUID.randomUUID().toString(),deviceId,null, null, true);
+                    Entrant entrant = new Entrant(email, name, "Entrant", phoneNumber, UUID.randomUUID().toString(),deviceId,null, null, true);
 
 
                     // Use UserController to sign up the user
                     userController.signUpUser(entrant);
                     Toast.makeText(MainActivity.this, "User registration in progress", Toast.LENGTH_SHORT).show();
+
+                    // Navigate to MainMenuActivity with the entrant object
+                    navigateToMainMenu(MainMenuActivity.class, entrant);
                 } else {
                     Toast.makeText(MainActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 }
+
             });
         }
     }

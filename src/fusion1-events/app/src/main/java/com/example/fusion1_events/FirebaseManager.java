@@ -27,7 +27,7 @@ public class FirebaseManager {
 
     public void addUserToFirebase(Entrant entrant)
     {
-        // Add the entrant tot he 'user' collection in Firebase
+        // Add the entrant to the 'user' collection in Firebase
         db.collection("users")
                 .add(entrant)
                 .addOnSuccessListener(documentReference ->{
@@ -95,11 +95,30 @@ public class FirebaseManager {
         }
     }
 
+    public void updateUserProfile(String userId, User updatedUser, UpdateCallback callback) {
+        db.collection("users").document(userId)
+                .set(updatedUser) // This will overwrite the document with updatedUser data
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseManager", "User profile updated successfully.");
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseManager", "Error updating user profile", e);
+                    callback.onFailure(e);
+                });
+    }
+
 
 
     // Callback interface for asynchronous user retrieval
     public interface UserCallback {
         void onSuccess(User user);
+        void onFailure(Exception e);
+    }
+
+    // Interface for callback
+    public interface UpdateCallback {
+        void onSuccess();
         void onFailure(Exception e);
     }
 }
