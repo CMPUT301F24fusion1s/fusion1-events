@@ -66,9 +66,10 @@ public class MainActivity extends AppCompatActivity {
                     if (user instanceof Admin) {
                         navigateToMainMenu(AdminMainMenuActivity.class);
                     }
-//                    } else if (user instanceof Entrant) {
-//                        navigateToMainMenu(EntrantMainMenuActivity.class);
-//                    } else if (user instanceof Organizer) {
+                    else if (user instanceof Entrant) {
+                        navigateToMainMenu(MainMenuActivity.class);
+                    }
+//                    else if (user instanceof Organizer) {
 //                        navigateToMainMenu(OrganizerMainMenuActivity.class);
 //                    }
                 }

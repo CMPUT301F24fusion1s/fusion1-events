@@ -86,6 +86,7 @@ public class FirebaseManager {
             case "Admin":
                 return document.toObject(Admin.class);
             case "Entrant":
+                Log.d("FirebaseManager", "Entrant ");
                 return document.toObject(Entrant.class);
             case "Organizer":
                 return document.toObject(Organizer.class);
