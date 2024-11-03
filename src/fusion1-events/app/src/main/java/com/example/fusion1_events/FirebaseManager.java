@@ -122,13 +122,12 @@ public class FirebaseManager {
         void onFailure(Exception e);
     }
 
-<<<<<<< HEAD
     // Interface for callback
     public interface UpdateCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
-=======
+
     /**
      * Stores a new Event object in Firestore.
      *
@@ -217,6 +216,4 @@ public class FirebaseManager {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
-
->>>>>>> 1b0b764d3ead665e393c930cf8ba51f6d633c7bc
 }
