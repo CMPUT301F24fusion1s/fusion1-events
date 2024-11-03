@@ -1,5 +1,11 @@
 package com.example.fusion1_events;
 
+import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
+import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
+import static com.example.fusion1_events.UtilityMethods.convertUuidListToStringList;
+import static com.example.fusion1_events.UtilityMethods.convertStringListToUuidList;
+
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -102,4 +108,94 @@ public class FirebaseManager {
         void onSuccess(User user);
         void onFailure(Exception e);
     }
+
+    /**
+     * Stores a new Event object in Firestore.
+     *
+     * @param event The Event object to store.
+     */
+    public void storeNewEvent(Event event) {
+        CollectionReference eventsCollection = db.collection("events");
+
+        // Create a map to store event data
+        Map<String, Object> eventData =  event.toMap();
+
+        // Add the event to Firestore
+        eventsCollection.add(eventData)
+                .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + documentReference.getId()))
+                .addOnFailureListener(e -> Log.e("FirebaseManager", "Error adding event", e));
+    }
+
+    /**
+     * Updates an existing Event object in Firestore.
+     *
+     * @param event The Event object to update.
+     */
+    public void updateExistingEvent(Event event) {
+        CollectionReference eventsCollection = db.collection("events");
+
+        // Create a map to store event data
+        Map<String, Object> eventData =  event.toMap();
+
+        // Update the event in Firestore
+        eventsCollection.document(event.getId().toString())
+                .update(eventData)
+                .addOnSuccessListener(aVoid -> Log.d("FirebaseManager", "Event updated with ID: " + event.getId()))
+                .addOnFailureListener(e -> Log.e("FirebaseManager", "Error updating event", e));
+    }
+
+    /**
+     * Retrieves a list of Event objects from Firestore.
+     *
+     * @param callback A callback to return the list of Event objects asynchronously.
+     */
+    public void getEventById(String eventId, final EventCallback callback) {
+        CollectionReference eventsCollection = db.collection("events");
+
+        eventsCollection.document(eventId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+
+                        if (document.exists()) {
+                            // Extract data from document
+                            UUID organizerId = UUID.fromString(document.getString("organizerId"));
+                            String name = document.getString("name");
+                            Date date = document.getDate("date");
+                            String location = document.getString("location");
+                            String description = document.getString("description");
+                            String posterBase64 = document.getString("poster");
+                            List<String> waitlistStrings = (List<String>) document.get("waitlist");
+                            int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
+
+                            // Convert Base64 string back to Bitmap
+                            Bitmap poster = null;
+                            if (posterBase64 != null) {
+                                poster = decodeBase64ToBitmap(posterBase64);
+                            }
+
+                            // Convert list of strings back to list of UUIDs
+                            List<UUID> waitlist = convertStringListToUuidList(waitlistStrings);
+
+                            // Create Event object
+                            Event event = new Event(organizerId, name, date, location, description, poster, capacity);
+                            event.setWaitlist(waitlist);
+                            callback.onSuccess(event);
+                        } else {
+                            callback.onFailure(new Exception("Event not found."));
+                        }
+                    } else {
+                        callback.onFailure(task.getException() != null ? task.getException() : new Exception("Unknown error occurred."));
+                        Log.e("FirebaseManager", "Failed to retrieve event by eventId", task.getException());
+                    }
+                });
+    }
+
+    // Callback interface for asynchronous event retrieval
+    public interface EventCallback {
+        void onSuccess(Event event);
+        void onFailure(Exception e);
+    }
+
 }
