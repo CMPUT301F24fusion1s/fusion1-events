@@ -1,21 +1,20 @@
 package com.example.fusion1_events;
 
-import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
 import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
-import static com.example.fusion1_events.UtilityMethods.convertUuidListToStringList;
 import static com.example.fusion1_events.UtilityMethods.convertStringListToUuidList;
 
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 
 public class FirebaseManager {
@@ -122,13 +121,12 @@ public class FirebaseManager {
         void onFailure(Exception e);
     }
 
-<<<<<<< HEAD
     // Interface for callback
     public interface UpdateCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
-=======
+
     /**
      * Stores a new Event object in Firestore.
      *
@@ -217,6 +215,4 @@ public class FirebaseManager {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
-
->>>>>>> 1b0b764d3ead665e393c930cf8ba51f6d633c7bc
 }
