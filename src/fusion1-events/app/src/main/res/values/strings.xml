@@ -7,5 +7,18 @@
     <string name="register_button">Register with Device ID</string>
 
     <!-- Welcome Back Screen -->
-    <string name="welcome_back_format">Welcome back, John Doe!</string>
+    <string name="welcome_back_format">Welcome back!</string>
+
+    <!-- Profile Screen -->
+    <string name="back">Back</string>
+    <string name="profile_title">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="user_name">John Doe</string>
+    <string name="user_email">example@gmail.com</string>
+    <string name="user_phone">(###)-###-####</string>
+    <string name="notifications_organizers">Notifications from organizers</string>
+    <string name="notifications_admin">Notifications from admin</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="replace">Replace</string>
+    <string name="remove">Remove</string>
 </resources>
