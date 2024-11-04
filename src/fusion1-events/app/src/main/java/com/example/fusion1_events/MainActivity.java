@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("userEmail", user.getEmail());
         intent.putExtra("userPhoneNumber", user.getPhoneNumber());
         intent.putExtra("userDeviceId", user.getDeviceId());
+        intent.putExtra("userId",user.getUserId());
         startActivity(intent);
         finish(); // Close the current activity to prevent going back to it
     }

@@ -17,7 +17,7 @@
         android:layout_marginTop="16dp"
         android:background="@null"
         android:contentDescription="Profile Button"
-        android:src="@drawable/button_background"
+        android:src="@drawable/ic_user"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
