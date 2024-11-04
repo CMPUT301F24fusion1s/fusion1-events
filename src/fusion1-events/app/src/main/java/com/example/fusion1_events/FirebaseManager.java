@@ -11,6 +11,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -101,8 +102,8 @@ public class FirebaseManager {
     }
 
     public void updateUserProfile(String userId, User updatedUser, UpdateCallback callback) {
-        db.collection("users").document(userId)
-                .set(updatedUser) // This will overwrite the document with updatedUser data
+        db.collection("users").document(updatedUser.getDeviceId())
+                .update(updatedUser.getDeviceId(), updatedUser) // This will overwrite the document with updatedUser data
                 .addOnSuccessListener(aVoid -> {
                     Log.d("FirebaseManager", "User profile updated successfully.");
                     callback.onSuccess();

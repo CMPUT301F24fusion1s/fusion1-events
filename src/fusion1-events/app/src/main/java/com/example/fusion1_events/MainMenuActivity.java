@@ -1,5 +1,6 @@
 package com.example.fusion1_events;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -28,11 +29,14 @@ public class MainMenuActivity extends AppCompatActivity {
         userController = new UserController(new FirebaseManager());
 
         // Get user data from Intent
-        userName = getIntent().getStringExtra("userName");
-        userEmail = getIntent().getStringExtra("userEmail");
-        userPhoneNumber = getIntent().getStringExtra("userPhoneNumber");
-        userDeviceId = getIntent().getStringExtra("userDeviceId");
-        userId = getIntent().getStringExtra("userId");
+        Intent mainActivityIntent= getIntent();
+        User user = (User) mainActivityIntent.getSerializableExtra("User");
+        assert user != null;
+        userName = user.getName();
+        userEmail = user.getEmail();
+        userPhoneNumber = user.getPhoneNumber();
+        userDeviceId = user.getDeviceId();
+        userId = user.getUserId();
 
         // Log user details for testing
         Log.d("MainMenuActivity", "User Name: " + userName);
@@ -41,10 +45,10 @@ public class MainMenuActivity extends AppCompatActivity {
         ImageButton editProfile = findViewById(R.id.btnProfile);
 
         // Set click listener for the profile button
-        editProfile.setOnClickListener(v -> showUserProfile());
+        editProfile.setOnClickListener(v -> showUserProfile(user));
     }
 
-    private void showUserProfile() {
+    private void showUserProfile(User user) {
         // Set the content to display the user profile layout
         setContentView(R.layout.user_profile_page);
 
@@ -61,11 +65,11 @@ public class MainMenuActivity extends AppCompatActivity {
 
         // Set up the back arrow button
         Button editProfileBtn = findViewById(R.id.editProfileButton);
-        editProfileBtn.setOnClickListener(v -> editProfile());
+        editProfileBtn.setOnClickListener(v -> editProfile(user));
 
 
     }
-    private void editProfile()
+    private void editProfile(User user)
     {
         setContentView(R.layout.user_edit_profile_page);
 
@@ -80,11 +84,12 @@ public class MainMenuActivity extends AppCompatActivity {
         Button saveChanges = findViewById(R.id.saveChangesButton);
 
         saveChanges.setOnClickListener(v -> {
-            User updateduser = new User();
-            updateduser.setName(eidtProfileName.getText().toString());
-            updateduser.setEmail(eidtProfileEmail.getText().toString());
-            updateduser.setPhoneNumber(eidtProfilePhone.getText().toString());
-            userController.updateProfile(userId, updateduser);
+            // I don't think we should make a new class.
+            // how are we storting the object
+            user.setName(eidtProfileName.getText().toString());
+            user.setEmail(eidtProfileEmail.getText().toString());
+            user.setPhoneNumber(eidtProfilePhone.getText().toString());
+            userController.updateProfile(userId, user);
                 });
 
     }
