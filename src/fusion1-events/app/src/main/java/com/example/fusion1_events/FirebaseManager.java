@@ -35,10 +35,11 @@ public class FirebaseManager {
     {
         // Add the entrant to the 'user' collection in Firebase
         db.collection("users")
-                .add(entrant)
+                .document(entrant.getDeviceId())
+                .set(entrant)
                 .addOnSuccessListener(documentReference ->{
                   // Log success or handle success scenario
-                    Log.d("FirebaseManager", "User added with ID: " + documentReference.getId());
+                    Log.d("FirebaseManager", "User added with ID: " + entrant.getDeviceId());
                 })
                 .addOnFailureListener(e -> {
                     Log.w("FirebaseManager", "Error adding user",e);
@@ -62,6 +63,8 @@ public class FirebaseManager {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
                         DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        String documentId = document.getId(); // Get the document ID directly
+
                         String role = document.getString("role");
 
                         if (role != null) {
@@ -102,8 +105,19 @@ public class FirebaseManager {
     }
 
     public void updateUserProfile(String userId, User updatedUser, UpdateCallback callback) {
+        String name = updatedUser.getName();
+        String email = updatedUser.getEmail();
+        String phone = updatedUser.getPhoneNumber();
+
+        // Create a map to store the fields to update
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", name);
+        updates.put("email", email);
+        updates.put("phoneNumber", phone);
+
+        // Ensure you are using the correct userId for the document reference
         db.collection("users").document(updatedUser.getDeviceId())
-                .update(updatedUser.getDeviceId(), updatedUser) // This will overwrite the document with updatedUser data
+                .update(updates)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("FirebaseManager", "User profile updated successfully.");
                     callback.onSuccess();
@@ -124,7 +138,7 @@ public class FirebaseManager {
 
     // Interface for callback
     public interface UpdateCallback {
-        void onSuccess();
+        void onSuccess(); // Pass the document ID along with the user
         void onFailure(Exception e);
     }
 
