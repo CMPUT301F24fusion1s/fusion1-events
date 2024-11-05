@@ -6,9 +6,12 @@ import android.provider.ContactsContract;
  *  Each user can user one device because we are
  */
 // TODO maybe change the email type so user does not input any value
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.io.Serializable;
 import java.util.UUID;
 
-public class User {
+public class User implements Serializable {
     private String email;
     private String name;
     private String role;
@@ -17,7 +20,7 @@ public class User {
     private String deviceId;
 
 
-    public User(String email, String name, String role, String phoneNumber, String userId, String deviceId) {
+    public User(String email, @NonNull String name, String role, String phoneNumber, String userId, String deviceId) {
         this.email = email;
         this.name = name;
         this.role = role;

@@ -89,6 +89,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <EditText
+        android:id="@+id/e_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/user_name"
@@ -113,6 +114,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <EditText
+        android:id="@+id/e_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/user_email"
@@ -137,6 +139,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <EditText
+        android:id="@+id/e_phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/user_phone"
