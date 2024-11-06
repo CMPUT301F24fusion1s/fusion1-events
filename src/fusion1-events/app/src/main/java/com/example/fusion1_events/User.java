@@ -2,26 +2,38 @@ package com.example.fusion1_events;
 
 import android.provider.ContactsContract;
 
-public class User {
-    protected String name;
+/**
+ *  Each user can user one device because we are
+ */
+// TODO maybe change the email type so user does not input any value
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-    public String getUserId() {
-        return userId;
-    }
+import java.io.Serializable;
+import java.util.UUID;
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+public class User implements Serializable {
+    private String email;
+    private String name;
+    private String role;
+    private String phoneNumber;
+    private String userId;
+    private String deviceId;
 
-    protected String userId;
-    protected String email;
 
-    public User(String email, String name, String role, String phoneNumber) {
+    public User(String email, @NonNull String name, String role, String phoneNumber, String userId, String deviceId) {
         this.email = email;
         this.name = name;
         this.role = role;
         this.phoneNumber = phoneNumber;
+        this.userId = userId;
+        this.deviceId = deviceId;
     }
+    // no argument constructor for serialization
+    public User()
+    {
+
+    }
+
 
     public String getRole() {
         return role;
@@ -39,9 +51,22 @@ public class User {
         this.email = email;
     }
 
-    protected String role;
-    protected String phoneNumber;
+    // Getters and setters for userId and deviceId
+    public String getUserId() {
+        return userId; // Convert String back to UUID
+    }
 
+    public void setUserId(String userId) {
+        this.userId = userId; // Convert UUID to String for storage
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 
 
     public String getName() {

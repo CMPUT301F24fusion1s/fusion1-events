@@ -1,21 +1,14 @@
 package com.example.fusion1_events;
 
-import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
 import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
-import static com.example.fusion1_events.UtilityMethods.convertUuidListToStringList;
 import static com.example.fusion1_events.UtilityMethods.convertStringListToUuidList;
 
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+
 
 public class FirebaseManager {
 
@@ -34,6 +28,27 @@ public class FirebaseManager {
     }
 
     /**
+     * Add new user to user collection
+     */
+
+    public void addUserToFirebase(Entrant entrant)
+    {
+        // Add the entrant to the 'user' collection in Firebase
+        db.collection("users")
+                .document(entrant.getDeviceId())
+                .set(entrant)
+                .addOnSuccessListener(documentReference ->{
+                  // Log success or handle success scenario
+                    Log.d("FirebaseManager", "User added with ID: " + entrant.getDeviceId());
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("FirebaseManager", "Error adding user",e);
+                });
+
+
+    }
+
+    /**
      * Retrieves a User object by the deviceId.
      * This method is a skeleton implementation and requires further handling for complete data validation.
      *
@@ -41,55 +56,87 @@ public class FirebaseManager {
      * @param callback A callback to return the User object asynchronously.
      */
     public void getUserByDeviceId(String deviceId, final UserCallback callback) {
-        // Reference to the users collection
         CollectionReference usersCollection = db.collection("users");
 
-        // Query Firestore by deviceId
         usersCollection.whereEqualTo("deviceId", deviceId)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
-                            // Get the first document matching the query (assuming deviceId is unique)
-                            DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
+                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        String role = document.getString("role");
 
-                            // Extract data from document (requires further error handling)
-                            String userId = document.getId();
-                            String name = document.getString("name");
-                            String email = document.getString("email");
-                            String phoneNumber = document.getString("phoneNumber");
-                            String role = document.getString("role");
-                            String facilityName = document.getString("facilityName");
-                            String location = document.getString("location");
+                        if (role != null) {
+                            Log.d("FirebaseManager", "Role: " + role);
+                            User user = createUserFromRole(role, document);
 
-                            // TODO: Add proper null checks and data validation
-                            User user = null;
-                            if (role != null) {
-                                Log.d("FirebaseManager", "Role: " + role);
-                                // TODO: Add logic to create user based on role
-                            } else {
-                                callback.onFailure(new Exception("Role is missing."));
-                                return;
-                            }
-
-                            // Pass the user object to the callback (requires further handling)
                             if (user != null) {
                                 callback.onSuccess(user);
                             } else {
-                                callback.onFailure(new Exception("User creation failed."));
+                                callback.onFailure(new Exception("Failed to create user instance from document."));
                             }
                         } else {
-                            callback.onFailure(task.getException());
-                            Log.e("FirebaseManager", "Failed to retrieve user by deviceId", task.getException());
+                            callback.onFailure(new Exception("Role is missing in the user document."));
                         }
+                    } else {
+                        String errorMessage = (task.getException() != null) ? task.getException().getMessage() : "Unknown error retrieving user.";
+                        Log.e("FirebaseManager", "Error retrieving user by deviceId: " + errorMessage, task.getException());
+                        callback.onFailure(new Exception("User not found or task failed."));
                     }
                 });
     }
 
+    /**
+     * Creates a User object based on the role specified in the document.
+     */
+    private User createUserFromRole(String role, DocumentSnapshot document) {
+        switch (role) {
+            case "Admin":
+                return document.toObject(Admin.class);
+            case "Entrant":
+                Log.d("FirebaseManager", "Entrant ");
+                return document.toObject(Entrant.class);
+            case "Organizer":
+                return document.toObject(Organizer.class);
+            default:
+                return document.toObject(User.class);
+        }
+    }
+
+    public void updateUserProfile(String userId, User updatedUser, UpdateCallback callback) {
+        String name = updatedUser.getName();
+        String email = updatedUser.getEmail();
+        String phone = updatedUser.getPhoneNumber();
+
+        // Create a map to store the fields to update
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", name);
+        updates.put("email", email);
+        updates.put("phoneNumber", phone);
+
+        // Ensure you are using the correct userId for the document reference
+        db.collection("users").document(updatedUser.getDeviceId())
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseManager", "User profile updated successfully.");
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseManager", "Error updating user profile", e);
+                    callback.onFailure(e);
+                });
+    }
+
+
+
     // Callback interface for asynchronous user retrieval
     public interface UserCallback {
         void onSuccess(User user);
+        void onFailure(Exception e);
+    }
+
+    // Interface for callback
+    public interface UpdateCallback {
+        void onSuccess();
         void onFailure(Exception e);
     }
 
@@ -101,27 +148,31 @@ public class FirebaseManager {
     public void storeNewEvent(Event event) {
         CollectionReference eventsCollection = db.collection("events");
 
-        // Convert the poster Bitmap to a Base64 string
-        String posterBase64 = encodeBitmapToBase64(event.getPoster());
-
-        // Convert the waitlist to a list of strings
-        List<String> waitlistStrings = convertUuidListToStringList(event.getWaitlist());
-
         // Create a map to store event data
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put("name", event.getName());
-        eventData.put("date", event.getDate());
-        eventData.put("location", event.getLocation());
-        eventData.put("description", event.getDescription());
-        eventData.put("qrCodeHash", event.getQrCodeHash());
-        eventData.put("poster", posterBase64);
-        eventData.put("capacity", event.getCapacity());
-        eventData.put("waitlist", waitlistStrings);
+        Map<String, Object> eventData =  event.toMap();
 
         // Add the event to Firestore
         eventsCollection.add(eventData)
                 .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + documentReference.getId()))
                 .addOnFailureListener(e -> Log.e("FirebaseManager", "Error adding event", e));
+    }
+
+    /**
+     * Updates an existing Event object in Firestore.
+     *
+     * @param event The Event object to update.
+     */
+    public void updateExistingEvent(Event event) {
+        CollectionReference eventsCollection = db.collection("events");
+
+        // Create a map to store event data
+        Map<String, Object> eventData =  event.toMap();
+
+        // Update the event in Firestore
+        eventsCollection.document(event.getId().toString())
+                .update(eventData)
+                .addOnSuccessListener(aVoid -> Log.d("FirebaseManager", "Event updated with ID: " + event.getId()))
+                .addOnFailureListener(e -> Log.e("FirebaseManager", "Error updating event", e));
     }
 
     /**
@@ -140,6 +191,7 @@ public class FirebaseManager {
 
                         if (document.exists()) {
                             // Extract data from document
+                            UUID organizerId = UUID.fromString(document.getString("organizerId"));
                             String name = document.getString("name");
                             Date date = document.getDate("date");
                             String location = document.getString("location");
@@ -158,7 +210,7 @@ public class FirebaseManager {
                             List<UUID> waitlist = convertStringListToUuidList(waitlistStrings);
 
                             // Create Event object
-                            Event event = new Event(name, date, location, description, poster, capacity);
+                            Event event = new Event(organizerId, name, date, location, description, poster, capacity);
                             event.setWaitlist(waitlist);
                             callback.onSuccess(event);
                         } else {
@@ -176,5 +228,4 @@ public class FirebaseManager {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
-
 }

@@ -59,7 +59,8 @@ public class QRCode {
      */
     public static String generateQRCodeHash(String eventId) {
         // Generate the QR code hash based on the event ID
-        // This is a simple example, replace with your actual hashing logic
+        // This is a simple example, replace with actual hashing logic
+        // TODO: Implement proper hashing algorithm, how should it work?
         return eventId;
     }
 }
