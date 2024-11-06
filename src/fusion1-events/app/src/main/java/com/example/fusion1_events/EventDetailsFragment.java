@@ -32,7 +32,7 @@ public class EventDetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            event = (Event) getArguments().getSerializable("event");
+            event = (Event) getArguments().getParcelable("event");
             userId = getArguments().getString("userId");
             deviceManager = new DeviceManager(getContext());
             firebaseManager = new FirebaseManager();
