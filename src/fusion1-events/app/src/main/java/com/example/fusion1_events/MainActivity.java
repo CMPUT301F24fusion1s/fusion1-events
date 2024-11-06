@@ -1,6 +1,8 @@
 package com.example.fusion1_events;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -26,6 +28,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -90,12 +94,27 @@ public class MainActivity extends AppCompatActivity {
 
     private void navigateToMainMenu(Class<?> activityClass, User user) {
         Intent intent = new Intent(MainActivity.this, activityClass);
-//        intent.putExtra("userName", user.getName());
-//        intent.putExtra("userEmail", user.getEmail());
-//        intent.putExtra("userPhoneNumber", user.getPhoneNumber());
-//        intent.putExtra("userDeviceId", user.getDeviceId());
-//        intent.putExtra("userId",user.getUserId());
-        intent.putExtra("User", user);
+
+        Bundle bundle = new Bundle();
+
+        // Pass the profile image bitmap
+        String tempFileName = "temp_image.jpg";
+        try {
+            FileOutputStream fos = this.openFileOutput(tempFileName, Context.MODE_PRIVATE);
+            user.getProfileImage().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+            fos.close();
+
+//            intent.putExtra("image_path", tempFileName);
+            startActivity(intent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        bundle.putParcelable("user", user);
+        bundle.putString("image_path", tempFileName);
+
+//        intent.putExtra("User", user);
+        intent.putExtras(bundle);
         startActivity(intent);
         finish(); // Close the current activity to prevent going back to it
     }

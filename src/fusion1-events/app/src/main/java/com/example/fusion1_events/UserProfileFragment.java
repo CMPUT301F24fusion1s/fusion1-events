@@ -21,7 +21,7 @@ public class UserProfileFragment extends Fragment {
     public static UserProfileFragment newInstance(User user) {
         UserProfileFragment fragment = new UserProfileFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_USER, user); // Pass the entire User object
+        args.putParcelable(ARG_USER, user); // Pass the entire User object
         fragment.setArguments(args);
         return fragment;
     }
@@ -30,7 +30,7 @@ public class UserProfileFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            user = (User) getArguments().getSerializable(ARG_USER); // Retrieve User object
+            user = (User) getArguments().getParcelable(ARG_USER); // Retrieve User object
         }
     }
 

@@ -1,28 +1,21 @@
 package com.example.fusion1_events;
 
-import android.app.Notification;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.media.Image;
-import android.provider.ContactsContract;
-
-import androidx.annotation.NonNull;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.UUID;
 
-public class Entrant extends User{
-    protected Bitmap profileImage;
+public class Entrant extends User implements Parcelable {
     protected Location location;
     private ArrayList<Event> eventList;
     // By default user's notification is on.
     protected boolean notificationEnabled = true;
-    private String profileImageUrl;
 
     public Entrant(String email, String name, String role, String phoneNumber, String userId, String deviceId, Bitmap profileImage, Location location, boolean notificationEnabled) {
-        super(email, name, role, phoneNumber, userId, deviceId);
-        this.profileImage = profileImage;
+        super(email, name, role, phoneNumber, userId, deviceId, profileImage);
         this.location = location;
         this.notificationEnabled = notificationEnabled;
     }
@@ -33,6 +26,29 @@ public class Entrant extends User{
         super();
     }
 
+
+    protected Entrant(Parcel in) {
+        super(in);
+        location = in.readParcelable(Location.class.getClassLoader());
+        notificationEnabled = in.readByte() != 0;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Entrant> CREATOR = new Creator<Entrant>() {
+        @Override
+        public Entrant createFromParcel(Parcel in) {
+            return new Entrant(in);
+        }
+
+        @Override
+        public Entrant[] newArray(int size) {
+            return new Entrant[size];
+        }
+    };
 
     public void joinWaitlist(Event event){
        // event.getWaitlist().joinEntrent(this);
@@ -46,14 +62,7 @@ public class Entrant extends User{
     public void rejectOrganizerInvitation(Event event){
         //event.addToRejectionList(this);
     }
-    public void uploadProfilePicture(Bitmap image){
-        if(image != null)
-            this.profileImage = image;
-    }
-    public void removeProfilePicture(){
-        // not sure if we should generate a default profile picture.
-        this.profileImage = null;
-    }
+
     public void turnNotificationOn(){
         this.notificationEnabled = true;
     }
@@ -61,23 +70,29 @@ public class Entrant extends User{
         this.notificationEnabled = false;
     }
 
-
-    public Bitmap getProfileImage() {
-        return this.profileImage;
-    }
-
     public static Entrant extractUser(Map<String, Object> userDocument){
         String phone  = (String) userDocument.get("phoneNumber");
         String name = (String) userDocument.get("name");
         String email = (String) userDocument.get("email");
         String role = (String) userDocument.get("role");
-        String userID = (String) userDocument.get("userID");
-        String deviceID = (String) userDocument.get("deviceID");
-        String image = (String) userDocument.get("profilePicture");
+        String userID = (String) userDocument.get("userId");
+        String deviceID = (String) userDocument.get("deviceId");
+        String image = (String) userDocument.get("profileImage");
         Bitmap convertedImage = UtilityMethods.decodeBase64ToBitmap(image);
         Entrant user = new Entrant(email, name, role, phone, userID, deviceID, convertedImage, null, true);
 
         return user;
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getEmail());
+        dest.writeString(getName());
+        dest.writeString(getRole());
+        dest.writeString(getPhoneNumber());
+        dest.writeString(getUserId());
+        dest.writeString(getDeviceId());
+        dest.writeParcelable(location, flags);
+        dest.writeByte((byte) (notificationEnabled ? 1 : 0));
+    }
 }

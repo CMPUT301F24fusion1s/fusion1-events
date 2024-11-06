@@ -54,8 +54,7 @@ public class UserController{
 
     public void replaceImage(Bitmap selectedImage, User user, Uri imageUri){
         Entrant entrantUser = (Entrant) user;
-        entrantUser.uploadProfilePicture(selectedImage);
-
+        entrantUser.setProfileImage(selectedImage);
     }
 
 }

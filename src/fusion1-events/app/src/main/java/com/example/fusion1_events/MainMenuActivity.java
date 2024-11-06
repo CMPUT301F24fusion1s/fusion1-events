@@ -1,6 +1,8 @@
 package com.example.fusion1_events;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +15,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Objects;
 
 
 public class MainMenuActivity extends AppCompatActivity {
@@ -30,10 +36,22 @@ public class MainMenuActivity extends AppCompatActivity {
 
         // Get user data from Intent
         Intent mainActivityIntent= getIntent();
-        User user = (User) mainActivityIntent.getSerializableExtra("User");
+
+        // Get the profile image from internal storage
+        Bitmap profileImage = null;
+        String fileName = getIntent().getStringExtra("image_path");
+        try {
+            FileInputStream fis = this.openFileInput(fileName);
+            profileImage = BitmapFactory.decodeStream(fis);
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Entrant user = (Entrant) Objects.requireNonNull(mainActivityIntent.getExtras()).get("user");
         assert user != null;
         userName = user.getName();
-
+        user.setProfileImage(profileImage);
 
         // Log user details for testing
         Log.d("MainMenuActivity", "User Name: " + userName);
