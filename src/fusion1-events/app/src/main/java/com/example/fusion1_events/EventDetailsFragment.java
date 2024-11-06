@@ -49,6 +49,7 @@ public class EventDetailsFragment extends Fragment {
         TextView eventDate = view.findViewById(R.id.eventDateTime);
         TextView eventLocation = view.findViewById(R.id.location);
         TextView eventMaxParticipants = view.findViewById(R.id.maxParticipants);
+        TextView eventGeolocationRequired = view.findViewById(R.id.geolocationRequired);
         TextView eventDescription = view.findViewById(R.id.description);
         ImageView eventPoster = view.findViewById(R.id.eventPoster);
 
@@ -57,6 +58,7 @@ public class EventDetailsFragment extends Fragment {
             eventDate.setText(event.getDate().toString());
             eventLocation.setText(event.getLocation());
             eventMaxParticipants.setText(String.valueOf(event.getCapacity()));
+            eventGeolocationRequired.setText(event.getGeolocationRequired() ? "Yes" : "No");
             eventDescription.setText(event.getDescription());
             eventPoster.setImageBitmap(event.getPoster());
         }

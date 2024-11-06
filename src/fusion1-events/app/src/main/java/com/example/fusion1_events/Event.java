@@ -1,6 +1,5 @@
 package com.example.fusion1_events;
 
-import static com.example.fusion1_events.UtilityMethods.convertUuidListToStringList;
 import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
 
@@ -13,7 +12,6 @@ import androidx.annotation.NonNull;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.zxing.WriterException;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,13 +29,14 @@ public class Event implements Parcelable {
     private Date date;
     private String location;
     private String description;
+    private Bitmap poster;
     private Bitmap qrCode;
     private String qrCodeHash;
-    private Bitmap poster;
+    private Integer capacity;
+    private Boolean geolocationRequired;
     private List<String> waitlist;
-    private int capacity;
 
-    public Event(UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity) {
+    public Event(UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, Boolean geolocationRequired) {
         this.id = UUID.randomUUID();
         this.organizerId = organizerId;
         this.name = name;
@@ -46,6 +45,7 @@ public class Event implements Parcelable {
         this.description = description;
         this.poster = poster;
         this.capacity = capacity;
+        this.geolocationRequired = geolocationRequired;
     }
 
     protected Event(Parcel in) {
@@ -59,6 +59,7 @@ public class Event implements Parcelable {
         qrCodeHash = in.readString();
         poster = in.readParcelable(Bitmap.class.getClassLoader());
         capacity = in.readInt();
+        geolocationRequired = in.readByte() != 0;
     }
 
 
@@ -83,6 +84,7 @@ public class Event implements Parcelable {
         eventData.put("qrCodeHash", this.getQrCodeHash());
         eventData.put("poster", posterBase64);
         eventData.put("capacity", this.getCapacity());
+        eventData.put("geolocationRequired", this.geolocationRequired);
         eventData.put("waitlist", this.getWaitlist());
 
         return eventData;
@@ -96,8 +98,9 @@ public class Event implements Parcelable {
         String location = document.getString("location");
         String description = document.getString("description");
         String posterBase64 = document.getString("poster");
-        List<String> waitlistStrings = (List<String>) document.get("waitlist");
         int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
+        Boolean geolocationRequired = document.getBoolean("geolocationRequired");
+        List<String> waitlistStrings = (List<String>) document.get("waitlist");
 
         // Convert Base64 string back to Bitmap
         Bitmap poster = null;
@@ -106,7 +109,7 @@ public class Event implements Parcelable {
         }
 
         // Create Event object
-        Event event = new Event(organizerId, name, date, location, description, poster, capacity);
+        Event event = new Event(organizerId, name, date, location, description, poster, capacity, geolocationRequired);
         event.setWaitlist(waitlistStrings);
 
         return event;
@@ -194,20 +197,28 @@ public class Event implements Parcelable {
         this.poster = poster;
     }
 
-    public List<String> getWaitlist() {
-        return waitlist;
-    }
-
-    public void setWaitlist(List<String> waitlist) {
-        this.waitlist = waitlist;
-    }
-
     public int getCapacity() {
         return capacity;
     }
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public Boolean getGeolocationRequired() {
+        return geolocationRequired;
+    }
+
+    public void setGeolocationRequired(Boolean geolocationRequired) {
+        this.geolocationRequired = geolocationRequired;
+    }
+
+    public List<String> getWaitlist() {
+        return waitlist;
+    }
+
+    public void setWaitlist(List<String> waitlist) {
+        this.waitlist = waitlist;
     }
 
     public List<User> runLottery() {
@@ -240,8 +251,9 @@ public class Event implements Parcelable {
         parcel.writeParcelable(this.qrCode, i);
         parcel.writeString(this.qrCodeHash);
         parcel.writeParcelable(this.poster, i);
-        parcel.writeStringList(this.waitlist);
         parcel.writeInt(this.capacity);
+        parcel.writeByte((byte) (this.geolocationRequired ? 1 : 0));
+        parcel.writeStringList(this.waitlist);
     }
 
     public static final Creator<Event> CREATOR = new Creator<Event>() {
