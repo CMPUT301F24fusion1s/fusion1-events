@@ -4,11 +4,15 @@ import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.convertStringListToUuidList;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -16,13 +20,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class FirebaseManager {
 
     // Initialize Firebase Firestore instance
     private FirebaseFirestore db;
-
+    // max size of image i can retrieve
+    final long imageSize = 10 * 1024 * 1024;
     public FirebaseManager() {
         this.db = FirebaseFirestore.getInstance();
     }
@@ -106,12 +112,15 @@ public class FirebaseManager {
         String name = updatedUser.getName();
         String email = updatedUser.getEmail();
         String phone = updatedUser.getPhoneNumber();
+        Entrant entrant = (Entrant) updatedUser;
+        String profileImage = UtilityMethods.encodeBitmapToBase64(((Entrant) updatedUser).getProfileImage());
 
         // Create a map to store the fields to update
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("email", email);
         updates.put("phoneNumber", phone);
+        updates.put("profileImage", profileImage);
 
         // Ensure you are using the correct userId for the document reference
         db.collection("users").document(updatedUser.getDeviceId())
@@ -125,7 +134,6 @@ public class FirebaseManager {
                     callback.onFailure(e);
                 });
     }
-
 
 
     // Callback interface for asynchronous user retrieval
@@ -228,4 +236,5 @@ public class FirebaseManager {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
+
 }

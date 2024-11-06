@@ -30,12 +30,11 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class EditProfileFragment extends Fragment {
-
     private EditText editProfileName, editProfileEmail, editProfilePhone;
     private TextView removeProfilePic, replaceProfilePic;
     private ImageView profileImage;
     private Button saveChangesButton;
-    private User user;
+    private User user; // Need to be in UserController Class
     private UserController userController = new UserController(new FirebaseManager()); // Assumes FirebaseManager setup
     private final int RESULT_LOAD_IMG = 0, RESULT_OK = -1;
 
@@ -62,6 +61,12 @@ public class EditProfileFragment extends Fragment {
             editProfileName.setText(user.getName());
             editProfileEmail.setText(user.getEmail());
             editProfilePhone.setText(user.getPhoneNumber());
+            Entrant entrant = (Entrant) user;
+            Bitmap userPicture = entrant.getProfileImage();
+            if (userPicture != null)
+                profileImage.setImageBitmap(userPicture);
+            else
+                profileImage.setImageDrawable(getActivity().getDrawable(R.drawable.ic_user));
         }
 
         // Set up the save button
@@ -108,10 +113,9 @@ public class EditProfileFragment extends Fragment {
                 // Open InputStream for image processing
                 InputStream imageStream = requireActivity().getContentResolver().openInputStream(imageUri);
                 Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-
-                // Convert Bitmap to Drawable
-                Drawable drawableImage = new BitmapDrawable(getResources(), selectedImage);
-                profileImage.setImageDrawable(drawableImage);
+                profileImage.setImageBitmap(selectedImage);
+                // Save selected image by user in his model class
+                userController.replaceImage(selectedImage, user, imageUri);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

@@ -36,6 +36,8 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage:10.0.1")
+    implementation("com.google.firebase:firebase-auth:10.0.1")
     implementation(libs.zxing.android.embedded)
     implementation(libs.appcompat)
     implementation(libs.material)
