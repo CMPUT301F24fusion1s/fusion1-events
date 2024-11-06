@@ -11,8 +11,6 @@ import android.util.Log;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -100,7 +98,10 @@ public class FirebaseManager {
                 return document.toObject(Admin.class);
             case "Entrant":
                 Log.d("FirebaseManager", "Entrant ");
-                return document.toObject(Entrant.class);
+                Map<String, Object> entrantDocument = document.getData();
+                assert entrantDocument != null;
+                Entrant entrant = Entrant.extractUser(entrantDocument);
+                return entrant ;
             case "Organizer":
                 return document.toObject(Organizer.class);
             default:

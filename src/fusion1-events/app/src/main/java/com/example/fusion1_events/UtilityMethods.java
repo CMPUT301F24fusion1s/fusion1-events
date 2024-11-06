@@ -2,10 +2,12 @@ package com.example.fusion1_events;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -57,4 +59,6 @@ public class UtilityMethods {
                 .map(UUID::fromString)
                 .collect(Collectors.toList());
     }
+
+
 }

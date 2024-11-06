@@ -9,6 +9,7 @@ import android.provider.ContactsContract;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 public class Entrant extends User{
@@ -64,4 +65,19 @@ public class Entrant extends User{
     public Bitmap getProfileImage() {
         return this.profileImage;
     }
+
+    public static Entrant extractUser(Map<String, Object> userDocument){
+        String phone  = (String) userDocument.get("phoneNumber");
+        String name = (String) userDocument.get("name");
+        String email = (String) userDocument.get("email");
+        String role = (String) userDocument.get("role");
+        String userID = (String) userDocument.get("userID");
+        String deviceID = (String) userDocument.get("deviceID");
+        String image = (String) userDocument.get("profilePicture");
+        Bitmap convertedImage = UtilityMethods.decodeBase64ToBitmap(image);
+        Entrant user = new Entrant(email, name, role, phone, userID, deviceID, convertedImage, null, true);
+
+        return user;
+    }
+
 }
