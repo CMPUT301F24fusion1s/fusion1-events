@@ -31,5 +31,12 @@
     <string name="event_details_location">Edmonton, Alberta</string>
     <string name="event_details_max_participants">Max. Participants</string>
     <string name="event_details_description">Lorem ipsum dolor sit amet…</string>
+  
+    <string-array name="am_pm_options">
+        <item>AM/PM</item>
+        <item>AM</item>
+        <item>PM</item>
+    </string-array>
 
 </resources>
+

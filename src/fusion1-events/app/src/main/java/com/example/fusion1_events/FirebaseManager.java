@@ -103,10 +103,19 @@ public class FirebaseManager {
     }
 
     public void updateUserProfile(String userId, User updatedUser, UpdateCallback callback) {
-        db.collection("users")
-                .document(updatedUser.getDeviceId())
-                .update("email", updatedUser.getEmail(),
-                        "name", updatedUser.getName()) // This will overwrite the document with updatedUser data
+        String name = updatedUser.getName();
+        String email = updatedUser.getEmail();
+        String phone = updatedUser.getPhoneNumber();
+
+        // Create a map to store the fields to update
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", name);
+        updates.put("email", email);
+        updates.put("phoneNumber", phone);
+
+        // Ensure you are using the correct userId for the document reference
+        db.collection("users").document(updatedUser.getDeviceId())
+                .update(updates)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("FirebaseManager", "User profile updated successfully.");
                     callback.onSuccess();
