@@ -197,12 +197,9 @@ public class FirebaseManager {
                                 poster = decodeBase64ToBitmap(posterBase64);
                             }
 
-                            // Convert list of strings back to list of UUIDs
-                            List<UUID> waitlist = convertStringListToUuidList(waitlistStrings);
-
                             // Create Event object
                             Event event = new Event(organizerId, name, date, location, description, poster, capacity);
-                            event.setWaitlist(waitlist);
+                            event.setWaitlist(waitlistStrings);
                             callback.onSuccess(event);
                         } else {
                             callback.onFailure(new Exception("Event not found."));
