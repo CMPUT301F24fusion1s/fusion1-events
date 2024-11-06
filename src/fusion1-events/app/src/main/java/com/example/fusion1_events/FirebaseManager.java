@@ -11,6 +11,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,10 +35,11 @@ public class FirebaseManager {
     {
         // Add the entrant to the 'user' collection in Firebase
         db.collection("users")
-                .add(entrant)
+                .document(entrant.getDeviceId())
+                .set(entrant)
                 .addOnSuccessListener(documentReference ->{
                   // Log success or handle success scenario
-                    Log.d("FirebaseManager", "User added with ID: " + documentReference.getId());
+                    Log.d("FirebaseManager", "User added with ID: " + entrant.getDeviceId());
                 })
                 .addOnFailureListener(e -> {
                     Log.w("FirebaseManager", "Error adding user",e);
@@ -101,8 +103,10 @@ public class FirebaseManager {
     }
 
     public void updateUserProfile(String userId, User updatedUser, UpdateCallback callback) {
-        db.collection("users").document(userId)
-                .set(updatedUser) // This will overwrite the document with updatedUser data
+        db.collection("users")
+                .document(updatedUser.getDeviceId())
+                .update("email", updatedUser.getEmail(),
+                        "name", updatedUser.getName()) // This will overwrite the document with updatedUser data
                 .addOnSuccessListener(aVoid -> {
                     Log.d("FirebaseManager", "User profile updated successfully.");
                     callback.onSuccess();

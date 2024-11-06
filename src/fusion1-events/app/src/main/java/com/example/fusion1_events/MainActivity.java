@@ -90,10 +90,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void navigateToMainMenu(Class<?> activityClass, User user) {
         Intent intent = new Intent(MainActivity.this, activityClass);
-        intent.putExtra("userName", user.getName());
-        intent.putExtra("userEmail", user.getEmail());
-        intent.putExtra("userPhoneNumber", user.getPhoneNumber());
-        intent.putExtra("userDeviceId", user.getDeviceId());
+//        intent.putExtra("userName", user.getName());
+//        intent.putExtra("userEmail", user.getEmail());
+//        intent.putExtra("userPhoneNumber", user.getPhoneNumber());
+//        intent.putExtra("userDeviceId", user.getDeviceId());
+//        intent.putExtra("userId",user.getUserId());
+        intent.putExtra("User", user);
         startActivity(intent);
         finish(); // Close the current activity to prevent going back to it
     }
