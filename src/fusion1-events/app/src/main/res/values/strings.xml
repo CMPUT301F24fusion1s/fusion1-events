@@ -21,4 +21,12 @@
     <string name="save_changes">Save Changes</string>
     <string name="replace">Replace</string>
     <string name="remove">Remove</string>
+
+    <string-array name="am_pm_options">
+        <item>AM/PM</item>
+        <item>AM</item>
+        <item>PM</item>
+    </string-array>
+
 </resources>
+
