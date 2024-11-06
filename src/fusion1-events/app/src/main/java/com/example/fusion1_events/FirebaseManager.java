@@ -181,26 +181,7 @@ public class FirebaseManager {
                         DocumentSnapshot document = task.getResult();
 
                         if (document.exists()) {
-                            // Extract data from document
-                            UUID organizerId = UUID.fromString(document.getString("organizerId"));
-                            String name = document.getString("name");
-                            Date date = document.getDate("date");
-                            String location = document.getString("location");
-                            String description = document.getString("description");
-                            String posterBase64 = document.getString("poster");
-                            List<String> waitlistStrings = (List<String>) document.get("waitlist");
-                            int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
-
-                            // Convert Base64 string back to Bitmap
-                            Bitmap poster = null;
-                            if (posterBase64 != null) {
-                                poster = decodeBase64ToBitmap(posterBase64);
-                            }
-
-                            // Create Event object
-                            Event event = new Event(organizerId, name, date, location, description, poster, capacity);
-                            event.setWaitlist(waitlistStrings);
-                            callback.onSuccess(event);
+                            callback.onSuccess(Event.fromFirestoreDocument(document));
                         } else {
                             callback.onFailure(new Exception("Event not found."));
                         }

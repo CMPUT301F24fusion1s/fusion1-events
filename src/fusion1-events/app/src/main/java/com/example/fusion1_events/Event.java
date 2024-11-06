@@ -1,6 +1,7 @@
 package com.example.fusion1_events;
 
 import static com.example.fusion1_events.UtilityMethods.convertUuidListToStringList;
+import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
 
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.zxing.WriterException;
 
 import java.io.Serializable;
@@ -16,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import kotlin.NotImplementedError;
@@ -83,6 +86,30 @@ public class Event implements Parcelable {
         eventData.put("waitlist", this.getWaitlist());
 
         return eventData;
+    }
+
+    public static Event fromFirestoreDocument(DocumentSnapshot document) {
+        // Extract data from document
+        UUID organizerId = UUID.fromString(document.getString("organizerId"));
+        String name = document.getString("name");
+        Date date = document.getDate("date");
+        String location = document.getString("location");
+        String description = document.getString("description");
+        String posterBase64 = document.getString("poster");
+        List<String> waitlistStrings = (List<String>) document.get("waitlist");
+        int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
+
+        // Convert Base64 string back to Bitmap
+        Bitmap poster = null;
+        if (posterBase64 != null) {
+            poster = decodeBase64ToBitmap(posterBase64);
+        }
+
+        // Create Event object
+        Event event = new Event(organizerId, name, date, location, description, poster, capacity);
+        event.setWaitlist(waitlistStrings);
+
+        return event;
     }
 
     private void generateQRCode() {
