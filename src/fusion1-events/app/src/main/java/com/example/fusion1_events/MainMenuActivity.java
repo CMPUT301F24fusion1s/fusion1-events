@@ -69,64 +69,6 @@ public class MainMenuActivity extends AppCompatActivity {
 
 }
 
-//    public void showEditProfileFragment(String userName, String userEmail, String userPhoneNumber, String userDeviceId) {
-//        EditProfileFragment editProfileFragment = EditProfileFragment.newInstance(userName, userEmail, userPhoneNumber, userDeviceId);
-//
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.fragment_container, editProfileFragment);
-//        transaction.addToBackStack(null); // Allow back navigation
-//        transaction.commit();
-//    }
-
-
-
-
-//    private void showUserProfile(User user) {
-//        // Set the content to display the user profile layout
-//        setContentView(R.layout.user_profile_page);
-//
-//        // Populate the profile layout with user information
-//        TextView profileName = findViewById(R.id.tvProfileName);
-//        TextView profileEmail = findViewById(R.id.tvProfileEmail);
-//        TextView profilePhone = findViewById(R.id.tvProfilePhoneNumber);
-//
-//
-//        // Set the text fields with user information
-//        profileName.setText(userName);
-//        profileEmail.setText(userEmail);
-//        profilePhone.setText(userPhoneNumber);
-//
-//        // Set up the back arrow button
-//        Button editProfileBtn = findViewById(R.id.editProfileButton);
-//        editProfileBtn.setOnClickListener(v -> editProfile(user));
-//
-//
-//    }
-//    private void editProfile(User user)
-//    {
-//        setContentView(R.layout.user_edit_profile_page);
-//
-//        EditText eidtProfileName = findViewById(R.id.e_name);
-//        EditText eidtProfileEmail = findViewById(R.id.e_email);
-//        EditText eidtProfilePhone = findViewById(R.id.e_phone);
-//
-//        eidtProfileName.setText(userName);
-//        eidtProfileEmail.setText(userEmail);
-//        eidtProfilePhone.setText(userPhoneNumber);
-//
-//        Button saveChanges = findViewById(R.id.saveChangesButton);
-//
-//        saveChanges.setOnClickListener(v -> {
-//            // I don't think we should make a new class.
-//            // how are we storting the object
-//            user.setName(eidtProfileName.getText().toString());
-//            user.setEmail(eidtProfileEmail.getText().toString());
-//            user.setPhoneNumber(eidtProfilePhone.getText().toString());
-//            userController.updateProfile(userId, user);
-//                });
-//
-//    }
-
 
 
 

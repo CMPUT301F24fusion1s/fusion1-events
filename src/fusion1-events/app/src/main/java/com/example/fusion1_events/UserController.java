@@ -1,5 +1,7 @@
 package com.example.fusion1_events;
 
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.util.Log;
 
 public class UserController {
@@ -50,6 +52,9 @@ public class UserController {
         });
     }
 
+    public void replaceImage(){
+//        return new Bitmap();
+    };
 
 }
 
