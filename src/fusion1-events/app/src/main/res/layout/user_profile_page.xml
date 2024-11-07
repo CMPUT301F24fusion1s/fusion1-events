@@ -30,17 +30,15 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
-        android:id="@+id/profileImage"
+        android:id="@+id/profileImage_main"
         android:layout_width="121dp"
         android:layout_height="121dp"
         android:layout_marginTop="155dp"
-        android:background="@drawable/profile_picture"
         android:src="@drawable/ic_user"
-        android:padding="35dp"
+        android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/white"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/editProfileButton"
