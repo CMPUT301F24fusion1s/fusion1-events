@@ -6,25 +6,46 @@ import android.os.Parcelable;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-
 import java.util.UUID;
 
+/**
+ * The QRCode class provides functionality to generate QR codes for events.
+ * It contains methods to generate a QR code bitmap and a hash for a given event ID.
+ */
 public class QRCode {
-    // Inner class to encapsulate the QR code result
+
+    /**
+     * Inner class to encapsulate the QR code result.
+     * This class implements Parcelable to allow QR code result objects to be passed between Android components.
+     */
     public static class QRCodeResult implements Parcelable {
         private final Bitmap bitmap;
         private final String hash;
 
+        /**
+         * Constructor to initialize QRCodeResult with a bitmap and hash.
+         *
+         * @param bitmap The bitmap representing the QR code.
+         * @param hash The hash associated with the QR code.
+         */
         public QRCodeResult(Bitmap bitmap, String hash) {
             this.bitmap = bitmap;
             this.hash = hash;
         }
 
+        /**
+         * Constructor to recreate QRCodeResult from a Parcel.
+         *
+         * @param in The Parcel containing the serialized QRCodeResult data.
+         */
         protected QRCodeResult(Parcel in) {
             bitmap = in.readParcelable(Bitmap.class.getClassLoader());
             hash = in.readString();
         }
 
+        /**
+         * CREATOR field to generate instances of QRCodeResult from a Parcel.
+         */
         public static final Creator<QRCodeResult> CREATOR = new Creator<QRCodeResult>() {
             @Override
             public QRCodeResult createFromParcel(Parcel in) {
@@ -48,10 +69,20 @@ public class QRCode {
             dest.writeString(hash);
         }
 
+        /**
+         * Gets the bitmap representing the QR code.
+         *
+         * @return The QR code bitmap.
+         */
         public Bitmap getBitmap() {
             return bitmap;
         }
 
+        /**
+         * Gets the hash associated with the QR code.
+         *
+         * @return The QR code hash.
+         */
         public String getHash() {
             return hash;
         }
