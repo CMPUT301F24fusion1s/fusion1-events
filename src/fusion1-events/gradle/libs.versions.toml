@@ -9,6 +9,7 @@ activity = "1.9.2"
 constraintlayout = "2.1.4"
 mockitoCore = "5.5.0"
 zxingAndroidEmbedded = "4.3.0"
+playServicesMlkitBarcodeScanning = "18.3.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -21,6 +22,7 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoCore" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+play-services-mlkit-barcode-scanning = { group = "com.google.android.gms", name = "play-services-mlkit-barcode-scanning", version.ref = "playServicesMlkitBarcodeScanning" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
