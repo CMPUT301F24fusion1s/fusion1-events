@@ -111,7 +111,9 @@ public class FirebaseManager {
         String email = updatedUser.getEmail();
         String phone = updatedUser.getPhoneNumber();
         Entrant entrant = (Entrant) updatedUser;
-        String profileImage = UtilityMethods.encodeBitmapToBase64(((Entrant) updatedUser).getProfileImage());
+        String profileImage  = null;
+        if(entrant.getProfileImage() != null)
+            profileImage = UtilityMethods.encodeBitmapToBase64(((Entrant) updatedUser).getProfileImage());
 
         // Create a map to store the fields to update
         Map<String, Object> updates = new HashMap<>();
