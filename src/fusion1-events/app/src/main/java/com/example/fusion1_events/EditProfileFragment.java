@@ -86,6 +86,7 @@ public class EditProfileFragment extends Fragment {
         removeProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                user.removeProfileImage();
                 profileImage.setImageDrawable(view.getResources().getDrawable(R.drawable.ic_user));
             }
         });

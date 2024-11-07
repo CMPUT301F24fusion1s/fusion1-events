@@ -148,4 +148,8 @@ public class User implements Parcelable {
         parcel.writeString(userId);
         parcel.writeString(deviceId);
     }
+
+    public void removeProfileImage(){
+        this.profileImage = null;
+    }
 }
