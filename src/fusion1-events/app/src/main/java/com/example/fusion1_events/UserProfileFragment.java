@@ -50,7 +50,10 @@ public class UserProfileFragment extends Fragment {
             profileName.setText(user.getName());
             profileEmail.setText(user.getEmail());
             profilePhone.setText(user.getPhoneNumber());
-            profileImage.setImageBitmap(user.getProfileImage());
+            if(user.getProfileImage() == null)
+                profileImage.setImageDrawable(getActivity().getDrawable(R.drawable.ic_user));
+            else
+                profileImage.setImageBitmap(user.getProfileImage());
 
         }
 
