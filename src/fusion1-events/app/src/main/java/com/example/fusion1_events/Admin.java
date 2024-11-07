@@ -1,5 +1,6 @@
 package com.example.fusion1_events;
 
+import android.graphics.Bitmap;
 import android.provider.ContactsContract;
 
 import androidx.lifecycle.Lifecycle;
@@ -9,8 +10,8 @@ import java.util.UUID;
 public class Admin extends User{
 
 
-    public Admin(String email, String name, String role, String phoneNumber, String userId, String deviceId) {
-        super(email, name, role, phoneNumber, userId, deviceId);
+    public Admin(String email, String name, String role, String phoneNumber, String userId, String deviceId, Bitmap profileImage) {
+        super(email, name, role, phoneNumber, userId, deviceId, profileImage);
     }
 
     // no argument constructor
@@ -28,7 +29,7 @@ public class Admin extends User{
         // not sure how to do it
     }
     public void removeImage(Entrant entrant){
-        entrant.removeProfilePicture();
+        entrant.setProfileImage(null);
     }
    // public void removeQrCode(QRcode qRcode){
      //   FireBaseManager.deleteQrCode(qRcode);

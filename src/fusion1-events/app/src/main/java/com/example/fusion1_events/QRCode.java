@@ -1,21 +1,51 @@
 package com.example.fusion1_events;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+
 import java.util.UUID;
 
 public class QRCode {
-
     // Inner class to encapsulate the QR code result
-    public static class QRCodeResult {
+    public static class QRCodeResult implements Parcelable {
         private final Bitmap bitmap;
         private final String hash;
 
         public QRCodeResult(Bitmap bitmap, String hash) {
             this.bitmap = bitmap;
             this.hash = hash;
+        }
+
+        protected QRCodeResult(Parcel in) {
+            bitmap = in.readParcelable(Bitmap.class.getClassLoader());
+            hash = in.readString();
+        }
+
+        public static final Creator<QRCodeResult> CREATOR = new Creator<QRCodeResult>() {
+            @Override
+            public QRCodeResult createFromParcel(Parcel in) {
+                return new QRCodeResult(in);
+            }
+
+            @Override
+            public QRCodeResult[] newArray(int size) {
+                return new QRCodeResult[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeParcelable(bitmap, flags);
+            dest.writeString(hash);
         }
 
         public Bitmap getBitmap() {
@@ -57,10 +87,9 @@ public class QRCode {
      * @param eventId The ID of the event.
      * @return A hash string of the event ID.
      */
-    public static String generateQRCodeHash(String eventId) {
+    static String generateQRCodeHash(String eventId) {
         // Generate the QR code hash based on the event ID
         // This is a simple example, replace with actual hashing logic
-        // TODO: Implement proper hashing algorithm, how should it work?
         return eventId;
     }
 }

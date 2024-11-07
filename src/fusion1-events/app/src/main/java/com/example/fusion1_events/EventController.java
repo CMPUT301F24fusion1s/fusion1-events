@@ -27,8 +27,8 @@ public class EventController {
      * @param poster Poster image for the event.
      * @param capacity Capacity of the event.
      */
-    public void createEvent(UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity) {
-        Event event = new Event(organizerId, name, date, location, description, poster, capacity);
+    public void createEvent(UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, Boolean geolocationRequired) {
+        Event event = new Event(organizerId, name, date, location, description, poster, capacity, geolocationRequired);
         firebaseManager.storeNewEvent(event);
     }
 

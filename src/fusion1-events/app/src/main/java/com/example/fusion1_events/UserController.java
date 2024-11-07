@@ -1,8 +1,10 @@
 package com.example.fusion1_events;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.Log;
 
-public class UserController {
+public class UserController{
     // Attributes for FirebaseManager reference
     private FirebaseManager firebaseManager;
 
@@ -50,6 +52,10 @@ public class UserController {
         });
     }
 
+    public void replaceImage(Bitmap selectedImage, User user, Uri imageUri){
+        Entrant entrantUser = (Entrant) user;
+        entrantUser.setProfileImage(selectedImage);
+    }
 
 }
 

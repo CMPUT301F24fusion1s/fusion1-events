@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">fusion1-events</string>
 
+    <!-- General -->
+    <string name="back">Back</string>
+
     <!-- Registration Screen -->
     <string name="hello_title">Hello!</string>
     <string name="register_subtitle">Please register to get started.</string>
@@ -10,7 +13,6 @@
     <string name="welcome_back_format">Welcome back!</string>
 
     <!-- Profile Screen -->
-    <string name="back">Back</string>
     <string name="profile_title">Profile</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="user_name">John Doe</string>
@@ -21,4 +23,21 @@
     <string name="save_changes">Save Changes</string>
     <string name="replace">Replace</string>
     <string name="remove">Remove</string>
+
+    <!-- Event Details Screen -->
+    <string name="event_details_title">Event-1</string>
+    <string name="event_details_primary_action_btn_text">Primary Action</string>
+    <string name="event_details_date">October 25 2024, 6:00 – 9:00 PM</string>
+    <string name="event_details_location">Edmonton, Alberta</string>
+    <string name="event_details_max_participants">Max. Participants</string>
+    <string name="event_details_description">Lorem ipsum dolor sit amet…</string>
+    <string name="event_details_geolocation_required">No</string>
+
+    <string-array name="am_pm_options">
+        <item>AM/PM</item>
+        <item>AM</item>
+        <item>PM</item>
+    </string-array>
+
 </resources>
+
