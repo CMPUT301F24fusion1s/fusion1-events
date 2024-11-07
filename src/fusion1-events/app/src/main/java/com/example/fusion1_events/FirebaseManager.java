@@ -111,6 +111,7 @@ public class FirebaseManager {
         String email = updatedUser.getEmail();
         String phone = updatedUser.getPhoneNumber();
         Entrant entrant = (Entrant) updatedUser;
+        boolean notification = entrant.getNotificationEnabled();
         String profileImage  = null;
         if(entrant.getProfileImage() != null)
             profileImage = UtilityMethods.encodeBitmapToBase64(((Entrant) updatedUser).getProfileImage());
@@ -121,6 +122,7 @@ public class FirebaseManager {
         updates.put("email", email);
         updates.put("phoneNumber", phone);
         updates.put("profileImage", profileImage);
+        updates.put("notification", notification);
 
         // Ensure you are using the correct userId for the document reference
         db.collection("users").document(updatedUser.getDeviceId())

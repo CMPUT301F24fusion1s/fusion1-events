@@ -15,7 +15,7 @@ public class Entrant extends User implements Parcelable {
     protected Location location;
     private ArrayList<Event> eventList;
     // By default user's notification is on.
-    protected boolean notificationEnabled = true;
+    protected Boolean notificationEnabled = true;
 
     public Entrant(String email, String name, String role, String phoneNumber, String userId, String deviceId, Bitmap profileImage, Location location, boolean notificationEnabled) {
         super(email, name, role, phoneNumber, userId, deviceId, profileImage);
@@ -65,6 +65,11 @@ public class Entrant extends User implements Parcelable {
     public void rejectOrganizerInvitation(Event event){
         //event.addToRejectionList(this);
     }
+
+    public Boolean getNotificationEnabled() {
+        return notificationEnabled;
+    }
+
 
     public void turnNotificationOn(){
         this.notificationEnabled = true;
