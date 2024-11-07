@@ -11,11 +11,16 @@ import android.graphics.BitmapFactory;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * The Entrant class represents a user with the role of an event participant.
+ * It extends the User class and implements Parcelable to allow easy transfer of objects between Android components.
+ * This class provides additional attributes and methods for managing an entrant's participation in events.
+ */
 public class Entrant extends User implements Parcelable {
     protected Location location;
     private ArrayList<Event> eventList;
     // By default user's notification is on.
-    protected boolean notificationEnabled = true;
+    protected Boolean notificationEnabled = true;
 
     public Entrant(String email, String name, String role, String phoneNumber, String userId, String deviceId, Bitmap profileImage, Location location, boolean notificationEnabled) {
         super(email, name, role, phoneNumber, userId, deviceId, profileImage);
@@ -30,6 +35,11 @@ public class Entrant extends User implements Parcelable {
     }
 
 
+    /**
+     * Constructor to create an Entrant object from a Parcel.
+     *
+     * @param in The Parcel containing the serialized Entrant data.
+     */
     protected Entrant(Parcel in) {
         super(in);
         location = in.readParcelable(Location.class.getClassLoader());
@@ -41,6 +51,9 @@ public class Entrant extends User implements Parcelable {
         return 0;
     }
 
+    /**
+     * Creator field to generate instances of Entrant from a Parcel.
+     */
     public static final Creator<Entrant> CREATOR = new Creator<Entrant>() {
         @Override
         public Entrant createFromParcel(Parcel in) {
@@ -53,26 +66,71 @@ public class Entrant extends User implements Parcelable {
         }
     };
 
+    /**
+     * Method to join the waitlist of an event.
+     *
+     * @param event The event the entrant wishes to join.
+     */
     public void joinWaitlist(Event event){
        // event.getWaitlist().joinEntrent(this);
     }
+    /**
+     * Method to quit the waitlist of an event.
+     *
+     * @param event The event the entrant wishes to quit.
+     */
     public void quitWaitlist(Event event){
         //event.getWaitlist().ommitEntrent(this);
     }
+
+    /**
+     * Method to accept an invitation from an event organizer.
+     *
+     * @param event The event the entrant wishes to join as an attendee.
+     */
     public void acceptOrganizerInvitation(Event event){
        // event.joinAttendeeList(this);
     }
+
+    /**
+     * Method to reject an invitation from an event organizer.
+     *
+     * @param event The event the entrant wishes to reject.
+     */
     public void rejectOrganizerInvitation(Event event){
         //event.addToRejectionList(this);
     }
 
+    /**
+     * Gets the notification status for the entrant.
+     *
+     * @return True if notifications are enabled, false otherwise.
+     */
+    public Boolean getNotificationEnabled() {
+        return notificationEnabled;
+    }
+
+
+    /**
+     * Turns on notifications for the entrant.
+     */
     public void turnNotificationOn(){
         this.notificationEnabled = true;
     }
+
+    /**
+     * Turns off notifications for the entrant.
+     */
     public void turnNotificationOff(){
         this.notificationEnabled = false;
     }
 
+    /**
+     * Extracts an Entrant object from a Firestore document map.
+     *
+     * @param userDocument The map containing user details from Firestore.
+     * @return An Entrant object created from the provided document data.
+     */
     public static Entrant extractUser(Map<String, Object> userDocument){
         Bitmap convertedImage = null;
         String phone  = (String) userDocument.get("phoneNumber");
@@ -94,6 +152,12 @@ public class Entrant extends User implements Parcelable {
         return user;
     }
 
+    /**
+     * Writes the Entrant object's data to a Parcel for serialization.
+     *
+     * @param dest The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(getEmail());

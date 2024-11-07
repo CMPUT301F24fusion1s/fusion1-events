@@ -21,11 +21,20 @@ import java.io.IOException;
 import java.util.Objects;
 
 
+/**
+ * The MainMenuActivity class represents the main menu screen of the application.
+ * It provides functionalities for navigating to user profile and editing profile information.
+ */
 public class MainMenuActivity extends AppCompatActivity {
 
     private String userName;
     private UserController userController;
 
+    /**
+     * Called when the activity is first created. Initializes the user interface components and sets up the event listeners.
+     *
+     * @param savedInstancesState If the activity is being re-initialized after previously being shut down, this Bundle contains the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
@@ -64,6 +73,11 @@ public class MainMenuActivity extends AppCompatActivity {
         editProfile.setOnClickListener(v -> showUserProfileFragment(user));
     }
 
+    /**
+     * Displays the UserProfileFragment containing the user's profile information.
+     *
+     * @param user The User object whose profile information will be displayed.
+     */
     private void showUserProfileFragment(User user) {
         // Create an instance of UserProfileFragment with user data
         UserProfileFragment userProfileFragment = UserProfileFragment.newInstance(user);
@@ -75,6 +89,11 @@ public class MainMenuActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    /**
+     * Displays the EditProfileFragment to allow editing of the user's profile information.
+     *
+     * @param user The User object whose profile information will be edited.
+     */
     void showEditProfileFragment(User user) {
         EditProfileFragment editProfileFragment = new EditProfileFragment();
         editProfileFragment.setUser(user); // Set the user object directly
