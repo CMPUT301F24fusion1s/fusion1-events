@@ -29,7 +29,14 @@ import androidx.fragment.app.Fragment;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+/**
+ * The EditProfileFragment class represents a user interface for editing a user's profile information.
+ * It allows users to update their name, email, phone number, and profile picture.
+ * This fragment interacts with the UserController class to perform operations related to updating the user data in a backend system.
+ * It also provides mechanisms for selecting, replacing, or removing the user's profile picture.
+ */
 public class EditProfileFragment extends Fragment {
+    // UI Elements for editing profile information
     private EditText editProfileName, editProfileEmail, editProfilePhone;
     private TextView removeProfilePic, replaceProfilePic;
     private ImageView profileImage;
@@ -38,10 +45,19 @@ public class EditProfileFragment extends Fragment {
     private UserController userController = new UserController(new FirebaseManager()); // Assumes FirebaseManager setup
     private final int RESULT_LOAD_IMG = 0, RESULT_OK = -1;
 
+    // The User object representing the current user
     public void setUser(User user) {
         this.user = user;
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return The View for the fragment's UI, or null.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -69,7 +85,7 @@ public class EditProfileFragment extends Fragment {
                 profileImage.setImageDrawable(getActivity().getDrawable(R.drawable.ic_user));
         }
 
-        // Set up the save button
+        // Set up the save button listener to save the updated profile data
         saveChangesButton.setOnClickListener(v -> {
             // Update user object with new values
             user.setName(editProfileName.getText().toString());
@@ -103,6 +119,14 @@ public class EditProfileFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Handles the result from activities started with startActivityForResult().
+     * In this case, it processes the selected image from the image picker.
+     *
+     * @param reqCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller.
+     */
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
@@ -126,6 +150,13 @@ public class EditProfileFragment extends Fragment {
             Toast.makeText(getActivity(), "You haven't picked an image", Toast.LENGTH_LONG).show();
         }
     }
-
 }
+/**
+ * Note:
+ * - This fragment allows users to update their profile, including personal information and profile picture.
+ * - It uses UserController to interact with backend services such as Firebase for updating user details.
+ * - The image picker functionality enables users to select an image from their gallery.
+ * - Permissions for accessing external storage must be handled to ensure compatibility with Android 11 and higher.
+ */
+
 
