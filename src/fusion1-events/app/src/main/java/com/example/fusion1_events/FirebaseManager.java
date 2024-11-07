@@ -3,9 +3,8 @@ package com.example.fusion1_events;
 import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.convertStringListToUuidList;
 
+
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class FirebaseManager {
@@ -100,8 +98,7 @@ public class FirebaseManager {
                 Log.d("FirebaseManager", "Entrant ");
                 Map<String, Object> entrantDocument = document.getData();
                 assert entrantDocument != null;
-                Entrant entrant = Entrant.extractUser(entrantDocument);
-                return entrant ;
+                return Entrant.extractUser(entrantDocument);
             case "Organizer":
                 return document.toObject(Organizer.class);
             default:

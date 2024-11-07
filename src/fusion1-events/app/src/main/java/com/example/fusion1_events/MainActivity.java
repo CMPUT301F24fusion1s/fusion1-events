@@ -40,10 +40,14 @@ public class MainActivity extends AppCompatActivity {
     private DeviceManager deviceManager;
     private FirebaseManager firebaseManager;
     private UserController userController;
+    private static Context appContext;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        appContext = getApplicationContext();
+
         setContentView(R.layout.register_page);  // This the first layout
 
         // Device manager and fire base
@@ -99,16 +103,19 @@ public class MainActivity extends AppCompatActivity {
 
         // Pass the profile image bitmap
         String tempFileName = "temp_image.jpg";
-        try {
-            FileOutputStream fos = this.openFileOutput(tempFileName, Context.MODE_PRIVATE);
-            user.getProfileImage().compress(Bitmap.CompressFormat.JPEG, 90, fos);
-            fos.close();
+            try {
+                if(user.getProfileImage() != null) {
+                    FileOutputStream fos = this.openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                    user.getProfileImage().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                    fos.close();
+                }
 
 //            intent.putExtra("image_path", tempFileName);
-            startActivity(intent);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                startActivity(intent);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
         bundle.putParcelable("user", user);
         bundle.putString("image_path", tempFileName);
@@ -149,6 +156,11 @@ public class MainActivity extends AppCompatActivity {
 
             });
         }
+
+    public static Context getAppContext() {
+        return appContext;
+    }
+
     }
 
 

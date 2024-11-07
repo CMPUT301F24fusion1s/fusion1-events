@@ -1,9 +1,12 @@
 package com.example.fusion1_events;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.content.Context;
+import android.graphics.BitmapFactory;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -71,6 +74,7 @@ public class Entrant extends User implements Parcelable {
     }
 
     public static Entrant extractUser(Map<String, Object> userDocument){
+        Bitmap convertedImage = null;
         String phone  = (String) userDocument.get("phoneNumber");
         String name = (String) userDocument.get("name");
         String email = (String) userDocument.get("email");
@@ -78,7 +82,13 @@ public class Entrant extends User implements Parcelable {
         String userID = (String) userDocument.get("userId");
         String deviceID = (String) userDocument.get("deviceId");
         String image = (String) userDocument.get("profileImage");
-        Bitmap convertedImage = UtilityMethods.decodeBase64ToBitmap(image);
+
+        if (image == null) {
+            // set to default
+            convertedImage = BitmapFactory.decodeResource(MainActivity.getAppContext().getResources(), R.drawable.ic_user);
+        }
+        else
+            convertedImage = UtilityMethods.decodeBase64ToBitmap(image);
         Entrant user = new Entrant(email, name, role, phone, userID, deviceID, convertedImage, null, true);
 
         return user;
