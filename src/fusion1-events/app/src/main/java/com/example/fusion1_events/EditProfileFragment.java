@@ -41,6 +41,7 @@ public class EditProfileFragment extends Fragment {
     private TextView removeProfilePic, replaceProfilePic;
     private ImageView profileImage;
     private Button saveChangesButton;
+    private ImageView backButton;
     private User user; // Need to be in UserController Class
     private UserController userController = new UserController(new FirebaseManager()); // Assumes FirebaseManager setup
     private final int RESULT_LOAD_IMG = 0, RESULT_OK = -1;
@@ -71,6 +72,7 @@ public class EditProfileFragment extends Fragment {
         replaceProfilePic = view.findViewById(R.id.replace);
         removeProfilePic = view.findViewById(R.id.remove);
         profileImage = view.findViewById(R.id.profileImage);
+        backButton   = view.findViewById(R.id.backArrow1);
 
         // Populate fields with the current user data
         if (user != null) {
@@ -98,6 +100,13 @@ public class EditProfileFragment extends Fragment {
             // Go back to UserProfileFragment after saving
             getActivity().getSupportFragmentManager().popBackStack();
         });
+
+        // Set back button to return the profile page
+        backButton.setOnClickListener(v -> {
+                    if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().popBackStack();}
+                    
+                });
 
         removeProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
