@@ -21,6 +21,10 @@ import java.util.UUID;
 
 import kotlin.NotImplementedError;
 
+/**
+ * Event class represents an event in the application, with properties such as name, date, location, description, etc.
+ * It implements Parcelable to allow easy transfer of data between components.
+ */
 public class Event implements Parcelable {
 
     private final UUID id;
@@ -36,6 +40,18 @@ public class Event implements Parcelable {
     private Boolean geolocationRequired;
     private List<String> waitlist;
 
+    /**
+     * Constructor for creating a new Event instance.
+     *
+     * @param organizerId         The UUID of the organizer.
+     * @param name                The name of the event.
+     * @param date                The date of the event.
+     * @param location            The location of the event.
+     * @param description         The description of the event.
+     * @param poster              The poster image for the event.
+     * @param capacity            The capacity of the event.
+     * @param geolocationRequired Whether geolocation is required for the event.
+     */
     public Event(UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, Boolean geolocationRequired) {
         this.id = UUID.randomUUID();
         this.organizerId = organizerId;
@@ -48,6 +64,11 @@ public class Event implements Parcelable {
         this.geolocationRequired = geolocationRequired;
     }
 
+    /**
+     * Constructor for recreating an Event instance from a Parcel.
+     *
+     * @param in Parcel containing the serialized event data.
+     */
     protected Event(Parcel in) {
         id = UUID.fromString(in.readString());
         organizerId = UUID.fromString(in.readString());
@@ -90,6 +111,12 @@ public class Event implements Parcelable {
         return eventData;
     }
 
+    /**
+     * Creates an Event object from a Firestore document.
+     *
+     * @param document The Firestore document containing event data.
+     * @return The Event object created from the document.
+     */
     public static Event fromFirestoreDocument(DocumentSnapshot document) {
         // Extract data from document
         UUID organizerId = UUID.fromString(document.getString("organizerId"));
@@ -115,6 +142,9 @@ public class Event implements Parcelable {
         return event;
     }
 
+    /**
+     * Generates a QR code for the event.
+     */
     private void generateQRCode() {
         try {
             QRCode.QRCodeResult qrCodeResult = QRCode.generateQRCode(this.getId());
@@ -126,6 +156,7 @@ public class Event implements Parcelable {
         }
     }
 
+    // Getters and setters for event properties
     public UUID getId() {
         return id;
     }
@@ -221,20 +252,40 @@ public class Event implements Parcelable {
         this.waitlist = waitlist;
     }
 
+    /**
+     * Runs a lottery for the event waitlist.
+     *
+     * @return List of selected users.
+     * @throws NotImplementedError as the logic is not yet implemented.
+     */
     public List<User> runLottery() {
         // TODO: Implement lottery logic
         throw new NotImplementedError("Method not implemented.");
     }
 
+    /**
+     * Re-runs the lottery for the event.
+     */
     public void reRunLottery() {
         this.runLottery();
     }
 
+    /**
+     * Sends a notification with the specified message.
+     *
+     * @param message The message to be sent.
+     * @throws NotImplementedError as the logic is not yet implemented.
+     */
     public void sendNotification(String message) {
         // TODO: Implement notification logic
         throw new NotImplementedError("Method not implemented.");
     }
 
+    /**
+     * Describe the contents for Parcelable interface.
+     *
+     * @return An integer value representing the contents.
+     */
     @Override
     public int describeContents() {
         return 0;
@@ -256,6 +307,12 @@ public class Event implements Parcelable {
         parcel.writeStringList(this.waitlist);
     }
 
+    /**
+     * Writes the Event data to a Parcel.
+     *
+     * @param parcel The Parcel in which the data should be written.
+     * @param i      Flags to modify how the object should be written.
+     */
     public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
         public Event createFromParcel(Parcel in) {
@@ -268,3 +325,11 @@ public class Event implements Parcelable {
         }
     };
 }
+
+/**
+ * Summary:
+ * - The Event class represents event data including name, date, location, description, and more.
+ * - It implements Parcelable to facilitate passing Event objects between Android components.
+ * - It provides methods to convert to and from Firestore documents and generate QR codes.
+ * - Not fully implemented features include lottery logic and sending notifications.
+ */
