@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,11 +44,14 @@ public class UserProfileFragment extends Fragment {
         TextView profileName = view.findViewById(R.id.tvProfileName);
         TextView profileEmail = view.findViewById(R.id.tvProfileEmail);
         TextView profilePhone = view.findViewById(R.id.tvProfilePhoneNumber);
+        ImageView profileImage = view.findViewById(R.id.profileImage_main);
 
         if (user != null) {
             profileName.setText(user.getName());
             profileEmail.setText(user.getEmail());
             profilePhone.setText(user.getPhoneNumber());
+            profileImage.setImageBitmap(user.getProfileImage());
+
         }
 
         // Set up Edit Profile button to open EditProfileFragment
