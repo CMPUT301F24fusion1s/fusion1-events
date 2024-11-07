@@ -13,6 +13,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.Serializable;
 
+/**
+ * Represents a User in the application, with details such as email, name, role, phone number, and profile image.
+ * Implements Parcelable for easy data transfer between Android components.
+ */
 public class User implements Parcelable {
     private String email;
     private String name;
@@ -22,6 +26,17 @@ public class User implements Parcelable {
     private String deviceId;
     protected Bitmap profileImage;
 
+    /**
+     * Parameterized constructor to initialize a User object with specified details.
+     *
+     * @param email         User's email address.
+     * @param name          User's name (non-null).
+     * @param role          User's role (e.g., "Admin", "User").
+     * @param phoneNumber   User's phone number.
+     * @param userId        Unique identifier for the user.
+     * @param deviceId      Unique device identifier associated with the user.
+     * @param profileImage  Profile image of the user as a Bitmap.
+     */
     public User(String email, @NonNull String name, String role, String phoneNumber, String userId, String deviceId, Bitmap profileImage) {
         this.email = email;
         this.name = name;
@@ -32,11 +47,18 @@ public class User implements Parcelable {
         this.profileImage = profileImage;
     }
 
-    // no argument constructor for serialization
+    /**
+     * No-argument constructor required for serialization purposes.
+     */
     public User()
     {
     }
 
+    /**
+     * Constructor to initialize a User object from a Parcel.
+     *
+     * @param in Parcel containing the User data.
+     */
     public User(Parcel in) {
         email = in.readString();
         name = in.readString();
@@ -47,6 +69,9 @@ public class User implements Parcelable {
     }
 
 
+    /**
+     * Parcelable Creator to create User instances from a Parcel.
+     */
     public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
         public User createFromParcel(Parcel in) {
@@ -59,6 +84,7 @@ public class User implements Parcelable {
         }
     };
 
+    // Getter and setter methods for user properties
     public String getRole() {
         return role;
     }
@@ -97,6 +123,11 @@ public class User implements Parcelable {
         return name;
     }
 
+    /**
+     * Sets the user's name if it is non-null and non-empty.
+     *
+     * @param name User's name.
+     */
     public void setName(String name) {
         if(name != null && !name.isEmpty())
             this.name = name;
@@ -106,6 +137,11 @@ public class User implements Parcelable {
         return phoneNumber;
     }
 
+    /**
+     * Sets the user's phone number after trimming leading and trailing whitespace.
+     *
+     * @param phoneNumber User's phone number.
+     */
     public void setPhoneNumber(String phoneNumber) {
         if(phoneNumber != null && !phoneNumber.isEmpty()) {
             phoneNumber = phoneNumber.trim();
@@ -121,6 +157,13 @@ public class User implements Parcelable {
         this.profileImage = profileImage;
     }
 
+    /**
+     * Updates the user's information with new name, email, and phone number.
+     *
+     * @param name        Updated name.
+     * @param email       Updated email.
+     * @param phoneNumber Updated phone number.
+     */
     public void updateInfo(String name, String email, String phoneNumber){
         setName(name);
         setEmail(email);
@@ -128,7 +171,9 @@ public class User implements Parcelable {
     }
 
     /**
-     * @return
+     * Describes the contents of the User object, used for Parcelable interface.
+     *
+     * @return Integer contents description.
      */
     @Override
     public int describeContents() {
@@ -136,8 +181,10 @@ public class User implements Parcelable {
     }
 
     /**
-     * @param parcel
-     * @param i
+     * Writes User properties to a Parcel for Parcelable interface.
+     *
+     * @param parcel Parcel to write data to.
+     * @param i      Flags for writing.
      */
     @Override
     public void writeToParcel(@androidx.annotation.NonNull Parcel parcel, int i) {
@@ -149,6 +196,9 @@ public class User implements Parcelable {
         parcel.writeString(deviceId);
     }
 
+    /**
+     * Removes the profile image by setting it to null.
+     */
     public void removeProfileImage(){
         this.profileImage = null;
     }
