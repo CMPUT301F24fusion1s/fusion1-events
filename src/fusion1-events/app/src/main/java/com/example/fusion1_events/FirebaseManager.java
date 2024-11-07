@@ -3,6 +3,7 @@ package com.example.fusion1_events;
 import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.convertStringListToUuidList;
 
+
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -22,7 +23,8 @@ public class FirebaseManager {
 
     // Initialize Firebase Firestore instance
     private FirebaseFirestore db;
-
+    // max size of image i can retrieve
+    final long imageSize = 10 * 1024 * 1024;
     public FirebaseManager() {
         this.db = FirebaseFirestore.getInstance();
     }
@@ -94,7 +96,9 @@ public class FirebaseManager {
                 return document.toObject(Admin.class);
             case "Entrant":
                 Log.d("FirebaseManager", "Entrant ");
-                return document.toObject(Entrant.class);
+                Map<String, Object> entrantDocument = document.getData();
+                assert entrantDocument != null;
+                return Entrant.extractUser(entrantDocument);
             case "Organizer":
                 return document.toObject(Organizer.class);
             default:
@@ -106,12 +110,17 @@ public class FirebaseManager {
         String name = updatedUser.getName();
         String email = updatedUser.getEmail();
         String phone = updatedUser.getPhoneNumber();
+        Entrant entrant = (Entrant) updatedUser;
+        String profileImage  = null;
+        if(entrant.getProfileImage() != null)
+            profileImage = UtilityMethods.encodeBitmapToBase64(((Entrant) updatedUser).getProfileImage());
 
         // Create a map to store the fields to update
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("email", email);
         updates.put("phoneNumber", phone);
+        updates.put("profileImage", profileImage);
 
         // Ensure you are using the correct userId for the document reference
         db.collection("users").document(updatedUser.getDeviceId())
@@ -125,7 +134,6 @@ public class FirebaseManager {
                     callback.onFailure(e);
                 });
     }
-
 
 
     // Callback interface for asynchronous user retrieval
@@ -190,29 +198,7 @@ public class FirebaseManager {
                         DocumentSnapshot document = task.getResult();
 
                         if (document.exists()) {
-                            // Extract data from document
-                            UUID organizerId = UUID.fromString(document.getString("organizerId"));
-                            String name = document.getString("name");
-                            Date date = document.getDate("date");
-                            String location = document.getString("location");
-                            String description = document.getString("description");
-                            String posterBase64 = document.getString("poster");
-                            List<String> waitlistStrings = (List<String>) document.get("waitlist");
-                            int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
-
-                            // Convert Base64 string back to Bitmap
-                            Bitmap poster = null;
-                            if (posterBase64 != null) {
-                                poster = decodeBase64ToBitmap(posterBase64);
-                            }
-
-                            // Convert list of strings back to list of UUIDs
-                            List<UUID> waitlist = convertStringListToUuidList(waitlistStrings);
-
-                            // Create Event object
-                            Event event = new Event(organizerId, name, date, location, description, poster, capacity);
-                            event.setWaitlist(waitlist);
-                            callback.onSuccess(event);
+                            callback.onSuccess(Event.fromFirestoreDocument(document));
                         } else {
                             callback.onFailure(new Exception("Event not found."));
                         }
@@ -228,4 +214,5 @@ public class FirebaseManager {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
+
 }

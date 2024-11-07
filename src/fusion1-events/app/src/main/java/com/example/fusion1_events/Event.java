@@ -1,21 +1,27 @@
 package com.example.fusion1_events;
 
-import static com.example.fusion1_events.UtilityMethods.convertUuidListToStringList;
+import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.zxing.WriterException;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import kotlin.NotImplementedError;
 
-public class Event {
+public class Event implements Parcelable {
 
     private final UUID id;
     private UUID organizerId;
@@ -23,13 +29,14 @@ public class Event {
     private Date date;
     private String location;
     private String description;
+    private Bitmap poster;
     private Bitmap qrCode;
     private String qrCodeHash;
-    private Bitmap poster;
-    private List<UUID> waitlist;
-    private int capacity;
+    private Integer capacity;
+    private Boolean geolocationRequired;
+    private List<String> waitlist;
 
-    public Event(UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity) {
+    public Event(UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, Boolean geolocationRequired) {
         this.id = UUID.randomUUID();
         this.organizerId = organizerId;
         this.name = name;
@@ -38,7 +45,23 @@ public class Event {
         this.description = description;
         this.poster = poster;
         this.capacity = capacity;
+        this.geolocationRequired = geolocationRequired;
     }
+
+    protected Event(Parcel in) {
+        id = UUID.fromString(in.readString());
+        organizerId = UUID.fromString(in.readString());
+        name = in.readString();
+        date = new Date(in.readLong());
+        location = in.readString();
+        description = in.readString();
+        qrCode = in.readParcelable(Bitmap.class.getClassLoader());
+        qrCodeHash = in.readString();
+        poster = in.readParcelable(Bitmap.class.getClassLoader());
+        capacity = in.readInt();
+        geolocationRequired = in.readByte() != 0;
+    }
+
 
     /**
      * Converts the Event object to a map for Firestore storage.
@@ -49,9 +72,6 @@ public class Event {
         // Convert the poster and QR code Bitmaps to Base64 strings
         String posterBase64 = encodeBitmapToBase64(this.getPoster());
         String qrCodeBase64 = encodeBitmapToBase64(this.getQrCode());
-
-        // Convert the waitlist to a list of strings
-        List<String> waitlistStrings = convertUuidListToStringList(this.getWaitlist());
 
         // Create a map to store event data
         Map<String, Object> eventData = new HashMap<>();
@@ -64,9 +84,35 @@ public class Event {
         eventData.put("qrCodeHash", this.getQrCodeHash());
         eventData.put("poster", posterBase64);
         eventData.put("capacity", this.getCapacity());
-        eventData.put("waitlist", waitlistStrings);
+        eventData.put("geolocationRequired", this.geolocationRequired);
+        eventData.put("waitlist", this.getWaitlist());
 
         return eventData;
+    }
+
+    public static Event fromFirestoreDocument(DocumentSnapshot document) {
+        // Extract data from document
+        UUID organizerId = UUID.fromString(document.getString("organizerId"));
+        String name = document.getString("name");
+        Date date = document.getDate("date");
+        String location = document.getString("location");
+        String description = document.getString("description");
+        String posterBase64 = document.getString("poster");
+        int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
+        Boolean geolocationRequired = document.getBoolean("geolocationRequired");
+        List<String> waitlistStrings = (List<String>) document.get("waitlist");
+
+        // Convert Base64 string back to Bitmap
+        Bitmap poster = null;
+        if (posterBase64 != null) {
+            poster = decodeBase64ToBitmap(posterBase64);
+        }
+
+        // Create Event object
+        Event event = new Event(organizerId, name, date, location, description, poster, capacity, geolocationRequired);
+        event.setWaitlist(waitlistStrings);
+
+        return event;
     }
 
     private void generateQRCode() {
@@ -151,20 +197,28 @@ public class Event {
         this.poster = poster;
     }
 
-    public List<UUID> getWaitlist() {
-        return waitlist;
-    }
-
-    public void setWaitlist(List<UUID> waitlist) {
-        this.waitlist = waitlist;
-    }
-
     public int getCapacity() {
         return capacity;
     }
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public Boolean getGeolocationRequired() {
+        return geolocationRequired;
+    }
+
+    public void setGeolocationRequired(Boolean geolocationRequired) {
+        this.geolocationRequired = geolocationRequired;
+    }
+
+    public List<String> getWaitlist() {
+        return waitlist;
+    }
+
+    public void setWaitlist(List<String> waitlist) {
+        this.waitlist = waitlist;
     }
 
     public List<User> runLottery() {
@@ -180,4 +234,37 @@ public class Event {
         // TODO: Implement notification logic
         throw new NotImplementedError("Method not implemented.");
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeString(this.id.toString());
+        parcel.writeString(this.organizerId.toString());
+        parcel.writeString(this.name);
+        parcel.writeLong(this.date.getTime());
+        parcel.writeString(this.location);
+        parcel.writeString(this.description);
+        parcel.writeParcelable(this.qrCode, i);
+        parcel.writeString(this.qrCodeHash);
+        parcel.writeParcelable(this.poster, i);
+        parcel.writeInt(this.capacity);
+        parcel.writeByte((byte) (this.geolocationRequired ? 1 : 0));
+        parcel.writeStringList(this.waitlist);
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 }
