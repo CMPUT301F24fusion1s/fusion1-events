@@ -5,13 +5,14 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <ImageView
-        android:id="@+id/backArrow"
+    <ImageButton
+        android:id="@+id/backArrow1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_arrow"
         android:layout_marginStart="17dp"
         android:layout_marginTop="66dp"
+        android:background="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:contentDescription="@string/back" />
@@ -33,23 +34,24 @@
         android:layout_width="121dp"
         android:layout_height="121dp"
         android:layout_marginTop="155dp"
-        android:background="@drawable/profile_picture"
         android:src="@drawable/ic_user"
-        android:padding="35dp"
+        android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/white"/>
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <TextView
         android:id="@+id/replace"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:focusable="true"
         android:text="@string/replace"
         android:textSize="16sp"
         android:textColor="#8A8A8A"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="4dp"
+        android:clickable="true"
         app:layout_constraintTop_toBottomOf="@id/profileImage"
         app:layout_constraintEnd_toStartOf="@id/textDivider"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,10 +72,12 @@
         android:id="@+id/remove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:focusable="true"
         android:text="@string/remove"
         android:textSize="16sp"
         android:textColor="#8A8A8A"
         android:layout_marginStart="4dp"
+        android:clickable="true"
         app:layout_constraintTop_toTopOf="@id/replace"
         app:layout_constraintStart_toEndOf="@id/textDivider"
         app:layout_constraintEnd_toEndOf="parent"/>

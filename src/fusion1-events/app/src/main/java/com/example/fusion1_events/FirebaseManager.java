@@ -3,6 +3,7 @@ package com.example.fusion1_events;
 import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.convertStringListToUuidList;
 
+
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -17,20 +18,29 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-
+/**
+ * The FirebaseManager class manages all interactions with Firebase Firestore, including user and event management.
+ * It provides methods for adding, updating, and retrieving users and events from the Firestore database.
+ */
 public class FirebaseManager {
 
     // Initialize Firebase Firestore instance
     private FirebaseFirestore db;
+    // Maximum size of image that can be retrieved
+    final long imageSize = 10 * 1024 * 1024;
 
+    /**
+     * Constructor to initialize the Firebase Firestore instance.
+     */
     public FirebaseManager() {
         this.db = FirebaseFirestore.getInstance();
     }
 
     /**
-     * Add new user to user collection
+     * Adds a new user to the 'users' collection in Firebase Firestore.
+     *
+     * @param entrant The Entrant object to add to Firestore.
      */
-
     public void addUserToFirebase(Entrant entrant)
     {
         // Add the entrant to the 'user' collection in Firebase
@@ -87,6 +97,11 @@ public class FirebaseManager {
 
     /**
      * Creates a User object based on the role specified in the document.
+     * This method determines the appropriate User subclass (e.g., Admin, Entrant, Organizer) to instantiate.
+     *
+     * @param role The role of the user (e.g., Admin, Entrant, Organizer).
+     * @param document The Firestore document containing user data.
+     * @return The User object created based on the role, or null if creation fails.
      */
     private User createUserFromRole(String role, DocumentSnapshot document) {
         switch (role) {
@@ -94,7 +109,9 @@ public class FirebaseManager {
                 return document.toObject(Admin.class);
             case "Entrant":
                 Log.d("FirebaseManager", "Entrant ");
-                return document.toObject(Entrant.class);
+                Map<String, Object> entrantDocument = document.getData();
+                assert entrantDocument != null;
+                return Entrant.extractUser(entrantDocument);
             case "Organizer":
                 return document.toObject(Organizer.class);
             default:
@@ -102,16 +119,30 @@ public class FirebaseManager {
         }
     }
 
+    /**
+     * Updates a user's profile information in Firebase Firestore.
+     *
+     * @param userId The ID of the user to update.
+     * @param updatedUser The updated User object containing the new profile information.
+     * @param callback A callback to handle success or failure events.
+     */
     public void updateUserProfile(String userId, User updatedUser, UpdateCallback callback) {
         String name = updatedUser.getName();
         String email = updatedUser.getEmail();
         String phone = updatedUser.getPhoneNumber();
+        Entrant entrant = (Entrant) updatedUser;
+        boolean notification = entrant.getNotificationEnabled();
+        String profileImage  = null;
+        if(entrant.getProfileImage() != null)
+            profileImage = UtilityMethods.encodeBitmapToBase64(((Entrant) updatedUser).getProfileImage());
 
         // Create a map to store the fields to update
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("email", email);
         updates.put("phoneNumber", phone);
+        updates.put("profileImage", profileImage);
+        updates.put("notification", notification);
 
         // Ensure you are using the correct userId for the document reference
         db.collection("users").document(updatedUser.getDeviceId())
@@ -127,14 +158,13 @@ public class FirebaseManager {
     }
 
 
-
     // Callback interface for asynchronous user retrieval
     public interface UserCallback {
         void onSuccess(User user);
         void onFailure(Exception e);
     }
 
-    // Interface for callback
+    // Interface for update callback
     public interface UpdateCallback {
         void onSuccess();
         void onFailure(Exception e);
@@ -176,9 +206,10 @@ public class FirebaseManager {
     }
 
     /**
-     * Retrieves a list of Event objects from Firestore.
+     * Retrieves an Event object from Firestore by its ID.
      *
-     * @param callback A callback to return the list of Event objects asynchronously.
+     * @param eventId The ID of the event to retrieve.
+     * @param callback A callback to return the Event object asynchronously.
      */
     public void getEventById(String eventId, final EventCallback callback) {
         CollectionReference eventsCollection = db.collection("events");
@@ -206,4 +237,5 @@ public class FirebaseManager {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
+
 }

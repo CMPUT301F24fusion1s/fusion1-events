@@ -1,6 +1,8 @@
 package com.example.fusion1_events;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,12 +16,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Objects;
 
+
+/**
+ * The MainMenuActivity class represents the main menu screen of the application.
+ * It provides functionalities for navigating to user profile and editing profile information.
+ */
 public class MainMenuActivity extends AppCompatActivity {
 
     private String userName;
     private UserController userController;
 
+    /**
+     * Called when the activity is first created. Initializes the user interface components and sets up the event listeners.
+     *
+     * @param savedInstancesState If the activity is being re-initialized after previously being shut down, this Bundle contains the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
@@ -30,10 +45,22 @@ public class MainMenuActivity extends AppCompatActivity {
 
         // Get user data from Intent
         Intent mainActivityIntent= getIntent();
-        User user = (User) mainActivityIntent.getSerializableExtra("User");
+
+        // Get the profile image from internal storage
+        Bitmap profileImage = null;
+        String fileName = getIntent().getStringExtra("image_path");
+        try {
+            FileInputStream fis = this.openFileInput(fileName);
+            profileImage = BitmapFactory.decodeStream(fis);
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Entrant user = (Entrant) Objects.requireNonNull(mainActivityIntent.getExtras()).get("user");
         assert user != null;
         userName = user.getName();
-
+        user.setProfileImage(profileImage);
 
         // Log user details for testing
         Log.d("MainMenuActivity", "User Name: " + userName);
@@ -46,6 +73,11 @@ public class MainMenuActivity extends AppCompatActivity {
         editProfile.setOnClickListener(v -> showUserProfileFragment(user));
     }
 
+    /**
+     * Displays the UserProfileFragment containing the user's profile information.
+     *
+     * @param user The User object whose profile information will be displayed.
+     */
     private void showUserProfileFragment(User user) {
         // Create an instance of UserProfileFragment with user data
         UserProfileFragment userProfileFragment = UserProfileFragment.newInstance(user);
@@ -57,6 +89,11 @@ public class MainMenuActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    /**
+     * Displays the EditProfileFragment to allow editing of the user's profile information.
+     *
+     * @param user The User object whose profile information will be edited.
+     */
     void showEditProfileFragment(User user) {
         EditProfileFragment editProfileFragment = new EditProfileFragment();
         editProfileFragment.setUser(user); // Set the user object directly
@@ -68,64 +105,6 @@ public class MainMenuActivity extends AppCompatActivity {
     }
 
 }
-
-//    public void showEditProfileFragment(String userName, String userEmail, String userPhoneNumber, String userDeviceId) {
-//        EditProfileFragment editProfileFragment = EditProfileFragment.newInstance(userName, userEmail, userPhoneNumber, userDeviceId);
-//
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.fragment_container, editProfileFragment);
-//        transaction.addToBackStack(null); // Allow back navigation
-//        transaction.commit();
-//    }
-
-
-
-
-//    private void showUserProfile(User user) {
-//        // Set the content to display the user profile layout
-//        setContentView(R.layout.user_profile_page);
-//
-//        // Populate the profile layout with user information
-//        TextView profileName = findViewById(R.id.tvProfileName);
-//        TextView profileEmail = findViewById(R.id.tvProfileEmail);
-//        TextView profilePhone = findViewById(R.id.tvProfilePhoneNumber);
-//
-//
-//        // Set the text fields with user information
-//        profileName.setText(userName);
-//        profileEmail.setText(userEmail);
-//        profilePhone.setText(userPhoneNumber);
-//
-//        // Set up the back arrow button
-//        Button editProfileBtn = findViewById(R.id.editProfileButton);
-//        editProfileBtn.setOnClickListener(v -> editProfile(user));
-//
-//
-//    }
-//    private void editProfile(User user)
-//    {
-//        setContentView(R.layout.user_edit_profile_page);
-//
-//        EditText eidtProfileName = findViewById(R.id.e_name);
-//        EditText eidtProfileEmail = findViewById(R.id.e_email);
-//        EditText eidtProfilePhone = findViewById(R.id.e_phone);
-//
-//        eidtProfileName.setText(userName);
-//        eidtProfileEmail.setText(userEmail);
-//        eidtProfilePhone.setText(userPhoneNumber);
-//
-//        Button saveChanges = findViewById(R.id.saveChangesButton);
-//
-//        saveChanges.setOnClickListener(v -> {
-//            // I don't think we should make a new class.
-//            // how are we storting the object
-//            user.setName(eidtProfileName.getText().toString());
-//            user.setEmail(eidtProfileEmail.getText().toString());
-//            user.setPhoneNumber(eidtProfilePhone.getText().toString());
-//            userController.updateProfile(userId, user);
-//                });
-//
-//    }
 
 
 

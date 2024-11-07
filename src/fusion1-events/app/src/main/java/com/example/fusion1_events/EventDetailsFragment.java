@@ -13,12 +13,23 @@ import androidx.fragment.app.Fragment;
 
 import javax.annotation.Nullable;
 
+/**
+ * The EventDetailsFragment class is responsible for displaying detailed information about a specific event.
+ * It includes options for users to join or leave the waitlist or, if they are the event organizer, to edit the event.
+ */
 public class EventDetailsFragment extends Fragment {
     private Event event;
     private String userId;
     DeviceManager deviceManager;
     FirebaseManager firebaseManager;
 
+    /**
+     * Creates a new instance of EventDetailsFragment with the specified event and user ID.
+     *
+     * @param event  The Event object containing event details.
+     * @param userId The ID of the user viewing the event.
+     * @return A new instance of EventDetailsFragment with the specified arguments.
+     */
     public EventDetailsFragment newInstance(Event event, String userId) {
         EventDetailsFragment fragment = new EventDetailsFragment();
         Bundle args = new Bundle();
@@ -27,6 +38,7 @@ public class EventDetailsFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,6 +108,10 @@ public class EventDetailsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Handles the action of editing an event. Currently, this method shows a Toast message, but it can be extended
+     * to navigate to the EditEventFragment for editing the event details.
+     */
     private void editEvent() {
         // Navigate to the EditEventFragment
 //        EditEventFragment editEventFragment = new EditEventFragment();
@@ -109,6 +125,10 @@ public class EventDetailsFragment extends Fragment {
         Toast.makeText(getContext(), "Edit Event button clicked", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Handles the action of adding the current user to the event's waitlist.
+     * This method updates the event in Firebase Firestore.
+     */
     private void joinWaitlist() {
         firebaseManager.getUserByDeviceId(deviceManager.getOrCreateDeviceId(), new FirebaseManager.UserCallback() {
             @Override
@@ -125,6 +145,10 @@ public class EventDetailsFragment extends Fragment {
         });
     }
 
+    /**
+     * Handles the action of removing the current user from the event's waitlist.
+     * This method updates the event in Firebase Firestore.
+     */
     private void leaveWaitlist() {
 
         firebaseManager.getUserByDeviceId(deviceManager.getOrCreateDeviceId(), new FirebaseManager.UserCallback() {
