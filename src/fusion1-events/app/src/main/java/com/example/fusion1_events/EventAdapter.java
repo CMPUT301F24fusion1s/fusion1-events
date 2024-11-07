@@ -7,7 +7,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-// Base code for EventAdapter
+/**
+ * The EventAdapter class is used to bind a list of Event objects to a RecyclerView.
+ * It handles the creation of item views and binds data from Event objects to those views.
+ */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
     private List<Event> eventList;
 
@@ -37,10 +40,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         return eventList.size();
     }
 
-    // ViewHolder class for Event
+    /**
+     * ViewHolder class for Event.
+     * This class is responsible for holding references to the views for each item in the RecyclerView.
+     */
     public static class EventViewHolder extends RecyclerView.ViewHolder {
         // TODO: Define views here
 
+        /**
+         * Constructor to initialize the EventViewHolder with the item view.
+         *
+         * @param itemView The item view representing a single event.
+         */
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
             // TODO: Initialize views
