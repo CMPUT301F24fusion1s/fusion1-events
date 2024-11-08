@@ -12,7 +12,7 @@
         android:title="Camera" />
 
     <item
-        android:id="@+id/Events"
+        android:id="@+id/events"
         android:icon="@drawable/baseline_calendar_today_24"
         android:title="Events" />
 

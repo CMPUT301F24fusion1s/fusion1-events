@@ -1,5 +1,6 @@
 package com.example.fusion1_events;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,12 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import android.view.MenuItem;
+import com.google.android.material.navigation.NavigationBarView;
 
 /**
  * The MainMenuActivity class represents the main menu screen of the application.
@@ -40,25 +41,6 @@ public class MainMenuActivity extends AppCompatActivity {
         // Initialize UserController
         userController = new UserController(new FirebaseManager());
 
-        // Initialize BottomNavigationView
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-
-        // Set up the listener for navigation
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.home:
-                        // Home tab selected, stay on MainMenuActivity
-                        return true;
-                    case R.id.camera:
-                        // Navigate to ScanActivity
-                        startActivity(new Intent(MainMenuActivity.this, ScanQRCodeActivity.class));
-                        return true;
-                }
-                return false;
-            }
-        });
 
 
         // Get user data from Intent
@@ -82,6 +64,26 @@ public class MainMenuActivity extends AppCompatActivity {
 
         // Log user details for testing
         Log.d("MainMenuActivity", "User Name: " + userName);
+
+        // Initialize BottomNavigationView
+        NavigationBarView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        // Set up the listener for navigation
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.home) {
+                // Home tab selected, stay on MainMenuActivity
+                return true;
+            } else if (item.getItemId() == R.id.camera) {
+                // Navigate to ScanActivity
+                startActivity(new Intent(MainMenuActivity.this, ScanQRCodeActivity.class));
+                return true;
+            } else if (item.getItemId() == R.id.events) {
+                // Navigate to EventsPageActivity
+                navigateToEventsPage(user);
+                return true;
+            }
+            return false;
+        });
 
         // Find the Profile button and other views
         ImageButton editProfile = findViewById(R.id.btnProfile);
@@ -129,4 +131,34 @@ public class MainMenuActivity extends AppCompatActivity {
         transaction.addToBackStack(null); // Allow back navigation
         transaction.commit();
     }
+
+    /**
+     * Navigates to the EventsPageActivity to display the list of events.
+     *
+     * @param user The User object to pass to the EventsPageActivity.
+     */
+    private void navigateToEventsPage(User user) {
+        Intent intent = new Intent(MainMenuActivity.this, EventsPageActivity.class);
+
+        Bundle bundle = new Bundle();
+
+        // Pass the profile image bitmap if it exists
+        String tempFileName = "temp_image.jpg";
+        try {
+            if (user.getProfileImage() != null) {
+                FileOutputStream fos = this.openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                user.getProfileImage().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        bundle.putParcelable("user", user);
+        bundle.putString("image_path", tempFileName);
+
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
 }

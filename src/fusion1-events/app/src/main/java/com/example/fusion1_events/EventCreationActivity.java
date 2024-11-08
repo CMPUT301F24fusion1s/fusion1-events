@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class EventCreationActivity extends AppCompatActivity {
     private FirebaseManager firebaseManager;
     private EventController eventController;
     private Bitmap selectedPoster;
+    private User currentUser;
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
@@ -38,6 +40,9 @@ public class EventCreationActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_creation);
+
+        // Get user data from intent
+        currentUser = getIntent().getParcelableExtra("user");
 
         // Initialize FirebaseManager and EventController
         firebaseManager = new FirebaseManager();
@@ -89,6 +94,16 @@ public class EventCreationActivity extends AppCompatActivity {
                 createEvent();
             }
         });
+
+        // Set onClickListener for back button
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // This will finish the current activity and return to EventsPageActivity
+                finish();
+            }
+        });
     }
 
     private void openImagePicker() {
@@ -114,7 +129,7 @@ public class EventCreationActivity extends AppCompatActivity {
         Date date = new Date(year - 1900, month - 1, day, hour, minute);
 
         // Create a new event
-        UUID organizerId = UUID.randomUUID(); // Replace with actual organizer ID
+        UUID organizerId = UUID.fromString(currentUser.getUserId());
         eventController.createEvent(organizerId, title, date, location, description, selectedPoster, maxWinners, geoLocationRequired);
 
         // Show success message
