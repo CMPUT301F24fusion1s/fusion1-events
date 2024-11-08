@@ -7,6 +7,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -193,38 +194,59 @@ public class FirebaseManager {
         CollectionReference eventsCollection = db.collection("events");
 
         // Create a map to store event data
-        Map<String, Object> eventData =  event.toMap();
+        Map<String, Object> eventData = event.toMap();
 
         // Update the event in Firestore
-        eventsCollection.document(event.getId().toString())
-                .update(eventData)
-                .addOnSuccessListener(aVoid -> Log.d("FirebaseManager", "Event updated with ID: " + event.getId()))
-                .addOnFailureListener(e -> Log.e("FirebaseManager", "Error updating event", e));
+        eventsCollection.whereEqualTo("qrCodeHash", event.getId().toString())
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        // Get the first (and should be only) matching document
+                        DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+
+                        // Update the document using its ID
+                        eventsCollection.document(document.getId())
+                                .update(eventData)
+                                .addOnSuccessListener(aVoid ->
+                                        Log.d("FirebaseManager", "Event updated with ID: " + event.getId()))
+                                .addOnFailureListener(e ->
+                                        Log.e("FirebaseManager", "Error updating event", e));
+                    } else {
+                        Log.e("FirebaseManager", "No event found with QR hash: " + event.getId());
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Log.e("FirebaseManager", "Error querying for event", e));
     }
 
     /**
      * Retrieves an Event object from Firestore by its ID.
      *
-     * @param eventId The ID of the event to retrieve.
+     * @param qrHash The hash of the event to retrieve. This is equivalent to Event ID.
      * @param callback A callback to return the Event object asynchronously.
      */
-    public void getEventById(String eventId, final EventCallback callback) {
+    public void getEventByQRHash(String qrHash, final EventCallback callback) {
         CollectionReference eventsCollection = db.collection("events");
 
-        eventsCollection.document(eventId)
+        // Query events where qrCodeHash matches the scanned hash
+        eventsCollection.whereEqualTo("qrCodeHash", qrHash)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        DocumentSnapshot document = task.getResult();
+                        QuerySnapshot querySnapshot = task.getResult();
 
-                        if (document.exists()) {
+                        if (!querySnapshot.isEmpty()) {
+                            // Get the first (and should be only) matching document
+                            DocumentSnapshot document = querySnapshot.getDocuments().get(0);
                             callback.onSuccess(Event.fromFirestoreDocument(document));
                         } else {
                             callback.onFailure(new Exception("Event not found."));
                         }
                     } else {
-                        callback.onFailure(task.getException() != null ? task.getException() : new Exception("Unknown error occurred."));
-                        Log.e("FirebaseManager", "Failed to retrieve event by eventId", task.getException());
+                        callback.onFailure(task.getException() != null ?
+                                task.getException() :
+                                new Exception("Unknown error occurred."));
+                        Log.e("FirebaseManager", "Failed to retrieve event by QR hash", task.getException());
                     }
                 });
     }

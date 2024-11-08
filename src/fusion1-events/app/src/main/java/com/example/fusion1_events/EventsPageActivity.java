@@ -1,5 +1,6 @@
 package com.example.fusion1_events;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,9 +63,7 @@ public class EventsPageActivity extends BaseActivity {
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
         eventAdapter = new EventAdapter(new ArrayList<>());
 
-        eventAdapter.setOnEventClickListener(event -> {
-            showEventDetailsFragment(event, currentUser.getDeviceId());
-        });
+        eventAdapter.setOnEventClickListener(this::navigateToEventDetails);
 
         rvEvents.setAdapter(eventAdapter);
     }
@@ -106,6 +106,32 @@ public class EventsPageActivity extends BaseActivity {
                         });
                     }
                 });
+    }
+
+    /**
+     * Navigates to the specified activity class.
+     *
+     * @param event The event to show details for.
+     */
+    private void navigateToEventDetails(Event event) {
+        Intent intent = new Intent(this, EventDetailsActivity.class);
+        Bundle bundle = new Bundle();
+        String tempFileName = "temp_event_poster.jpg";
+
+        try {
+            if (event.getPoster() != null) {
+                FileOutputStream fos = openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                event.getPoster().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        bundle.putParcelable("event", event);
+        bundle.putString("poster_image_path", tempFileName);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override
