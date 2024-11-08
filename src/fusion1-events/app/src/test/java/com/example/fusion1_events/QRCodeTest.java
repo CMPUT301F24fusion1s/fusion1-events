@@ -7,11 +7,19 @@ import com.google.zxing.WriterException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.*;
 
 import java.util.UUID;
+
+@RunWith(RobolectricTestRunner.class)
+/*WARNING: No manifest file found at .\AndroidManifest.xml.
+Falling back to the Android OS resources only.
+To remove this warning, annotate your test class with*/
+@Config(manifest=Config.NONE)
 
 public class QRCodeTest {
 
@@ -20,7 +28,9 @@ public class QRCodeTest {
 
     @Before
     public void setUp() {
+        // Generate a mock event ID
         mockEventId = UUID.randomUUID();
+        // Use Robolectric to create a Bitmap
         mockBitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
     }
 
