@@ -23,7 +23,9 @@
         </activity>
         <activity android:name=".AdminMainMenuActivity" />
 
-        <activity android:name=".MainMenuActivity"/>
+        <activity android:name=".MainMenuActivity" />
+        <activity android:name=".ScanQRCodeActivity"/>
+
 
 
 
