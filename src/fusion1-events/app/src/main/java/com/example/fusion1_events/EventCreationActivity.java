@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -91,6 +92,16 @@ public class EventCreationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 createEvent();
+            }
+        });
+
+        // Set onClickListener for back button
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // This will finish the current activity and return to EventsPageActivity
+                finish();
             }
         });
     }
