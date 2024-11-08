@@ -21,7 +21,6 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoCore" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 
