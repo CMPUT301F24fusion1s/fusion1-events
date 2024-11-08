@@ -1,5 +1,6 @@
 package com.example.fusion1_events;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +18,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -44,7 +46,7 @@ public class MainMenuActivity extends AppCompatActivity {
         userController = new UserController(new FirebaseManager());
 
         // Get user data from Intent
-        Intent mainActivityIntent= getIntent();
+        Intent mainActivityIntent = getIntent();
 
         // Get the profile image from internal storage
         Bitmap profileImage = null;
@@ -71,6 +73,12 @@ public class MainMenuActivity extends AppCompatActivity {
         // Set click listener for the profile button
         //editProfile.setOnClickListener(v -> showUserProfile(user));
         editProfile.setOnClickListener(v -> showUserProfileFragment(user));
+
+        // Set click listener for the nav events button
+        ImageButton navEvents = findViewById(R.id.navBarButtonEvents);
+        navEvents.setOnClickListener(v -> {
+            navigateToEventsPage(user);
+        });
     }
 
     /**
@@ -102,6 +110,35 @@ public class MainMenuActivity extends AppCompatActivity {
         transaction.replace(android.R.id.content, editProfileFragment); // Full-screen overlay
         transaction.addToBackStack(null); // Allow back navigation
         transaction.commit();
+    }
+
+    /**
+     * Navigates to the EventsPageActivity to display the list of events.
+     *
+     * @param user The User object to pass to the EventsPageActivity.
+     */
+    private void navigateToEventsPage(User user) {
+        Intent intent = new Intent(MainMenuActivity.this, EventsPageActivity.class);
+
+        Bundle bundle = new Bundle();
+
+        // Pass the profile image bitmap if it exists
+        String tempFileName = "temp_image.jpg";
+        try {
+            if (user.getProfileImage() != null) {
+                FileOutputStream fos = this.openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                user.getProfileImage().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        bundle.putParcelable("user", user);
+        bundle.putString("image_path", tempFileName);
+
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
 }

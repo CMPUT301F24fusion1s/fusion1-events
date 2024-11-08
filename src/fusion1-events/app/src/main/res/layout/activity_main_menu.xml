@@ -144,6 +144,7 @@
             android:src="@drawable/baseline_camera_alt_24" />
 
         <ImageButton
+            android:id="@+id/navBarButtonEvents"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

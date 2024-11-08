@@ -1,21 +1,18 @@
 package com.example.fusion1_events;
 
-import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
-import static com.example.fusion1_events.UtilityMethods.convertStringListToUuidList;
 
-
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -230,6 +227,78 @@ public class FirebaseManager {
                         Log.e("FirebaseManager", "Failed to retrieve event by eventId", task.getException());
                     }
                 });
+    }
+
+    public void getAllEvents(final EventsListCallback callback) {
+        CollectionReference eventsCollection = db.collection("events");
+
+        eventsCollection
+                .orderBy("date", Query.Direction.ASCENDING)  // Sort by date
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<Event> events = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            events.add(Event.fromFirestoreDocument(document));
+                        }
+                        callback.onSuccess(events);
+                    } else {
+                        callback.onFailure(task.getException() != null ?
+                                task.getException() :
+                                new Exception("Unknown error occurred."));
+                    }
+                });
+    }
+
+    public void getUserEvents(UUID userId, final EventsListCallback callback) {
+        CollectionReference eventsCollection = db.collection("events");
+
+        // First, get events where user is the organizer
+        eventsCollection
+                .whereEqualTo("organizerId", userId.toString())
+                .get()
+                .addOnCompleteListener(organizerTask -> {
+                    if (organizerTask.isSuccessful()) {
+                        List<Event> userEvents = new ArrayList<>();
+
+                        // Add events where user is organizer
+                        for (DocumentSnapshot doc : organizerTask.getResult()) {
+                            userEvents.add(Event.fromFirestoreDocument(doc));
+                        }
+
+                        // Now get events where user is in waitlist
+                        eventsCollection
+                                .whereArrayContains("waitlist", userId.toString())
+                                .get()
+                                .addOnCompleteListener(waitlistTask -> {
+                                    if (waitlistTask.isSuccessful()) {
+                                        // Add events where user is in waitlist
+                                        for (DocumentSnapshot doc : waitlistTask.getResult()) {
+                                            userEvents.add(Event.fromFirestoreDocument(doc));
+                                        }
+
+                                        // Sort events by date
+                                        Collections.sort(userEvents, (e1, e2) -> e1.getDate().compareTo(e2.getDate()));
+
+                                        callback.onSuccess(userEvents);
+                                    } else {
+                                        callback.onFailure(waitlistTask.getException() != null ?
+                                                waitlistTask.getException() :
+                                                new Exception("Error fetching waitlist events"));
+                                    }
+                                });
+                    } else {
+                        callback.onFailure(organizerTask.getException() != null ?
+                                organizerTask.getException() :
+                                new Exception("Error fetching organized events"));
+                    }
+                });
+    }
+
+    // Callback interface for retrieving multiple events
+    public interface EventsListCallback {
+        void onSuccess(List<Event> events);
+        void onFailure(Exception e);
     }
 
     // Callback interface for asynchronous event retrieval

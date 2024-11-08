@@ -26,6 +26,7 @@
         <activity android:name=".AdminMainMenuActivity" />
         <activity android:name=".MainMenuActivity" />
         <activity android:name=".EventCreationActivity" />
+        <activity android:name=".EventsPageActivity" />
         <activity android:name=".ScanQRCodeActivity"/>
     </application>
 
