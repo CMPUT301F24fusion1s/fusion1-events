@@ -16,9 +16,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import android.view.MenuItem;
+import com.google.android.material.navigation.NavigationBarView;
 
 /**
  * The MainMenuActivity class represents the main menu screen of the application.
@@ -42,25 +41,6 @@ public class MainMenuActivity extends AppCompatActivity {
         // Initialize UserController
         userController = new UserController(new FirebaseManager());
 
-        // Initialize BottomNavigationView
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-
-        // Set up the listener for navigation
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.home:
-                        // Home tab selected, stay on MainMenuActivity
-                        return true;
-                    case R.id.camera:
-                        // Navigate to ScanActivity
-                        startActivity(new Intent(MainMenuActivity.this, ScanQRCodeActivity.class));
-                        return true;
-                }
-                return false;
-            }
-        });
 
 
         // Get user data from Intent
@@ -85,17 +65,31 @@ public class MainMenuActivity extends AppCompatActivity {
         // Log user details for testing
         Log.d("MainMenuActivity", "User Name: " + userName);
 
+        // Initialize BottomNavigationView
+        NavigationBarView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        // Set up the listener for navigation
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.home) {
+                // Home tab selected, stay on MainMenuActivity
+                return true;
+            } else if (item.getItemId() == R.id.camera) {
+                // Navigate to ScanActivity
+                startActivity(new Intent(MainMenuActivity.this, ScanQRCodeActivity.class));
+                return true;
+            } else if (item.getItemId() == R.id.events) {
+                // Navigate to EventsPageActivity
+                navigateToEventsPage(user);
+                return true;
+            }
+            return false;
+        });
+
         // Find the Profile button and other views
         ImageButton editProfile = findViewById(R.id.btnProfile);
 
         // Set click listener for the profile button
         editProfile.setOnClickListener(v -> showUserProfileFragment(user));
-
-        // Set click listener for the nav events button
-        ImageButton navEvents = findViewById(R.id.navBarButtonEvents);
-        navEvents.setOnClickListener(v -> {
-            navigateToEventsPage(user);
-        });
     }
 
     @Override
