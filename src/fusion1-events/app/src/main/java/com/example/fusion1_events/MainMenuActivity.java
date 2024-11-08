@@ -60,6 +60,7 @@ public class MainMenuActivity extends AppCompatActivity {
             }
         });
 
+
         // Get user data from Intent
         Intent mainActivityIntent = getIntent();
 
@@ -87,6 +88,15 @@ public class MainMenuActivity extends AppCompatActivity {
 
         // Set click listener for the profile button
         editProfile.setOnClickListener(v -> showUserProfileFragment(user));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set the BottomNavigationView to the home tab when returning to MainMenuActivity
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.home); // Set the home tab as selected
+        Log.d("MainMenuActivity", "onResume: Home tab set as selected");
     }
 
     /**
