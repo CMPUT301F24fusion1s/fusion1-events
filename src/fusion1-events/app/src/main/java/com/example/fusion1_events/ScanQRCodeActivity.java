@@ -66,18 +66,50 @@ public class ScanQRCodeActivity extends BaseActivity {
 
     /**
      * ActivityResultLauncher that handles the result of the QR scan.
-     * If a QR code is successfully scanned, it displays the result in an AlertDialog.
+     * If a QR code is successfully scanned, it displays the event details page.
      * If the scan is canceled or no result is found, it shows a Toast message and finishes the activity.
      */
     ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
         if (result.getContents() != null) {
             Log.d(TAG, "barLauncher: Scan result received");
-            // Display the scanned result in an AlertDialog
-            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRCodeActivity.this);
-            builder.setTitle("Scan Result");
-            builder.setMessage(result.getContents());
-            builder.setPositiveButton("OK", (DialogInterface dialog, int which) -> dialog.dismiss());
-            builder.show();
+            String qrHash = result.getContents();
+
+            // Get event details from Firebase using the scanned qrHash
+            FirebaseManager firebaseManager = new FirebaseManager();
+            firebaseManager.getEventByQRHash(qrHash, new FirebaseManager.EventCallback() {
+                @Override
+                public void onSuccess(Event event) {
+                    // Navigate to event details
+                    Intent intent = new Intent(ScanQRCodeActivity.this, EventDetailsActivity.class);
+                    Bundle bundle = new Bundle();
+                    String tempFileName = "temp_event_poster.jpg";
+
+                    try {
+                        if (event.getPoster() != null) {
+                            FileOutputStream fos = openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                            event.getPoster().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                            fos.close();
+                        }
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error saving poster image", e);
+                        e.printStackTrace();
+                    }
+
+                    bundle.putParcelable("event", event);
+                    bundle.putString("poster_image_path", tempFileName);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    finish(); // Close the scanner activity
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e(TAG, "Error fetching event details", e);
+                    Toast.makeText(ScanQRCodeActivity.this,
+                            "Error: Could not find event", Toast.LENGTH_SHORT).show();
+                    finish(); // Close the scanner activity
+                }
+            });
         } else {
             Log.d(TAG, "barLauncher: Scan canceled or no result found");
             // If the scan was canceled, show a toast message

@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.zxing.WriterException;
 
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +67,31 @@ public class Event implements Parcelable {
     }
 
     /**
+     * Constructor for creating a new Event instance with an existing ID.
+     *
+     * @param id                  The UUID of the event.
+     * @param organizerId         The UUID of the organizer.
+     * @param name                The name of the event.
+     * @param date                The date of the event.
+     * @param location            The location of the event.
+     * @param description         The description of the event.
+     * @param poster              The poster image for the event.
+     * @param capacity            The capacity of the event.
+     * @param geolocationRequired Whether geolocation is required for the event.
+     */
+    public Event(UUID id, UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, Boolean geolocationRequired) {
+        this.id = id;
+        this.organizerId = organizerId;
+        this.name = name;
+        this.date = date;
+        this.location = location;
+        this.description = description;
+        this.poster = poster;
+        this.capacity = capacity;
+        this.geolocationRequired = geolocationRequired;
+    }
+
+    /**
      * Constructor for recreating an Event instance from a Parcel.
      *
      * @param in Parcel containing the serialized event data.
@@ -78,7 +105,6 @@ public class Event implements Parcelable {
         description = in.readString();
         qrCode = in.readParcelable(Bitmap.class.getClassLoader());
         qrCodeHash = in.readString();
-        poster = in.readParcelable(Bitmap.class.getClassLoader());
         capacity = in.readInt();
         geolocationRequired = in.readByte() != 0;
     }
@@ -119,6 +145,7 @@ public class Event implements Parcelable {
      */
     public static Event fromFirestoreDocument(DocumentSnapshot document) {
         // Extract data from document
+        UUID id = UUID.fromString(document.getString("qrCodeHash"));
         UUID organizerId = UUID.fromString(document.getString("organizerId"));
         String name = document.getString("name");
         Date date = document.getDate("date");
@@ -127,7 +154,7 @@ public class Event implements Parcelable {
         String posterBase64 = document.getString("poster");
         int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
         Boolean geolocationRequired = document.getBoolean("geolocationRequired");
-        List<String> waitlistStrings = (List<String>) document.get("waitlist");
+        List<String> waitlistStrings = (ArrayList<String>) document.get("waitlist");
 
         // Convert Base64 string back to Bitmap
         Bitmap poster = null;
@@ -136,7 +163,7 @@ public class Event implements Parcelable {
         }
 
         // Create Event object
-        Event event = new Event(organizerId, name, date, location, description, poster, capacity, geolocationRequired);
+        Event event = new Event(id, organizerId, name, date, location, description, poster, capacity, geolocationRequired);
         event.setWaitlist(waitlistStrings);
 
         return event;
@@ -245,11 +272,25 @@ public class Event implements Parcelable {
     }
 
     public List<String> getWaitlist() {
+        if (waitlist == null) {
+            waitlist = List.of();
+        }
+
         return waitlist;
     }
 
     public void setWaitlist(List<String> waitlist) {
         this.waitlist = waitlist;
+    }
+
+    public void addToWaitlist(String userId) {
+        if (this.waitlist == null || this.waitlist instanceof AbstractList) {
+            this.waitlist = new ArrayList<>();
+        }
+
+        if (!this.waitlist.contains(userId)) {
+            this.waitlist.add(userId);
+        }
     }
 
     /**
@@ -301,7 +342,6 @@ public class Event implements Parcelable {
         parcel.writeString(this.description);
         parcel.writeParcelable(this.qrCode, i);
         parcel.writeString(this.qrCodeHash);
-        parcel.writeParcelable(this.poster, i);
         parcel.writeInt(this.capacity);
         parcel.writeByte((byte) (this.geolocationRequired ? 1 : 0));
         parcel.writeStringList(this.waitlist);
