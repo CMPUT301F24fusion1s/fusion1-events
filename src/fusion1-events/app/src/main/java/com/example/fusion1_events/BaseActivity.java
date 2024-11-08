@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationBarView;
@@ -77,6 +79,45 @@ public abstract class BaseActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Displays the EventDetailsFragment containing the event's information.
+     *
+     * @param event The Event object whose details will be displayed.
+     * @param userDeviceId The Device ID of the current user viewing the event.
+     */
+    protected void showEventDetailsFragment(Event event, String userDeviceId) {
+        // Get references to the containers
+        View mainContent = findViewById(R.id.main_content);
+        View fragmentContainer = findViewById(R.id.fragment_container);
+
+        // Hide main content and show fragment container
+        mainContent.setVisibility(View.GONE);
+        fragmentContainer.setVisibility(View.VISIBLE);
+
+        // Create an instance of EventDetailsFragment with event data
+        EventDetailsFragment eventDetailsFragment = EventDetailsFragment.newInstance(event, userDeviceId);
+
+        // Replace the fragment container content with the new fragment
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, eventDetailsFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+
+        // Add a callback for when the fragment is popped from the back stack
+        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                    // Show main content and hide fragment container
+                    mainContent.setVisibility(View.VISIBLE);
+                    fragmentContainer.setVisibility(View.GONE);
+                    // Remove the listener to avoid memory leaks
+                    getSupportFragmentManager().removeOnBackStackChangedListener(this);
+                }
+            }
+        });
     }
 
     protected void setupBottomNavigation() {

@@ -60,6 +60,11 @@ public class EventsPageActivity extends BaseActivity {
     private void setupRecyclerView() {
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
         eventAdapter = new EventAdapter(new ArrayList<>());
+
+        eventAdapter.setOnEventClickListener(event -> {
+            showEventDetailsFragment(event, currentUser.getDeviceId());
+        });
+
         rvEvents.setAdapter(eventAdapter);
     }
 

@@ -17,6 +17,11 @@ import java.util.Locale;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
     private List<Event> eventList;
     private Context context;
+    private OnEventClickListener listener;
+
+    public interface OnEventClickListener {
+        void onEventClick(Event event);
+    }
 
     public EventAdapter(List<Event> eventList) {
         this.eventList = eventList;
@@ -57,6 +62,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         }
     }
 
+    // Add setter for listener
+    public void setOnEventClickListener(OnEventClickListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public int getItemCount() {
         return eventList.size();
@@ -67,7 +77,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         notifyDataSetChanged();
     }
 
-    static class EventViewHolder extends RecyclerView.ViewHolder {
+    class EventViewHolder extends RecyclerView.ViewHolder {
         ImageView eventImage;
         TextView eventTitle;
         TextView eventDate;
@@ -83,6 +93,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             eventTime = itemView.findViewById(R.id.eventTime);
             eventLocation = itemView.findViewById(R.id.eventLocation);
             eventDescription = itemView.findViewById(R.id.eventDescription);
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onEventClick(eventList.get(position));
+                }
+            });
         }
     }
 }

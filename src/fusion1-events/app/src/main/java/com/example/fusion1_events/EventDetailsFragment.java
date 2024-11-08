@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  */
 public class EventDetailsFragment extends Fragment {
     private Event event;
-    private String userId;
+    private String userDeviceId;
     DeviceManager deviceManager;
     FirebaseManager firebaseManager;
 
@@ -27,14 +27,14 @@ public class EventDetailsFragment extends Fragment {
      * Creates a new instance of EventDetailsFragment with the specified event and user ID.
      *
      * @param event  The Event object containing event details.
-     * @param userId The ID of the user viewing the event.
+     * @param userDeviceId The ID of the user viewing the event.
      * @return A new instance of EventDetailsFragment with the specified arguments.
      */
-    public EventDetailsFragment newInstance(Event event, String userId) {
+    public static EventDetailsFragment newInstance(Event event, String userDeviceId) {
         EventDetailsFragment fragment = new EventDetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable("event", event);
-        args.putString("userId", userId);
+        args.putString("userDeviceId", userDeviceId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,7 +45,7 @@ public class EventDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             event = (Event) getArguments().getParcelable("event");
-            userId = getArguments().getString("userId");
+            userDeviceId = getArguments().getString("userDeviceId");
             deviceManager = new DeviceManager(getContext());
             firebaseManager = new FirebaseManager();
         }
@@ -55,6 +55,12 @@ public class EventDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.event_details, container, false);
+
+        view.findViewById(R.id.backText).setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
 
         // Display event details in the view
         TextView eventName = view.findViewById(R.id.eventTitle);
@@ -82,7 +88,7 @@ public class EventDetailsFragment extends Fragment {
 
         Button primaryActionButton = view.findViewById(R.id.primaryActionButton);
 
-        firebaseManager.getUserByDeviceId(userId, new FirebaseManager.UserCallback() {
+        firebaseManager.getUserByDeviceId(userDeviceId, new FirebaseManager.UserCallback() {
             @Override
             public void onSuccess(User user) {
                 if (user.getUserId().equals(event.getOrganizerId().toString())) {
