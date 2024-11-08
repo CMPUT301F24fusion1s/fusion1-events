@@ -5,21 +5,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.view.MenuItem;
 
 /**
  * The MainMenuActivity class represents the main menu screen of the application.
@@ -43,8 +40,28 @@ public class MainMenuActivity extends AppCompatActivity {
         // Initialize UserController
         userController = new UserController(new FirebaseManager());
 
+        // Initialize BottomNavigationView
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        // Set up the listener for navigation
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.home:
+                        // Home tab selected, stay on MainMenuActivity
+                        return true;
+                    case R.id.camera:
+                        // Navigate to ScanActivity
+                        startActivity(new Intent(MainMenuActivity.this, ScanQRCodeActivity.class));
+                        return true;
+                }
+                return false;
+            }
+        });
+
         // Get user data from Intent
-        Intent mainActivityIntent= getIntent();
+        Intent mainActivityIntent = getIntent();
 
         // Get the profile image from internal storage
         Bitmap profileImage = null;
@@ -69,7 +86,6 @@ public class MainMenuActivity extends AppCompatActivity {
         ImageButton editProfile = findViewById(R.id.btnProfile);
 
         // Set click listener for the profile button
-        //editProfile.setOnClickListener(v -> showUserProfile(user));
         editProfile.setOnClickListener(v -> showUserProfileFragment(user));
     }
 
@@ -103,9 +119,4 @@ public class MainMenuActivity extends AppCompatActivity {
         transaction.addToBackStack(null); // Allow back navigation
         transaction.commit();
     }
-
 }
-
-
-
-
