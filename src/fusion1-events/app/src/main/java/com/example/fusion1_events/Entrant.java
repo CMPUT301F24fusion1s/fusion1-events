@@ -5,9 +5,6 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.content.Context;
-import android.graphics.BitmapFactory;
-
 import java.util.ArrayList;
 import java.util.Map;
 
