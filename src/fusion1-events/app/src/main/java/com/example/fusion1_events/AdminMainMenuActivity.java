@@ -26,5 +26,16 @@ public class AdminMainMenuActivity extends AppCompatActivity {
         Button viewFacilitiesButton = findViewById(R.id.btn_view_facilities);
         Button browseImagesButton = findViewById(R.id.btn_browse_images);
 
+
+
+        viewProfilesButton.setOnClickListener(v -> show_profiles());
+
+
+
+    }
+
+    void show_profiles()
+    {
+        setContentView(R.layout.activity_profile_list);
     }
 }
