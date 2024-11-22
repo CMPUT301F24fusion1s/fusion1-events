@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The FirebaseManager class manages all interactions with Firebase Firestore, including user and event management.
@@ -155,6 +156,42 @@ public class FirebaseManager {
                 });
     }
 
+    /**
+     * This method is user to return
+     * @param callback
+     */
+
+    public List<Entrant> getAllusers(final UsersListCallback callback)
+    {
+        //
+         AtomicReference<List<Entrant>> users = null;
+
+        CollectionReference all_users = db.collection("users");
+
+        all_users.whereEqualTo("role","Entrant").get().addOnCompleteListener(task -> {
+
+       if(task.isSuccessful() && task.getResult() != null) {
+
+           users.set(new ArrayList<>());
+           for (DocumentSnapshot document : task.getResult()) {
+               Map<String, Object> entrantDocument = document.getData();
+               assert entrantDocument != null;
+               users.get().add(Entrant.extractUser(entrantDocument));
+               callback.onScuccess(users.get());
+
+           }
+       }
+       else
+           {
+               callback.onFailure(task.getException() != null ?
+                       task.getException() :
+                       new Exception("Unknown error occurred."));
+           }
+        });
+
+        return users.get();
+    }
+
 
     // Callback interface for asynchronous user retrieval
     public interface UserCallback {
@@ -165,6 +202,12 @@ public class FirebaseManager {
     // Interface for update callback
     public interface UpdateCallback {
         void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    // Callback interface for fetching all user profiles
+    public interface UsersListCallback{
+        void onScuccess(List<Entrant> users);
         void onFailure(Exception e);
     }
 
@@ -328,5 +371,7 @@ public class FirebaseManager {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
+
+
 
 }

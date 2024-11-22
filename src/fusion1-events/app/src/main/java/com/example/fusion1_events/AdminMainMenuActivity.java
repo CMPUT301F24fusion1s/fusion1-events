@@ -36,6 +36,15 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
     void show_profiles()
     {
-        setContentView(R.layout.activity_profile_list);
+
+        setContentView(R.layout.activity_profile_list);  // switch to profile layout
+
+        AdminController admincontroller = new AdminController(new FirebaseManager());
+
+        admincontroller.getallusers();
+
+
+        // we need to call the firebase manager to fetch all user
+        // and display them in the profile_list
     }
 }
