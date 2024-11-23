@@ -32,4 +32,8 @@ public class AdminController {
         });
     }
 
+    public void deleteUser(String deviceId){
+        firebaseManager.deleteUser(deviceId);
+    }
+
 }

@@ -20,6 +20,8 @@ import java.util.List;
 
 public class AdminMainMenuActivity extends AppCompatActivity {
 
+    AdminController admincontroller;
+
     /**
      * Called when the activity is first created. This method sets up the layout and initializes the UI components
      * for the main menu that the admin interacts with.
@@ -38,6 +40,7 @@ public class AdminMainMenuActivity extends AppCompatActivity {
         Button viewFacilitiesButton = findViewById(R.id.btn_view_facilities);
         Button browseImagesButton = findViewById(R.id.btn_browse_images);
 
+        admincontroller = new AdminController(new FirebaseManager());
 
         viewProfilesButton.setOnClickListener(v -> show_profiles());
 
@@ -50,7 +53,6 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.profile_list_layout);
 
-        AdminController admincontroller = new AdminController(new FirebaseManager());
 
         admincontroller.getallusers(new FirebaseManager.UsersListCallback() {
             @Override
@@ -111,11 +113,10 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
     private void deleteUser(Entrant user, View profileItem, LinearLayout profileListLayout) {
         // Call FirebaseManager to delete the user
-
+        admincontroller.deleteUser(user.getDeviceId());
+        // delete the profile from the view
+        profileListLayout.removeView(profileItem);
 
         Toast.makeText(this,"device ID"+ user.getDeviceId(), Toast.LENGTH_SHORT).show() ;
-
-        
-
     }
 }

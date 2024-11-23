@@ -362,6 +362,12 @@ public class FirebaseManager {
                 });
     }
 
+
+    public void deleteUser(String deviceId){
+        CollectionReference usersCollection = db.collection("users");
+        usersCollection.document(deviceId).delete();
+    }
+
     // Callback interface for retrieving multiple events
     public interface EventsListCallback {
         void onSuccess(List<Event> events);
