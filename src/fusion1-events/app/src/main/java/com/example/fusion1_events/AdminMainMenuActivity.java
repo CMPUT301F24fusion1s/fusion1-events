@@ -1,8 +1,10 @@
 package com.example.fusion1_events;
 
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -75,11 +77,16 @@ public class AdminMainMenuActivity extends AppCompatActivity {
             TextView emailTextView = profileIeam.findViewById(R.id.profile_email);
             TextView deviceIdTextView = profileIeam.findViewById(R.id.profile_device_id);
             TextView phoneTextView = profileIeam.findViewById(R.id.profile_phone);
+            ImageView imageView = profileIeam.findViewById(R.id.profile_image);
 
             nameTextView.setText(user.getName());
             emailTextView.setText(user.getEmail());
             deviceIdTextView.setText(user.getDeviceId());
             phoneTextView.setText(user.getPhoneNumber());
+
+            if (user.getProfileImage() != null)
+                imageView.setImageBitmap(user.getProfileImage());
+
 
             // Add the profile item to the parent layout
             profileListLayout.addView(profileIeam);
