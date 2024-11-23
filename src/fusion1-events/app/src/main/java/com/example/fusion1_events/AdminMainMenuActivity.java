@@ -4,8 +4,10 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,6 +48,8 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_profile_list);  // switch to profile layout
 
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.profile_list_layout);
+
         AdminController admincontroller = new AdminController(new FirebaseManager());
 
         admincontroller.getallusers(new FirebaseManager.UsersListCallback() {
@@ -59,8 +63,6 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
             }
         });
-
-
         // we need to call the firebase manager to fetch all user
         // and display them in the profile_list
     }
