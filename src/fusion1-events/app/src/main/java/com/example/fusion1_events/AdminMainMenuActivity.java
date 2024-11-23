@@ -1,9 +1,12 @@
 package com.example.fusion1_events;
 
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
 
 
 public class AdminMainMenuActivity extends AppCompatActivity {
@@ -36,15 +39,14 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
     void show_profiles()
     {
-
+        ArrayAdapter<Entrant> userListAdapter;
         setContentView(R.layout.activity_profile_list);  // switch to profile layout
 
         AdminController admincontroller = new AdminController(new FirebaseManager());
 
-        admincontroller.getallusers();
+        ArrayList<Entrant> userList = (ArrayList<Entrant>) admincontroller.getallusers();
+        userListAdapter = new ArrayAdapter<>(getApplicationContext(), 0 , userList);
+        userListAdapter.notifyDataSetChanged();
 
-
-        // we need to call the firebase manager to fetch all user
-        // and display them in the profile_list
     }
 }
