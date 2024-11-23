@@ -1,12 +1,10 @@
 package com.example.fusion1_events;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdminController {
     // Attributes for FirebaseManager reference
     private FirebaseManager firebaseManager;
-    private ArrayList<Entrant> userList;
 
 
     /**
@@ -18,23 +16,20 @@ public class AdminController {
         this.firebaseManager = firebaseManager;
     }
 
-    public void getallusers()
-    {
-
+    public void getallusers(final FirebaseManager.UsersListCallback callback) {
         firebaseManager.getAllusers(new FirebaseManager.UsersListCallback() {
             @Override
-            public void  onSuccess(List<Entrant> users) {
-                userList = (ArrayList<Entrant>) users;
+            public void onScuccess(List<Entrant> users) {
+                // Pass the result to the provided callback
+                callback.onScuccess(users);
             }
 
             @Override
             public void onFailure(Exception e) {
-
+                // Pass the error to the provided callback
+                callback.onFailure(e);
             }
         });
     }
 
-    public ArrayList<Entrant> getUserList() {
-        return userList;
-    }
 }

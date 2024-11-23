@@ -161,33 +161,38 @@ public class FirebaseManager {
      * @param callback
      */
 
-    public List<Entrant> getAllusers(final UsersListCallback callback) {
-        List<Entrant> users = new ArrayList<>();
+    public void getAllusers(final UsersListCallback callback)
+    {
+        //
+         //AtomicReference<List<Entrant>> users = null;
 
         CollectionReference all_users = db.collection("users");
 
-        all_users
-                .whereEqualTo("role", "Entrant")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        for (DocumentSnapshot document : task.getResult()) {
-                            Map<String, Object> entrantDocument = document.getData();
-                            if (entrantDocument != null) {
-                                users.add(Entrant.extractUser(entrantDocument));
-                            }
-                        }
-                        // Call the callback after the entire list is populated
-                        callback.onSuccess(users);
-                    } else {
-                        callback.onFailure(task.getException() != null ?
-                                task.getException() :
-                                new Exception("Unknown error occurred."));
-                    }
-                });
-        return users;
-    }
+        all_users.whereEqualTo("role","Entrant").get().addOnCompleteListener(task -> {
 
+       if(task.isSuccessful() && task.getResult() != null) {
+           List<Entrant> users = new ArrayList<>();
+
+           for (DocumentSnapshot document : task.getResult()) {
+               Map<String, Object> entrantDocument = document.getData();
+               assert entrantDocument != null;
+               users.add(Entrant.extractUser(entrantDocument));
+
+
+           }
+           //
+           callback.onScuccess(users);
+       }
+       else
+           {
+               callback.onFailure(task.getException() != null ?
+                       task.getException() :
+                       new Exception("Unknown error occurred."));
+           }
+        });
+
+
+    }
 
 
     // Callback interface for asynchronous user retrieval
@@ -204,7 +209,7 @@ public class FirebaseManager {
 
     // Callback interface for fetching all user profiles
     public interface UsersListCallback{
-        void onSuccess(List<Entrant> users);
+        void onScuccess(List<Entrant> users);
         void onFailure(Exception e);
     }
 

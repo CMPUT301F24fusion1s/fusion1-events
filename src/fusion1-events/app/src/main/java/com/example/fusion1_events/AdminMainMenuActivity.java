@@ -1,14 +1,14 @@
 package com.example.fusion1_events;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
+import android.view.View;
 import android.widget.Button;
-import android.widget.ScrollView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class AdminMainMenuActivity extends AppCompatActivity {
@@ -41,27 +41,48 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
     void show_profiles()
     {
-        ArrayList<Entrant> userList;
-        ArrayAdapter<Entrant> userListAdapter;
+
         setContentView(R.layout.activity_profile_list);  // switch to profile layout
 
-        // define the views
-        TextView header = findViewById(R.id.profile_header);
-        ScrollView scrollView = findViewById(R.id.profile_scrollView);
-
-        // get the profiles
         AdminController admincontroller = new AdminController(new FirebaseManager());
-        admincontroller.getallusers();
-        userList = admincontroller.getUserList();
 
-        // Set the content of the views
-        userListAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.activity_profile_list , userList);
-        userListAdapter.notifyDataSetChanged();
-        header.setText("Profile List");
+        admincontroller.getallusers(new FirebaseManager.UsersListCallback() {
+            @Override
+            public void onScuccess(List<Entrant> users) {
+                populateProfileList(users);
+            }
 
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+
+
+        // we need to call the firebase manager to fetch all user
+        // and display them in the profile_list
     }
 
-    void populateScrollView(ArrayList<Entrant> users){
+    private void populateProfileList(List<Entrant> users) {
+        // define views
+        LinearLayout profileListLayout = findViewById(R.id.profile_list_layout);
+        Entrant entrant = new Entrant();
+        for (Entrant user : users) {
+            View profileIeam = getLayoutInflater().inflate(R.layout.porfile_iteam, null);
 
+            // Set user details
+            TextView nameTextView = profileIeam.findViewById(R.id.profile_name);
+            TextView emailTextView = profileIeam.findViewById(R.id.profile_email);
+            TextView deviceIdTextView = profileIeam.findViewById(R.id.profile_device_id);
+            TextView phoneTextView = profileIeam.findViewById(R.id.profile_phone);
+
+            nameTextView.setText(user.getName());
+            emailTextView.setText(user.getEmail());
+            deviceIdTextView.setText(user.getDeviceId());
+            phoneTextView.setText(user.getPhoneNumber());
+
+            // Add the profile item to the parent layout
+            profileListLayout.addView(profileIeam);
+        }
     }
 }
