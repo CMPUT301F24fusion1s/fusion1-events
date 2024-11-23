@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 	private void registerNewUser(String deviceId, String name, String email, String phoneNumber) {
 		Entrant entrant = new Entrant(email, name, "Entrant", phoneNumber,
 				UUID.randomUUID().toString(), deviceId, null, null, true);
-
+//Admin(String email, String name, String role, String phoneNumber, String userId, String deviceId, Bitmap profileImage)
 		userController.signUpUser(entrant);
 		Toast.makeText(this, "User registration in progress", Toast.LENGTH_SHORT).show();
 		navigateToMainMenu(MainMenuActivity.class, entrant);

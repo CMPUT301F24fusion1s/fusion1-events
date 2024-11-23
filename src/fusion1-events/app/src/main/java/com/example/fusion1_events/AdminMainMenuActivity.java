@@ -1,12 +1,26 @@
 package com.example.fusion1_events;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.List;
+
 
 public class AdminMainMenuActivity extends AppCompatActivity {
+
+    AdminController admincontroller;
 
     /**
      * Called when the activity is first created. This method sets up the layout and initializes the UI components
@@ -16,9 +30,9 @@ public class AdminMainMenuActivity extends AppCompatActivity {
      *                            this Bundle contains the most recent data supplied.
      */
     @Override
-    protected void onCreate(Bundle savedInstancesState){
-       super.onCreate(savedInstancesState);
-       setContentView(R.layout.activity_admin_main_menu);
+    protected void onCreate(Bundle savedInstancesState) {
+        super.onCreate(savedInstancesState);
+        setContentView(R.layout.activity_admin_main_menu);
 
         // Initialize buttons to interact with different sections of the admin main menu
         Button viewEventButton = findViewById(R.id.btn_view_event);
@@ -26,5 +40,83 @@ public class AdminMainMenuActivity extends AppCompatActivity {
         Button viewFacilitiesButton = findViewById(R.id.btn_view_facilities);
         Button browseImagesButton = findViewById(R.id.btn_browse_images);
 
+        admincontroller = new AdminController(new FirebaseManager());
+
+        viewProfilesButton.setOnClickListener(v -> show_profiles());
+
+
+    }
+
+    void show_profiles() {
+
+        setContentView(R.layout.activity_profile_list);  // switch to profile layout
+
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.profile_list_layout);
+
+
+        admincontroller.getallusers(new FirebaseManager.UsersListCallback() {
+            @Override
+            public void onScuccess(List<Entrant> users) {
+                populateProfileList(users);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+        // we need to call the firebase manager to fetch all user
+        // and display them in the profile_list
+    }
+
+    private void populateProfileList(List<Entrant> users) {
+        // define views
+        LinearLayout profileListLayout = findViewById(R.id.profile_list_layout);
+        Entrant entrant = new Entrant();
+        for (Entrant user : users) {
+            View profileItem = getLayoutInflater().inflate(R.layout.porfile_iteam, null);
+
+            // Set user details
+            TextView nameTextView = profileItem.findViewById(R.id.profile_name);
+            TextView emailTextView = profileItem.findViewById(R.id.profile_email);
+            TextView deviceIdTextView = profileItem.findViewById(R.id.profile_device_id);
+            TextView phoneTextView = profileItem.findViewById(R.id.profile_phone);
+            ImageView imageView = profileItem.findViewById(R.id.profile_image);
+
+            nameTextView.setText(user.getName());
+            emailTextView.setText(user.getEmail());
+            deviceIdTextView.setText(user.getDeviceId());
+            phoneTextView.setText(user.getPhoneNumber());
+
+            if (user.getProfileImage() != null)
+                imageView.setImageBitmap(user.getProfileImage());
+
+
+            // Set up the delete button
+            ImageButton deleteButton = profileItem.findViewById(R.id.delete_button);
+            deleteButton.setOnClickListener(v -> {
+                // Confirm deletion (optional)
+                new AlertDialog.Builder(this)
+                        .setTitle("Delete User")
+                        .setMessage("Are you sure you want to delete this user?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            deleteUser(user, profileItem, profileListLayout);
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+            });
+
+            // Add the profile item to the parent layout
+            profileListLayout.addView(profileItem);
+        }
+    }
+
+    private void deleteUser(Entrant user, View profileItem, LinearLayout profileListLayout) {
+        // Call FirebaseManager to delete the user
+        admincontroller.deleteUser(user.getDeviceId());
+        // delete the profile from the view
+        profileListLayout.removeView(profileItem);
+
+        Toast.makeText(this,"device ID"+ user.getDeviceId(), Toast.LENGTH_SHORT).show() ;
     }
 }

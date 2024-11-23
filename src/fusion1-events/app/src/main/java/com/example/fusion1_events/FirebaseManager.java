@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The FirebaseManager class manages all interactions with Firebase Firestore, including user and event management.
@@ -155,6 +156,44 @@ public class FirebaseManager {
                 });
     }
 
+    /**
+     * This method is user to return
+     * @param callback
+     */
+
+    public void getAllusers(final UsersListCallback callback)
+    {
+        //
+         //AtomicReference<List<Entrant>> users = null;
+
+        CollectionReference all_users = db.collection("users");
+
+        all_users.whereEqualTo("role","Entrant").get().addOnCompleteListener(task -> {
+
+       if(task.isSuccessful() && task.getResult() != null) {
+           List<Entrant> users = new ArrayList<>();
+
+           for (DocumentSnapshot document : task.getResult()) {
+               Map<String, Object> entrantDocument = document.getData();
+               assert entrantDocument != null;
+               users.add(Entrant.extractUser(entrantDocument));
+
+
+           }
+           //
+           callback.onScuccess(users);
+       }
+       else
+           {
+               callback.onFailure(task.getException() != null ?
+                       task.getException() :
+                       new Exception("Unknown error occurred."));
+           }
+        });
+
+
+    }
+
 
     // Callback interface for asynchronous user retrieval
     public interface UserCallback {
@@ -165,6 +204,12 @@ public class FirebaseManager {
     // Interface for update callback
     public interface UpdateCallback {
         void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    // Callback interface for fetching all user profiles
+    public interface UsersListCallback{
+        void onScuccess(List<Entrant> users);
         void onFailure(Exception e);
     }
 
@@ -317,6 +362,12 @@ public class FirebaseManager {
                 });
     }
 
+
+    public void deleteUser(String deviceId){
+        CollectionReference usersCollection = db.collection("users");
+        usersCollection.document(deviceId).delete();
+    }
+
     // Callback interface for retrieving multiple events
     public interface EventsListCallback {
         void onSuccess(List<Event> events);
@@ -328,5 +379,7 @@ public class FirebaseManager {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
+
+
 
 }

@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.List;
+
 /**
  * The UserController class manages user-related operations such as login, sign-up, and profile updates.
  * It interacts with Firebase through a FirebaseManager instance to manage user data.
@@ -87,6 +89,8 @@ public class UserController{
         Entrant entrantUser = (Entrant) user;
         entrantUser.setProfileImage(selectedImage);
     }
+
+
 
 }
 
