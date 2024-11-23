@@ -3,6 +3,8 @@ package com.example.fusion1_events;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,14 +41,27 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
     void show_profiles()
     {
+        ArrayList<Entrant> userList;
         ArrayAdapter<Entrant> userListAdapter;
         setContentView(R.layout.activity_profile_list);  // switch to profile layout
 
-        AdminController admincontroller = new AdminController(new FirebaseManager());
+        // define the views
+        TextView header = findViewById(R.id.profile_header);
+        ScrollView scrollView = findViewById(R.id.profile_scrollView);
 
-        ArrayList<Entrant> userList = (ArrayList<Entrant>) admincontroller.getallusers();
-        userListAdapter = new ArrayAdapter<>(getApplicationContext(), 0 , userList);
+        // get the profiles
+        AdminController admincontroller = new AdminController(new FirebaseManager());
+        admincontroller.getallusers();
+        userList = admincontroller.getUserList();
+
+        // Set the content of the views
+        userListAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.activity_profile_list , userList);
         userListAdapter.notifyDataSetChanged();
+        header.setText("Profile List");
+
+    }
+
+    void populateScrollView(ArrayList<Entrant> users){
 
     }
 }
