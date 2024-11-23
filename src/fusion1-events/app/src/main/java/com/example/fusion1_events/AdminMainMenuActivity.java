@@ -72,14 +72,14 @@ public class AdminMainMenuActivity extends AppCompatActivity {
         LinearLayout profileListLayout = findViewById(R.id.profile_list_layout);
         Entrant entrant = new Entrant();
         for (Entrant user : users) {
-            View profileIeam = getLayoutInflater().inflate(R.layout.porfile_iteam, null);
+            View profileItem = getLayoutInflater().inflate(R.layout.porfile_iteam, null);
 
             // Set user details
-            TextView nameTextView = profileIeam.findViewById(R.id.profile_name);
-            TextView emailTextView = profileIeam.findViewById(R.id.profile_email);
-            TextView deviceIdTextView = profileIeam.findViewById(R.id.profile_device_id);
-            TextView phoneTextView = profileIeam.findViewById(R.id.profile_phone);
-            ImageView imageView = profileIeam.findViewById(R.id.profile_image);
+            TextView nameTextView = profileItem.findViewById(R.id.profile_name);
+            TextView emailTextView = profileItem.findViewById(R.id.profile_email);
+            TextView deviceIdTextView = profileItem.findViewById(R.id.profile_device_id);
+            TextView phoneTextView = profileItem.findViewById(R.id.profile_phone);
+            ImageView imageView = profileItem.findViewById(R.id.profile_image);
 
             nameTextView.setText(user.getName());
             emailTextView.setText(user.getEmail());
@@ -91,21 +91,21 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
 
             // Set up the delete button
-            ImageButton deleteButton = profileIeam.findViewById(R.id.delete_button);
+            ImageButton deleteButton = profileItem.findViewById(R.id.delete_button);
             deleteButton.setOnClickListener(v -> {
                 // Confirm deletion (optional)
                 new AlertDialog.Builder(this)
                         .setTitle("Delete User")
                         .setMessage("Are you sure you want to delete this user?")
                         .setPositiveButton("Yes", (dialog, which) -> {
-                            deleteUser(user, profileIeam, profileListLayout);
+                            deleteUser(user, profileItem, profileListLayout);
                         })
                         .setNegativeButton("No", null)
                         .show();
             });
 
             // Add the profile item to the parent layout
-            profileListLayout.addView(profileIeam);
+            profileListLayout.addView(profileItem);
         }
     }
 
