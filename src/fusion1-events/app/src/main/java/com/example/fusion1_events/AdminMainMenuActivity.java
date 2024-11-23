@@ -1,5 +1,7 @@
 package com.example.fusion1_events;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,9 +28,9 @@ public class AdminMainMenuActivity extends AppCompatActivity {
      *                            this Bundle contains the most recent data supplied.
      */
     @Override
-    protected void onCreate(Bundle savedInstancesState){
-       super.onCreate(savedInstancesState);
-       setContentView(R.layout.activity_admin_main_menu);
+    protected void onCreate(Bundle savedInstancesState) {
+        super.onCreate(savedInstancesState);
+        setContentView(R.layout.activity_admin_main_menu);
 
         // Initialize buttons to interact with different sections of the admin main menu
         Button viewEventButton = findViewById(R.id.btn_view_event);
@@ -36,15 +39,12 @@ public class AdminMainMenuActivity extends AppCompatActivity {
         Button browseImagesButton = findViewById(R.id.btn_browse_images);
 
 
-
         viewProfilesButton.setOnClickListener(v -> show_profiles());
-
 
 
     }
 
-    void show_profiles()
-    {
+    void show_profiles() {
 
         setContentView(R.layout.activity_profile_list);  // switch to profile layout
 
@@ -90,8 +90,32 @@ public class AdminMainMenuActivity extends AppCompatActivity {
                 imageView.setImageBitmap(user.getProfileImage());
 
 
+            // Set up the delete button
+            ImageButton deleteButton = profileIeam.findViewById(R.id.delete_button);
+            deleteButton.setOnClickListener(v -> {
+                // Confirm deletion (optional)
+                new AlertDialog.Builder(this)
+                        .setTitle("Delete User")
+                        .setMessage("Are you sure you want to delete this user?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            deleteUser(user, profileIeam, profileListLayout);
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+            });
+
             // Add the profile item to the parent layout
             profileListLayout.addView(profileIeam);
         }
+    }
+
+    private void deleteUser(Entrant user, View profileItem, LinearLayout profileListLayout) {
+        // Call FirebaseManager to delete the user
+
+
+        Toast.makeText(this,"device ID"+ user.getDeviceId(), Toast.LENGTH_SHORT).show() ;
+
+        
+
     }
 }
