@@ -161,25 +161,27 @@ public class FirebaseManager {
      * @param callback
      */
 
-    public List<Entrant> getAllusers(final UsersListCallback callback)
+    public void getAllusers(final UsersListCallback callback)
     {
         //
-         AtomicReference<List<Entrant>> users = null;
+         //AtomicReference<List<Entrant>> users = null;
 
         CollectionReference all_users = db.collection("users");
 
         all_users.whereEqualTo("role","Entrant").get().addOnCompleteListener(task -> {
 
        if(task.isSuccessful() && task.getResult() != null) {
+           List<Entrant> users = new ArrayList<>();
 
-           users.set(new ArrayList<>());
            for (DocumentSnapshot document : task.getResult()) {
                Map<String, Object> entrantDocument = document.getData();
                assert entrantDocument != null;
-               users.get().add(Entrant.extractUser(entrantDocument));
-               callback.onScuccess(users.get());
+               users.add(Entrant.extractUser(entrantDocument));
+
 
            }
+           //
+           callback.onScuccess(users);
        }
        else
            {
@@ -189,7 +191,7 @@ public class FirebaseManager {
            }
         });
 
-        return users.get();
+
     }
 
 

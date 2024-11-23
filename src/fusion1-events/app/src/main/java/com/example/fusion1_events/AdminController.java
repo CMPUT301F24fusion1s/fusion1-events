@@ -16,19 +16,20 @@ public class AdminController {
         this.firebaseManager = firebaseManager;
     }
 
-    public  List<Entrant> getallusers()
-    {
-       List<Entrant> usersList = firebaseManager.getAllusers(new FirebaseManager.UsersListCallback() {
+    public void getallusers(final FirebaseManager.UsersListCallback callback) {
+        firebaseManager.getAllusers(new FirebaseManager.UsersListCallback() {
             @Override
             public void onScuccess(List<Entrant> users) {
-
+                // Pass the result to the provided callback
+                callback.onScuccess(users);
             }
 
             @Override
             public void onFailure(Exception e) {
-
+                // Pass the error to the provided callback
+                callback.onFailure(e);
             }
         });
-        return usersList;
     }
+
 }

@@ -1,9 +1,14 @@
 package com.example.fusion1_events;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.List;
 
 
 public class AdminMainMenuActivity extends AppCompatActivity {
@@ -41,10 +46,43 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
         AdminController admincontroller = new AdminController(new FirebaseManager());
 
-        admincontroller.getallusers();
+        admincontroller.getallusers(new FirebaseManager.UsersListCallback() {
+            @Override
+            public void onScuccess(List<Entrant> users) {
+                populateProfileList(users);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
 
 
         // we need to call the firebase manager to fetch all user
         // and display them in the profile_list
+    }
+
+    private void populateProfileList(List<Entrant> users) {
+        // define views
+        LinearLayout profileListLayout = findViewById(R.id.profile_list_layout);
+        Entrant entrant = new Entrant();
+        for (Entrant user : users) {
+            View profileIeam = getLayoutInflater().inflate(R.layout.porfile_iteam, null);
+
+            // Set user details
+            TextView nameTextView = profileIeam.findViewById(R.id.profile_name);
+            TextView emailTextView = profileIeam.findViewById(R.id.profile_email);
+            TextView deviceIdTextView = profileIeam.findViewById(R.id.profile_device_id);
+            TextView phoneTextView = profileIeam.findViewById(R.id.profile_phone);
+
+            nameTextView.setText(user.getName());
+            emailTextView.setText(user.getEmail());
+            deviceIdTextView.setText(user.getDeviceId());
+            phoneTextView.setText(user.getPhoneNumber());
+
+            // Add the profile item to the parent layout
+            profileListLayout.addView(profileIeam);
+        }
     }
 }
