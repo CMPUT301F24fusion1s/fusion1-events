@@ -29,6 +29,7 @@
         <activity android:name=".EventsPageActivity" />
         <activity android:name=".EventDetailsActivity" />
         <activity android:name=".ScanQRCodeActivity"/>
+        <activity android:name=".AdminEventActivity"/>
     </application>
 
 </manifest>

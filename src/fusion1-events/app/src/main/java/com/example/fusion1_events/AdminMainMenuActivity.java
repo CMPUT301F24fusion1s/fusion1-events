@@ -3,16 +3,12 @@ package com.example.fusion1_events;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AdminMainMenuActivity extends AppCompatActivity {
+public class AdminMainMenuActivity extends AppCompatActivity{
 
     AdminController admincontroller;
 
@@ -79,6 +75,15 @@ public class AdminMainMenuActivity extends AppCompatActivity {
         textView.setText("List of Events");
         eventListView.setLayoutManager(new LinearLayoutManager(this));
         eventListView.setAdapter(eventListAdapter);
+        Context context = this;
+        eventListAdapter.setOnEventClickListener(new EventAdapter.OnEventClickListener() {
+            @Override
+            public void onEventClick(Event event) {
+                Intent intent = new Intent(context,AdminEventActivity.class);
+                intent.putExtra("event", event);
+                startActivity(intent);
+            }
+        });
     }
 
     void show_profiles() {
