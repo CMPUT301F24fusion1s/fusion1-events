@@ -2,6 +2,7 @@ package com.example.fusion1_events;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
@@ -108,6 +109,13 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
             // Add the profile item to the parent layout
             profileListLayout.addView(profileItem);
+
+            ImageButton back_arrow = findViewById(R.id.backArrow1);
+
+            back_arrow.setOnClickListener(v -> {
+               Intent intent = new Intent(this, AdminMainMenuActivity.class);
+               startActivity(intent);
+            });
         }
     }
 
