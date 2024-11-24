@@ -32,39 +32,59 @@
         <Button
             android:id="@+id/btn_view_event"
             android:layout_width="match_parent"
+            android:background="@drawable/button_background"
+            app:backgroundTint="@android:color/black"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:backgroundTint="#000000"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/white"
+            android:textSize="16sp"
             android:text="View Event"
-            android:textColor="#FFFFFF" />
+             />
 
         <Button
             android:id="@+id/btn_view_profiles"
             android:layout_width="match_parent"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:background="@drawable/button_background"
+            app:backgroundTint="@android:color/black"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:backgroundTint="#000000"
             android:text="View Profiles"
-            android:textColor="#FFFFFF" />
+             />
 
         <Button
             android:id="@+id/btn_view_facilities"
             android:layout_width="match_parent"
+            android:background="@drawable/button_background"
+            app:backgroundTint="@android:color/black"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/white"
+            android:textSize="16sp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:backgroundTint="#000000"
             android:text="View Facilities"
-            android:textColor="#FFFFFF" />
+             />
 
         <!-- Black button for browsing images -->
         <Button
             android:id="@+id/btn_browse_images"
             android:layout_width="match_parent"
+            android:background="@drawable/button_background"
+            app:backgroundTint="@android:color/black"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:backgroundTint="#000000"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/white"
+            android:textSize="16sp"
             android:text="Browse Images"
-            android:textColor="#FFFFFF" />
+             />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
