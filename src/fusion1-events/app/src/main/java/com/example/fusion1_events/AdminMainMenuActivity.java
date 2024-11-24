@@ -6,16 +6,18 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -45,6 +47,31 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
         viewProfilesButton.setOnClickListener(v -> show_profiles());
 
+        viewEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setContentView(R.layout.admin_event_list);
+                admincontroller.getAllEvents(new FirebaseManager.EventsListCallback() {
+                    @Override
+                    public void onSuccess(List<Event> events) {
+                        showEvents((ArrayList<Event>) events);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+
+                    }
+                });
+            }
+        });
+
+    }
+
+    private void showEvents(ArrayList<Event> events) {
+        ArrayAdapter<Event> eventListAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.admin_event_list, events);
+
+        TextView textView = findViewById(R.id.admin_event_list_page_title);
+        ListView eventListView = findViewById(R.id.event_list);
 
     }
 
@@ -52,10 +79,7 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_profile_list);  // switch to profile layout
 
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.profile_list_layout);
-
-
-        admincontroller.getallusers(new FirebaseManager.UsersListCallback() {
+        admincontroller.getAllUsers(new FirebaseManager.UsersListCallback() {
             @Override
             public void onScuccess(List<Entrant> users) {
                 populateProfileList(users);
