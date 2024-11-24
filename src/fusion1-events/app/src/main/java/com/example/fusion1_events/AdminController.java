@@ -16,7 +16,7 @@ public class AdminController {
         this.firebaseManager = firebaseManager;
     }
 
-    public void getallusers(final FirebaseManager.UsersListCallback callback) {
+    public void getAllUsers(final FirebaseManager.UsersListCallback callback) {
         firebaseManager.getAllusers(new FirebaseManager.UsersListCallback() {
             @Override
             public void onScuccess(List<Entrant> users) {
@@ -36,4 +36,18 @@ public class AdminController {
         firebaseManager.deleteUser(deviceId);
     }
 
+    public void getAllEvents(FirebaseManager.EventsListCallback eventsListCallback) {
+        firebaseManager.getAllEvents(new FirebaseManager.EventsListCallback() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                eventsListCallback.onSuccess(events);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+
+    }
 }

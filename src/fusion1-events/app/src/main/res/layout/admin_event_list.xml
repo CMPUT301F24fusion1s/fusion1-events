@@ -4,7 +4,7 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/admin_event_list_page_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Events"
@@ -15,7 +15,7 @@
         android:id="@+id/event_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
+        android:layout_below="@id/admin_event_list_page_title"
         android:layout_marginTop="8dp" />
 
 </RelativeLayout>
