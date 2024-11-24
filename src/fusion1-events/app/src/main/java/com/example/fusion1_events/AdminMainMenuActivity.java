@@ -11,11 +11,14 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +71,14 @@ public class AdminMainMenuActivity extends AppCompatActivity {
     }
 
     private void showEvents(ArrayList<Event> events) {
-        ArrayAdapter<Event> eventListAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.admin_event_list, events);
+        EventAdapter eventListAdapter = new EventAdapter(events);
 
         TextView textView = findViewById(R.id.admin_event_list_page_title);
-        ListView eventListView = findViewById(R.id.event_list);
+        RecyclerView eventListView = findViewById(R.id.event_list);
 
+        textView.setText("List of Events");
+        eventListView.setLayoutManager(new LinearLayoutManager(this));
+        eventListView.setAdapter(eventListAdapter);
     }
 
     void show_profiles() {
