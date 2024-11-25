@@ -19,7 +19,7 @@ public class Facility {
         return location;
     }
 
-    // Optional: Setters if you need to modify the data later
+    //setters
     public void setName(String name) {
         this.name = name;
     }

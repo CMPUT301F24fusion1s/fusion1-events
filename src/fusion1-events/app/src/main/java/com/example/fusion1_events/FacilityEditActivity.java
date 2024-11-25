@@ -18,7 +18,7 @@ public class FacilityEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_facility); // Ensure this matches your layout file name
+        setContentView(R.layout.activity_edit_facility);
 
         // Initialize the EditText and Button
         etFacilityName = findViewById(R.id.etFacilityName);

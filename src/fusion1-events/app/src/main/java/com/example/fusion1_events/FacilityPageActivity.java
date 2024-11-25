@@ -24,7 +24,7 @@ public class FacilityPageActivity extends AppCompatActivity implements FacilityA
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.facility_page); // Ensure this matches your layout file name
+        setContentView(R.layout.facility_page);
 
         rvFacilities = findViewById(R.id.rvFacilities);
         FloatingActionButton fabAddFacility = findViewById(R.id.fabAddFacility);
@@ -70,8 +70,8 @@ public class FacilityPageActivity extends AppCompatActivity implements FacilityA
             if (position >= 0 && position < facilitiesList.size()) {
                 // Update the facility in the list
                 Facility facilityToUpdate = facilitiesList.get(position);
-                facilityToUpdate.setName(updatedName); // Assuming you have a setter in your Facility class
-                facilityToUpdate.setLocation(updatedLocation); // Assuming you have a setter in your Facility class
+                facilityToUpdate.setName(updatedName);
+                facilityToUpdate.setLocation(updatedLocation);
 
                 // Notify the adapter to refresh the RecyclerView
                 adapter.notifyItemChanged(position);

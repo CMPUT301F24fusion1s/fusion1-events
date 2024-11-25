@@ -16,11 +16,10 @@ public class FacilityAddActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_facility); // Ensure this matches your layout file name
-
-        etFacilityName = findViewById(R.id.NameInput); // Ensure the ID matches your layout
-        etFacilityLocation = findViewById(R.id.etFacilityLocation); // Ensure the ID matches your layout
-        btnAdd = findViewById(R.id.btnAdd); // Ensure the ID matches your layout
+        setContentView(R.layout.activity_add_facility);
+        etFacilityName = findViewById(R.id.NameInput);
+        etFacilityLocation = findViewById(R.id.etFacilityLocation);
+        btnAdd = findViewById(R.id.btnAdd);
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override

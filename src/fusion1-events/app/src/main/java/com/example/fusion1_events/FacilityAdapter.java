@@ -60,8 +60,8 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
             // Initialize the TextViews and Buttons
             tvFacilityName = itemView.findViewById(R.id.tvFacilityName);
             tvFacilityLocation = itemView.findViewById(R.id.tvFacilityLocation);
-            btnEdit = itemView.findViewById(R.id.btnEdit); // Ensure this ID matches your layout
-            btnDelete = itemView.findViewById(R.id.btnDelete); // Ensure this ID matches your layout
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 
