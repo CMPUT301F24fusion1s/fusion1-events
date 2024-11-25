@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
-
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +28,7 @@ public class EventsPageActivity extends BaseActivity {
     private RecyclerView rvEvents;
     private EventAdapter eventAdapter;
     private FloatingActionButton fabAddEvent;
+    private TextView tvManageFacility;
     private FirebaseManager firebaseManager;
 
     @Override
@@ -40,6 +41,7 @@ public class EventsPageActivity extends BaseActivity {
         // Initialize views
         rvEvents = findViewById(R.id.rvEvents);
         fabAddEvent = findViewById(R.id.fabAddEvent);
+        tvManageFacility = findViewById(R.id.tvManageFacility);
 
         // Setup RecyclerView
         setupRecyclerView();
@@ -49,6 +51,16 @@ public class EventsPageActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 navigateToActivity(EventCreationActivity.class);
+            }
+        });
+
+        // Manage Facility click listener
+        tvManageFacility.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start the FacilityPageActivity
+                Intent intent = new Intent(EventsPageActivity.this, FacilityPageActivity.class);
+                startActivity(intent); // Start the FacilityPageActivity
             }
         });
 

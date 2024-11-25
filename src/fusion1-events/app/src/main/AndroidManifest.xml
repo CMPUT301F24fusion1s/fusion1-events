@@ -28,6 +28,9 @@
         <activity android:name=".EventCreationActivity" />
         <activity android:name=".EventsPageActivity" />
         <activity android:name=".EventDetailsActivity" />
+        <activity android:name=".FacilityPageActivity"/>
+        <activity android:name=".FacilityAddActivity"/>
+        <activity android:name=".FacilityEditActivity"/>
         <activity android:name=".ScanQRCodeActivity"/>
     </application>
 
