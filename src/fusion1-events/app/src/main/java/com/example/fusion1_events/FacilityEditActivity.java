@@ -1,4 +1,4 @@
-package com.example.fusion1_events; // Change to your actual package name
+package com.example.fusion1_events;
 
 import android.content.Intent;
 import android.os.Bundle;
