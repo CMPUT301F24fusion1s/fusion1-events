@@ -334,8 +334,9 @@ public class FirebaseManager {
                         }
 
                         // Now get events where user is in waitlist
+                        // TODO: Need to also get events where user is in the invitedEntrants list
                         eventsCollection
-                                .whereArrayContains("waitlist", userId.toString())
+                                .whereArrayContains("waitingEntrants", userId.toString())
                                 .get()
                                 .addOnCompleteListener(waitlistTask -> {
                                     if (waitlistTask.isSuccessful()) {
