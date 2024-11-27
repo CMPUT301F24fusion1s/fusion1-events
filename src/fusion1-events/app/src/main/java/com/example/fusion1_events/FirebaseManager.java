@@ -3,6 +3,8 @@ package com.example.fusion1_events;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -11,6 +13,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -319,49 +322,58 @@ public class FirebaseManager {
 
     public void getUserEvents(UUID userId, final EventsListCallback callback) {
         CollectionReference eventsCollection = db.collection("events");
+        String userIdString = userId.toString();
+        List<Event> userEvents = new ArrayList<>();
 
-        // First, get events where user is the organizer
-        eventsCollection
-                .whereEqualTo("organizerId", userId.toString())
-                .get()
-                .addOnCompleteListener(organizerTask -> {
-                    if (organizerTask.isSuccessful()) {
-                        List<Event> userEvents = new ArrayList<>();
+        // Create tasks for different event queries
+        Task<QuerySnapshot> organizerTask = eventsCollection
+                .whereEqualTo("organizerId", userIdString)
+                .get();
 
-                        // Add events where user is organizer
-                        for (DocumentSnapshot doc : organizerTask.getResult()) {
-                            userEvents.add(Event.fromFirestoreDocument(doc));
+        Task<QuerySnapshot> waitlistTask = eventsCollection
+                .whereArrayContains("waitingEntrants", userIdString)
+                .get();
+
+        Task<QuerySnapshot> invitedTask = eventsCollection
+                .whereArrayContains("invitedEntrants", userIdString)
+                .get();
+
+        // Execute all queries in parallel
+        Tasks.whenAllComplete(organizerTask, waitlistTask, invitedTask)
+                .addOnSuccessListener(tasks -> {
+                    try {
+                        // Process organizer events
+                        if (organizerTask.isSuccessful()) {
+                            addEventsFromSnapshot(organizerTask.getResult(), userEvents);
                         }
 
-                        // Now get events where user is in waitlist
-                        eventsCollection
-                                .whereArrayContains("waitlist", userId.toString())
-                                .get()
-                                .addOnCompleteListener(waitlistTask -> {
-                                    if (waitlistTask.isSuccessful()) {
-                                        // Add events where user is in waitlist
-                                        for (DocumentSnapshot doc : waitlistTask.getResult()) {
-                                            userEvents.add(Event.fromFirestoreDocument(doc));
-                                        }
+                        // Process waitlist events
+                        if (waitlistTask.isSuccessful()) {
+                            addEventsFromSnapshot(waitlistTask.getResult(), userEvents);
+                        }
 
-                                        // Sort events by date
-                                        Collections.sort(userEvents, (e1, e2) -> e1.getDate().compareTo(e2.getDate()));
+                        // Process invited events
+                        if (invitedTask.isSuccessful()) {
+                            addEventsFromSnapshot(invitedTask.getResult(), userEvents);
+                        }
 
-                                        callback.onSuccess(userEvents);
-                                    } else {
-                                        callback.onFailure(waitlistTask.getException() != null ?
-                                                waitlistTask.getException() :
-                                                new Exception("Error fetching waitlist events"));
-                                    }
-                                });
-                    } else {
-                        callback.onFailure(organizerTask.getException() != null ?
-                                organizerTask.getException() :
-                                new Exception("Error fetching organized events"));
+                        // Sort events by date and return
+                        userEvents.sort(Comparator.comparing(Event::getDate));
+                        callback.onSuccess(userEvents);
+
+                    } catch (Exception e) {
+                        callback.onFailure(new Exception("Error processing events", e));
                     }
-                });
+                })
+                .addOnFailureListener(e -> callback.onFailure(new Exception("Error fetching events", e)));
     }
 
+    // Helper method to process QuerySnapshot and add events to the list
+    private void addEventsFromSnapshot(QuerySnapshot snapshot, List<Event> eventsList) {
+        for (DocumentSnapshot doc : snapshot) {
+            eventsList.add(Event.fromFirestoreDocument(doc));
+        }
+    }
 
     public void deleteUser(String deviceId){
         CollectionReference usersCollection = db.collection("users");

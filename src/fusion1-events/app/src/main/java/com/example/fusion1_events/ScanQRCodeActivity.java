@@ -114,7 +114,6 @@ public class ScanQRCodeActivity extends BaseActivity {
             Log.d(TAG, "barLauncher: Scan canceled or no result found");
             // If the scan was canceled, show a toast message
             Toast.makeText(this, "Scan canceled", Toast.LENGTH_SHORT).show();
-            // TODO: navigate to previous activity, not MainMenuActivity
             navigateToActivity(MainMenuActivity.class);
         }
     });
