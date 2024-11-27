@@ -146,8 +146,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     primaryActionButton.setOnClickListener(v -> leaveWaitlist());
                 } else if (event.getWaitlist().getInvitedEntrants().contains(currentUser.getUserId())) {
                     primaryActionButton.setText("Reply to Invite");
-                    Toast.makeText(EventDetailsActivity.this,
-                            "User clicked Reply to Invite button", Toast.LENGTH_SHORT).show();
+                    primaryActionButton.setOnClickListener(v -> replyToInvite());
                 } else {
                     primaryActionButton.setText("Join Waitlist");
                     primaryActionButton.setOnClickListener(v -> joinWaitlist());
@@ -175,5 +174,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         setupPrimaryActionButton(); // Refresh button state
         Toast.makeText(EventDetailsActivity.this,
                 "Successfully left waitlist", Toast.LENGTH_SHORT).show();
+    }
+
+    private void replyToInvite() {
+        Toast.makeText(EventDetailsActivity.this,
+                "User clicked Reply to Invite button", Toast.LENGTH_SHORT).show();
     }
 }
