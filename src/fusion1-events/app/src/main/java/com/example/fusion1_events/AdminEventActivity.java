@@ -1,5 +1,6 @@
 package com.example.fusion1_events;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AdminEventActivity extends AppCompatActivity {
@@ -28,6 +30,7 @@ public class AdminEventActivity extends AppCompatActivity {
     Bitmap eventPoster;
     int eventCapacity;
     Button deleteBtn;
+    AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,9 +82,26 @@ public class AdminEventActivity extends AppCompatActivity {
             }
         });
 
+
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                builder = new AlertDialog.Builder(getApplicationContext());
+                builder.setMessage("Do you want to save changes?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        adminController.updateEvent(event);
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // do nothing.
+                            }
+                        })
+                        .setTitle("Saving Alert")
+                        .create();
                 finish();
             }
         });

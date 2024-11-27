@@ -54,4 +54,8 @@ public class AdminController {
     public void deleteEvent(Event event) {
         firebaseManager.deleteEvent(event);
     }
+
+    public void updateEvent(Event event) {
+        firebaseManager.updateExistingEvent(event);
+    }
 }
