@@ -229,8 +229,9 @@ public class FirebaseManager {
         Map<String, Object> eventData =  event.toMap();
 
         // Add the event to Firestore
-        eventsCollection.document(event.getQrCodeHash())
-                .set(event)
+        eventsCollection
+                .document(event.getQrCodeHash())
+                .set(eventData)
                 .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + event.getQrCodeHash()))
                 .addOnFailureListener(e -> Log.e("FirebaseManager", "Error adding event", e));
     }
@@ -247,23 +248,9 @@ public class FirebaseManager {
         Map<String, Object> eventData = event.toMap();
 
         // Update the event in Firestore
-        eventsCollection.whereEqualTo("qrCodeHash", event.getId().toString())
-                .get()
+        eventsCollection.document(event.getQrCodeHash())
+                .update(eventData)
                 .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
-                        // Get the first (and should be only) matching document
-                        DocumentSnapshot document = querySnapshot.getDocuments().get(0);
-
-                        // Update the document using its ID
-                        eventsCollection.document(document.getId())
-                                .update(eventData)
-                                .addOnSuccessListener(aVoid ->
-                                        Log.d("FirebaseManager", "Event updated with ID: " + event.getId()))
-                                .addOnFailureListener(e ->
-                                        Log.e("FirebaseManager", "Error updating event", e));
-                    } else {
-                        Log.e("FirebaseManager", "No event found with QR hash: " + event.getId());
-                    }
                 })
                 .addOnFailureListener(e ->
                         Log.e("FirebaseManager", "Error querying for event", e));

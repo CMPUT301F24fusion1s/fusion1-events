@@ -3,6 +3,7 @@ package com.example.fusion1_events;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +83,19 @@ public class AdminMainMenuActivity extends AppCompatActivity{
             public void onEventClick(Event event) {
                 Intent intent = new Intent(context,AdminEventActivity.class);
                 intent.putExtra("event", event);
+                Bundle bundle = new Bundle();
+                String tempFileName = "temp_event_poster.jpg";
+
+                try {
+                    if (event.getPoster() != null) {
+                        FileOutputStream fos = openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                        event.getPoster().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                        fos.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                intent.putExtra("poster", tempFileName);
                 startActivity(intent);
             }
         });
