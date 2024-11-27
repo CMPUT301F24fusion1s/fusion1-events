@@ -63,7 +63,6 @@ public class AdminMainMenuActivity extends AppCompatActivity{
                 });
             }
         });
-
     }
 
     private void showEvents(ArrayList<Event> events) {

@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The FirebaseManager class manages all interactions with Firebase Firestore, including user and event management.
@@ -194,6 +193,11 @@ public class FirebaseManager {
 
     }
 
+    public void deleteEvent(Event event) {
+        CollectionReference eventsCollection = db.collection("events");
+        eventsCollection.document(event.getQrCodeHash()).delete();
+    }
+
 
     // Callback interface for asynchronous user retrieval
     public interface UserCallback {
@@ -225,8 +229,9 @@ public class FirebaseManager {
         Map<String, Object> eventData =  event.toMap();
 
         // Add the event to Firestore
-        eventsCollection.add(eventData)
-                .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + documentReference.getId()))
+        eventsCollection.document(event.getQrCodeHash())
+                .set(event)
+                .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + event.getQrCodeHash()))
                 .addOnFailureListener(e -> Log.e("FirebaseManager", "Error adding event", e));
     }
 

@@ -50,4 +50,8 @@ public class AdminController {
         });
 
     }
+
+    public void deleteEvent(Event event) {
+        firebaseManager.deleteEvent(event);
+    }
 }
