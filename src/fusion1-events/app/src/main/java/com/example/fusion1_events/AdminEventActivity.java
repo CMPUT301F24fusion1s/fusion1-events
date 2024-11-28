@@ -1,8 +1,11 @@
 package com.example.fusion1_events;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,6 +48,7 @@ public class AdminEventActivity extends AppCompatActivity {
     int eventCapacity;
     Button deleteBtn;
     AlertDialog.Builder builder;
+    Intent intent1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,13 +95,16 @@ public class AdminEventActivity extends AppCompatActivity {
         if (event.getCapacity() != 0)
             capacity.setText("Maximum Capcity: " + String.valueOf(event.getCapacity()));
 
+        Context context = this;
+
+        intent1 = new Intent();
 
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 deleteEvent(event);
+                setResult(RESULT_OK, intent1);
                 finish();
-
             }
         });
 
@@ -153,6 +161,7 @@ public class AdminEventActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         adminController.updateEvent(event);
+                        setResult(RESULT_OK, intent1);
                         finish();
                     }
                 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -220,6 +229,7 @@ public class AdminEventActivity extends AppCompatActivity {
             }
         }
     }
+
 }
 
 

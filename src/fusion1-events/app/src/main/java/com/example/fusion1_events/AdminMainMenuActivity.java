@@ -26,7 +26,9 @@ import java.util.List;
 public class AdminMainMenuActivity extends AppCompatActivity{
 
     AdminController admincontroller;
-
+    RecyclerView eventListView;
+    EventAdapter eventListAdapter;
+    int REQUEST_CODE_EVENT_ACTIVITY = 5;
     /**
      * Called when the activity is first created. This method sets up the layout and initializes the UI components
      * for the main menu that the admin interacts with.
@@ -66,13 +68,15 @@ public class AdminMainMenuActivity extends AppCompatActivity{
                 });
             }
         });
+
+
     }
 
-    private void showEvents(ArrayList<Event> events) {
-        EventAdapter eventListAdapter = new EventAdapter(events);
+    public void showEvents(ArrayList<Event> events) {
+        eventListAdapter = new EventAdapter(events);
 
         TextView textView = findViewById(R.id.admin_event_list_page_title);
-        RecyclerView eventListView = findViewById(R.id.event_list);
+        eventListView = findViewById(R.id.event_list);
 
         textView.setText("List of Events");
         eventListView.setLayoutManager(new LinearLayoutManager(this));
@@ -96,7 +100,7 @@ public class AdminMainMenuActivity extends AppCompatActivity{
                     e.printStackTrace();
                 }
                 intent.putExtra("poster", tempFileName);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_EVENT_ACTIVITY);
             }
         });
     }
@@ -177,4 +181,24 @@ public class AdminMainMenuActivity extends AppCompatActivity{
 
         Toast.makeText(this,"device ID"+ user.getDeviceId(), Toast.LENGTH_SHORT).show() ;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_EVENT_ACTIVITY && resultCode == RESULT_OK) {
+            admincontroller.getAllEvents(new FirebaseManager.EventsListCallback() {
+                @Override
+                public void onSuccess(List<Event> events) {
+                    showEvents((ArrayList<Event>) events);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(AdminMainMenuActivity.this, "Failed to fetch events", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
 }
