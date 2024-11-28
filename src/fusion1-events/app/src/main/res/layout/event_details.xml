@@ -39,7 +39,7 @@
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
         android:paddingTop="16dp"
-        android:src="@drawable/baseline_image_24" />
+        android:src="@drawable/baseline_image_24_png" />
 
     <!-- Join Waitlist Button -->
     <Button

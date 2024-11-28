@@ -1,11 +1,9 @@
 package com.example.fusion1_events;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -99,6 +96,7 @@ public class AdminEventActivity extends AppCompatActivity {
 
         intent1 = new Intent();
 
+
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -137,8 +135,9 @@ public class AdminEventActivity extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                event.setPoster(null);
-                                poster.setImageDrawable(getResources().getDrawable(R.drawable.baseline_image_24));
+                                Bitmap defImg = BitmapFactory.decodeResource(getResources(), R.drawable.baseline_image_24);
+                                event.setPoster(defImg);
+                                poster.setImageBitmap(defImg);
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {

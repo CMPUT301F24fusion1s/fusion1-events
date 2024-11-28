@@ -58,7 +58,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         if (event.getPoster() != null) {
             holder.eventImage.setImageBitmap(event.getPoster());
         } else {
-            holder.eventImage.setImageResource(R.drawable.baseline_image_24);
+            holder.eventImage.setImageResource(R.drawable.baseline_image_24_png);
         }
     }
 

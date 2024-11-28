@@ -4,6 +4,7 @@ import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 

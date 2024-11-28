@@ -65,7 +65,7 @@
             android:layout_height="200dp"
             android:layout_marginVertical="16dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/baseline_image_24"
+            android:src="@drawable/baseline_image_24_png"
             android:contentDescription="Event Image" />
 
         <!-- Delete Button and QR Code -->
@@ -89,7 +89,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_marginStart="8dp"
-                android:src="@drawable/baseline_image_24"
+                android:src="@drawable/baseline_image_24_png"
                 android:contentDescription="QR Code" />
         </LinearLayout>
 
