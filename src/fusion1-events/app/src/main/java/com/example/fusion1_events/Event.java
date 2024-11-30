@@ -353,7 +353,7 @@ public class Event implements Parcelable {
         parcel.writeString(this.qrCodeHash);
         parcel.writeInt(this.capacity != null ? this.capacity : -1);
         parcel.writeByte((byte) (this.geolocationRequired != null && this.geolocationRequired ? 1 : 0));
-        parcel.writeStringList(this.waitlist != null ? this.waitlist : new ArrayList<>());
+        parcel.writeParcelable(this.waitlist != null ? this.waitlist : new WaitList(),i);
     }
 
 
