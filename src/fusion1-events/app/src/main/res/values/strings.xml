@@ -28,10 +28,13 @@
     <string name="event_details_title">Event-1</string>
     <string name="event_details_primary_action_btn_text">Primary Action</string>
     <string name="event_details_date">October 25 2024, 6:00 – 9:00 PM</string>
+    <string name="event_details_date1">October 25 2024</string>
+    <string name="event_details_time">6:00 – 9:00 PM</string>
     <string name="event_details_location">Edmonton, Alberta</string>
     <string name="event_details_max_participants">Max. Participants</string>
     <string name="event_details_description">Lorem ipsum dolor sit amet…</string>
     <string name="event_details_geolocation_required">No</string>
+    <string name="scrollable_content">test</string>
 
     <string-array name="am_pm_options">
         <item>AM/PM</item>

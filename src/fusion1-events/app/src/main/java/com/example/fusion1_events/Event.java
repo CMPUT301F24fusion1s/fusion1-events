@@ -4,6 +4,7 @@ import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -99,18 +100,29 @@ public class Event implements Parcelable {
      * @param in Parcel containing the serialized event data.
      */
     protected Event(Parcel in) {
-        id = UUID.fromString(in.readString());
-        organizerId = UUID.fromString(in.readString());
+        String idString = in.readString();
+        id = idString != null ? UUID.fromString(idString) : null;
+
+        String organizerIdString = in.readString();
+        organizerId = organizerIdString != null ? UUID.fromString(organizerIdString) : null;
+
         name = in.readString();
-        date = new Date(in.readLong());
+
+        long dateLong = in.readLong();
+        date = (dateLong != -1) ? new Date(dateLong) : null;
+
         location = in.readString();
         description = in.readString();
         qrCode = in.readParcelable(Bitmap.class.getClassLoader());
         qrCodeHash = in.readString();
-        capacity = in.readInt();
+
+        int capacityValue = in.readInt();
+        capacity = (capacityValue != -1) ? capacityValue : null;
+
         geolocationRequired = in.readByte() != 0;
         waitlist = in.readParcelable(WaitList.class.getClassLoader());
     }
+
 
 
     /**
@@ -331,18 +343,19 @@ public class Event implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeString(this.id.toString());
-        parcel.writeString(this.organizerId.toString());
+        parcel.writeString(this.id != null ? this.id.toString() : null);
+        parcel.writeString(this.organizerId != null ? this.organizerId.toString() : null);
         parcel.writeString(this.name);
-        parcel.writeLong(this.date.getTime());
+        parcel.writeLong(this.date != null ? this.date.getTime() : -1);
         parcel.writeString(this.location);
         parcel.writeString(this.description);
         parcel.writeParcelable(this.qrCode, i);
         parcel.writeString(this.qrCodeHash);
-        parcel.writeInt(this.capacity);
-        parcel.writeByte((byte) (this.geolocationRequired ? 1 : 0));
-        parcel.writeParcelable(this.waitlist, i);
+        parcel.writeInt(this.capacity != null ? this.capacity : -1);
+        parcel.writeByte((byte) (this.geolocationRequired != null && this.geolocationRequired ? 1 : 0));
+        parcel.writeParcelable(this.waitlist != null ? this.waitlist : new WaitList(),i);
     }
+
 
     /**
      * Writes the Event data to a Parcel.

@@ -2,26 +2,32 @@ package com.example.fusion1_events;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class AdminMainMenuActivity extends AppCompatActivity {
+public class AdminMainMenuActivity extends AppCompatActivity{
 
     AdminController admincontroller;
-
+    RecyclerView eventListView;
+    EventAdapter eventListAdapter;
+    int REQUEST_CODE_EVENT_ACTIVITY = 5;
     /**
      * Called when the activity is first created. This method sets up the layout and initializes the UI components
      * for the main menu that the admin interacts with.
@@ -44,17 +50,65 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
         viewProfilesButton.setOnClickListener(v -> show_profiles());
 
+        viewEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setContentView(R.layout.admin_event_list);
+                admincontroller.getAllEvents(new FirebaseManager.EventsListCallback() {
+                    @Override
+                    public void onSuccess(List<Event> events) {
+                        showEvents((ArrayList<Event>) events);
+                    }
 
+                    @Override
+                    public void onFailure(Exception e) {
+
+                    }
+                });
+            }
+        });
+
+
+    }
+
+    public void showEvents(ArrayList<Event> events) {
+        eventListAdapter = new EventAdapter(events);
+
+        TextView textView = findViewById(R.id.admin_event_list_page_title);
+        eventListView = findViewById(R.id.event_list);
+
+        textView.setText("List of Events");
+        eventListView.setLayoutManager(new LinearLayoutManager(this));
+        eventListView.setAdapter(eventListAdapter);
+        Context context = this;
+        eventListAdapter.setOnEventClickListener(new EventAdapter.OnEventClickListener() {
+            @Override
+            public void onEventClick(Event event) {
+                Intent intent = new Intent(context,AdminEventActivity.class);
+                intent.putExtra("event", event);
+                Bundle bundle = new Bundle();
+                String tempFileName = "temp_event_poster.jpg";
+
+                try {
+                    if (event.getPoster() != null) {
+                        FileOutputStream fos = openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                        event.getPoster().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                        fos.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                intent.putExtra("poster", tempFileName);
+                startActivityForResult(intent, REQUEST_CODE_EVENT_ACTIVITY);
+            }
+        });
     }
 
     void show_profiles() {
 
         setContentView(R.layout.activity_profile_list);  // switch to profile layout
 
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.profile_list_layout);
-
-
-        admincontroller.getallusers(new FirebaseManager.UsersListCallback() {
+        admincontroller.getAllUsers(new FirebaseManager.UsersListCallback() {
             @Override
             public void onScuccess(List<Entrant> users) {
                 populateProfileList(users);
@@ -108,6 +162,13 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
             // Add the profile item to the parent layout
             profileListLayout.addView(profileItem);
+
+            ImageButton back_arrow = findViewById(R.id.backArrow1);
+
+            back_arrow.setOnClickListener(v -> {
+               Intent intent = new Intent(this, AdminMainMenuActivity.class);
+               startActivity(intent);
+            });
         }
     }
 
@@ -119,4 +180,24 @@ public class AdminMainMenuActivity extends AppCompatActivity {
 
         Toast.makeText(this,"device ID"+ user.getDeviceId(), Toast.LENGTH_SHORT).show() ;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_EVENT_ACTIVITY && resultCode == RESULT_OK) {
+            admincontroller.getAllEvents(new FirebaseManager.EventsListCallback() {
+                @Override
+                public void onSuccess(List<Event> events) {
+                    showEvents((ArrayList<Event>) events);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(AdminMainMenuActivity.this, "Failed to fetch events", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
 }
