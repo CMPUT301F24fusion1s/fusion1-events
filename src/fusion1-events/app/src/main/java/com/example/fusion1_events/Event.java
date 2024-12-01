@@ -15,6 +15,7 @@ import com.google.zxing.WriterException;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -294,13 +295,21 @@ public class Event implements Parcelable {
 
     /**
      * Runs a lottery for the event waitlist.
-     *
-     * @return List of selected users.
-     * @throws NotImplementedError as the logic is not yet implemented.
      */
-    public List<User> runLottery() {
-        // TODO: Implement lottery logic
-        throw new NotImplementedError("Method not implemented.");
+    public void runLottery() {
+        int availableCapacity = this.capacity - this.waitlist.getEnrolledEntrants().size();
+        List<String> waitingEntrants = new ArrayList<>(this.waitlist.getWaitingEntrants());
+
+        // Shuffle the waiting entrants list
+        Collections.shuffle(waitingEntrants);
+
+        if (availableCapacity > waitingEntrants.size()) {
+            waitlist.inviteWaitingEntrants(waitingEntrants);
+            return;
+        }
+
+        List<String> selectedEntrants = waitingEntrants.subList(0, availableCapacity);
+        waitlist.inviteWaitingEntrants(selectedEntrants);
     }
 
     /**
@@ -445,6 +454,13 @@ public class Event implements Parcelable {
             }
         }
 
+        public void inviteWaitingEntrants(List<String> userIds) {
+            if (userIds == null) return;
+            for (String userId : userIds) {
+                inviteWaitingEntrant(userId);
+            }
+        }
+
         public void cancelInvitedEntrant(String userId) {
             if (userId == null) return;
             if (invitedEntrants.contains(userId)) {
@@ -458,6 +474,14 @@ public class Event implements Parcelable {
             if (invitedEntrants.contains(userId)) {
                 invitedEntrants.remove(userId);
                 enrolledEntrants.add(userId);
+            }
+        }
+
+        public void cancelEnrolledEntrant(String userId) {
+            if (userId == null) return;
+            if (enrolledEntrants.contains(userId)) {
+                enrolledEntrants.remove(userId);
+                cancelledEntrants.add(userId);
             }
         }
 
