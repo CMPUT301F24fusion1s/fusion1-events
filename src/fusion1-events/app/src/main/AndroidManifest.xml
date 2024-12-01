@@ -32,6 +32,7 @@
         <activity android:name=".FacilityAddActivity"/>
         <activity android:name=".FacilityEditActivity"/>
         <activity android:name=".ScanQRCodeActivity"/>
+        <activity android:name=".ManageEventActivity"/>
     </application>
 
 </manifest>
