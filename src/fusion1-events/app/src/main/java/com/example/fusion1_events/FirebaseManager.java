@@ -401,6 +401,14 @@ public class FirebaseManager {
                 .whereArrayContains("invitedEntrants", userIdString)
                 .get();
 
+        Task<QuerySnapshot> enrolledTask = eventsCollection
+                .whereArrayContains("enrolledEntrants", userIdString)
+                .get();
+
+        Task<QuerySnapshot> cancelledTask = eventsCollection
+                .whereArrayContains("cancelledEntrants", userIdString)
+                .get();
+
         // Execute all queries in parallel
         Tasks.whenAllComplete(organizerTask, waitlistTask, invitedTask)
                 .addOnSuccessListener(tasks -> {
@@ -418,6 +426,16 @@ public class FirebaseManager {
                         // Process invited events
                         if (invitedTask.isSuccessful()) {
                             addEventsFromSnapshot(invitedTask.getResult(), userEvents);
+                        }
+
+                        // Process enrolled events
+                        if (enrolledTask.isSuccessful()) {
+                            addEventsFromSnapshot(enrolledTask.getResult(), userEvents);
+                        }
+
+                        // Process cancelled events
+                        if (cancelledTask.isSuccessful()) {
+                            addEventsFromSnapshot(cancelledTask.getResult(), userEvents);
                         }
 
                         // Sort events by date and return

@@ -477,6 +477,14 @@ public class Event implements Parcelable {
             }
         }
 
+        public void cancelEnrolledEntrant(String userId) {
+            if (userId == null) return;
+            if (enrolledEntrants.contains(userId)) {
+                enrolledEntrants.remove(userId);
+                cancelledEntrants.add(userId);
+            }
+        }
+
         public List<String> getAllEntrants() {
             List<String> allEntrants = new ArrayList<>();
             allEntrants.addAll(waitingEntrants);
