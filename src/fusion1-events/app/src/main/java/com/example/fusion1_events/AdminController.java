@@ -89,14 +89,14 @@ public class AdminController {
 
 
     /**
-     *  facility stuff can you lend a nigger a pen
+     *
      */
     public void getAllFacilities(FirebaseManager.facilityCallback facilityCallback)
     {
         firebaseManager.getAllFacilities(new FirebaseManager.facilityCallback() {
             @Override
             public void onSuccess(List<Facility> facilities) {
-
+            facilityCallback.onSuccess(facilities);
             }
 
             @Override
@@ -110,4 +110,7 @@ public class AdminController {
         firebaseManager.deleteFacility(facilityName, callback);
     }
 
+    public void addFacility(Facility facility, FirebaseManager.OperationCallback operationCallback) {
+        firebaseManager.addFacility(facility,operationCallback);
+    }
 }

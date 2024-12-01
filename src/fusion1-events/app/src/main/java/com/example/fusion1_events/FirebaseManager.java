@@ -120,6 +120,13 @@ public class FirebaseManager {
         }
     }
 
+    public void addFacility(Facility facility, FirebaseManager.OperationCallback callback) {
+        db.collection("Facilities")
+                .document(facility.getName()) // Use name as document ID, or use UUID.randomUUID().toString()
+                .set(facility)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
+    }
     /**
      * Updates a user's profile information in Firebase Firestore.
      *

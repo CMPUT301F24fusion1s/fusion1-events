@@ -53,12 +53,13 @@ public class AdminMainMenuActivity extends AppCompatActivity{
         viewProfilesButton.setOnClickListener(v -> show_profiles());
 
         viewFacilitiesButton.setOnClickListener(v -> {
-            List<Facility> mockFacilities = new ArrayList<>();
+
             setContentView(R.layout.admin_facility_list); // Switch to the facilities layout
+
             adminController.getAllFacilities(new FirebaseManager.facilityCallback() {
                 @Override
                 public void onSuccess(List<Facility> facilities) {
-                    populateFacilitiesList(mockFacilities);
+                    populateFacilitiesList(facilities);
                 }
 
                 @Override
@@ -96,6 +97,13 @@ public class AdminMainMenuActivity extends AppCompatActivity{
 
         // Clear any existing views
         facilityListLayout.removeAllViews();
+
+        ImageButton event_list_back_arrow = findViewById(R.id.backArrowEvent);
+
+        event_list_back_arrow.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AdminMainMenuActivity.class);
+            startActivity(intent);
+        });
 
         for (Facility facility : facilities) {
             // Inflate the facility item layout
