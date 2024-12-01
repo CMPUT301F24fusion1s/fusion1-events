@@ -35,6 +35,7 @@
     <string name="event_details_description">Lorem ipsum dolor sit amet…</string>
     <string name="event_details_geolocation_required">No</string>
     <string name="scrollable_content">test</string>
+    <string name="list_of_facilities">List of Facilities</string>
 
     <string-array name="am_pm_options">
         <item>AM/PM</item>

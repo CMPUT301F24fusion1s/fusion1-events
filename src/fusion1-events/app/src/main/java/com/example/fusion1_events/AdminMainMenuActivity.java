@@ -24,7 +24,7 @@ import java.util.List;
 
 public class AdminMainMenuActivity extends AppCompatActivity{
 
-    AdminController admincontroller;
+    AdminController adminController;
     RecyclerView eventListView;
     EventAdapter eventListAdapter;
     int REQUEST_CODE_EVENT_ACTIVITY = 5;
@@ -45,16 +45,13 @@ public class AdminMainMenuActivity extends AppCompatActivity{
         Button viewProfilesButton = findViewById(R.id.btn_view_profiles);
         Button viewFacilitiesButton = findViewById(R.id.btn_view_facilities);
 
-
-        admincontroller = new AdminController(new FirebaseManager());
-
         viewProfilesButton.setOnClickListener(v -> show_profiles());
-
+        viewFacilitiesButton.setOnClickListener(v -> showFacilities());
         viewEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setContentView(R.layout.admin_event_list);
-                admincontroller.getAllEvents(new FirebaseManager.EventsListCallback() {
+                adminController.getAllEvents(new FirebaseManager.EventsListCallback() {
                     @Override
                     public void onSuccess(List<Event> events) {
                         showEvents((ArrayList<Event>) events);
@@ -69,6 +66,9 @@ public class AdminMainMenuActivity extends AppCompatActivity{
         });
 
 
+    }
+
+    private void showFacilities() {
     }
 
     public void showEvents(ArrayList<Event> events) {
@@ -114,7 +114,7 @@ public class AdminMainMenuActivity extends AppCompatActivity{
 
         setContentView(R.layout.activity_profile_list);  // switch to profile layout
 
-        admincontroller.getAllUsers(new FirebaseManager.UsersListCallback() {
+        adminController.getAllUsers(new FirebaseManager.UsersListCallback() {
             @Override
             public void onScuccess(List<Entrant> users) {
                 populateProfileList(users);
@@ -183,7 +183,7 @@ public class AdminMainMenuActivity extends AppCompatActivity{
 
     private void deleteUser(Entrant user, View profileItem, LinearLayout profileListLayout) {
         // Call FirebaseManager to delete the user
-        admincontroller.deleteUser(user.getDeviceId());
+        adminController.deleteUser(user.getDeviceId());
         // delete the profile from the view
         profileListLayout.removeView(profileItem);
 
@@ -199,7 +199,7 @@ public class AdminMainMenuActivity extends AppCompatActivity{
                     imageView.setImageResource(R.drawable.ic_user); // Reset to placeholder image
 
                     // Delegate backend operation to AdminController
-                    admincontroller.removeUserImage(deviceId, new FirebaseManager.OperationCallback() {
+                    adminController.removeUserImage(deviceId, new FirebaseManager.OperationCallback() {
                         @Override
                         public void onSuccess() {
                             Toast.makeText(AdminMainMenuActivity.this, "Profile image removed successfully", Toast.LENGTH_SHORT).show();
@@ -221,7 +221,7 @@ public class AdminMainMenuActivity extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_EVENT_ACTIVITY && resultCode == RESULT_OK) {
-            admincontroller.getAllEvents(new FirebaseManager.EventsListCallback() {
+            adminController.getAllEvents(new FirebaseManager.EventsListCallback() {
                 @Override
                 public void onSuccess(List<Event> events) {
                     showEvents((ArrayList<Event>) events);
