@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The FirebaseManager class manages all interactions with Firebase Firestore, including user and event management.
@@ -197,6 +196,31 @@ public class FirebaseManager {
 
     }
 
+    public void removeUserImage(String deviceID, OperationCallback callback)
+    {
+        db.collection("users").
+                document(deviceID).update("profileImage",null)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseManager", "User image removed successfully from Firestore.");
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseManager", "Error removing user image from Firestore", e);
+                    if (callback != null) {
+                        callback.onFailure(e);
+                    }
+                });
+
+
+    }
+
+    public void deleteEvent(Event event) {
+        CollectionReference eventsCollection = db.collection("events");
+        eventsCollection.document(event.getQrCodeHash()).delete();
+    }
+
 
     // Callback interface for asynchronous user retrieval
     public interface UserCallback {
@@ -206,6 +230,12 @@ public class FirebaseManager {
 
     // Interface for update callback
     public interface UpdateCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    // Interface for update callback
+    public interface OperationCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
@@ -228,8 +258,10 @@ public class FirebaseManager {
         Map<String, Object> eventData =  event.toMap();
 
         // Add the event to Firestore
-        eventsCollection.add(eventData)
-                .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + documentReference.getId()))
+        eventsCollection
+                .document(event.getQrCodeHash())
+                .set(eventData)
+                .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + event.getQrCodeHash()))
                 .addOnFailureListener(e -> Log.e("FirebaseManager", "Error adding event", e));
     }
 
@@ -245,23 +277,9 @@ public class FirebaseManager {
         Map<String, Object> eventData = event.toMap();
 
         // Update the event in Firestore
-        eventsCollection.whereEqualTo("qrCodeHash", event.getId().toString())
-                .get()
+        eventsCollection.document(event.getQrCodeHash())
+                .update(eventData)
                 .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
-                        // Get the first (and should be only) matching document
-                        DocumentSnapshot document = querySnapshot.getDocuments().get(0);
-
-                        // Update the document using its ID
-                        eventsCollection.document(document.getId())
-                                .update(eventData)
-                                .addOnSuccessListener(aVoid ->
-                                        Log.d("FirebaseManager", "Event updated with ID: " + event.getId()))
-                                .addOnFailureListener(e ->
-                                        Log.e("FirebaseManager", "Error updating event", e));
-                    } else {
-                        Log.e("FirebaseManager", "No event found with QR hash: " + event.getId());
-                    }
                 })
                 .addOnFailureListener(e ->
                         Log.e("FirebaseManager", "Error querying for event", e));

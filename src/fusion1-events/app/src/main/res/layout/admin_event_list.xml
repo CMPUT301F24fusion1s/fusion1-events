@@ -4,18 +4,36 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/admin_event_list_page_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Events"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="13dp"
+        android:gravity="center_horizontal"
+        android:text="List of Events"
         android:textSize="24sp"
         android:textStyle="bold" />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/event_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
+        android:layout_below="@id/admin_event_list_page_title"
         android:layout_marginTop="8dp" />
+
+    <ImageButton
+        android:id="@+id/backArrowEvent"
+        android:layout_width="54dp"
+        android:layout_height="41dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="153dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@+id/admin_event_list_page_title"
+        android:contentDescription="@string/back"
+        android:src="@drawable/ic_arrow"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+    />
 
 </RelativeLayout>
