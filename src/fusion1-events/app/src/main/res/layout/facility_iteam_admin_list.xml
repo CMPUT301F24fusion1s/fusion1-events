@@ -6,8 +6,7 @@
     android:padding="16dp"
     android:layout_marginBottom="8dp">
 
-
-    <!-- Profile Details -->
+    <!-- Facility Details -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -18,26 +17,14 @@
             android:id="@+id/facility_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Oliver Community League"
-            android:textColor="@color/black"
+            android:text="Facility Name"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/profile_device_id"
+            android:id="@+id/facility_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Device ID: 14563-3456"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
-
-
-
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10326 118 St NW, Edmonton, AB T5K 1Z5"
-            android:textColor="@color/black"
+            android:text="Facility Location"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -46,6 +33,7 @@
         android:id="@+id/delete_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:background="@null"
-        android:src="@drawable/baseline_delete_24" />
+        android:src="@drawable/baseline_delete_24"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Delete" />
 </LinearLayout>

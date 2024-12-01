@@ -4,6 +4,7 @@ public class Facility {
     private String name;
     private String location;
 
+
     // Constructor
     public Facility(String name, String location) {
         this.name = name;

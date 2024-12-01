@@ -1,6 +1,7 @@
 package com.example.fusion1_events;
 
 import java.util.List;
+import java.util.Map;
 
 public class AdminController {
     // Attributes for FirebaseManager reference
@@ -85,4 +86,28 @@ public class AdminController {
     public void updateEvent(Event event) {
         firebaseManager.updateExistingEvent(event);
     }
+
+
+    /**
+     *  facility stuff can you lend a nigger a pen
+     */
+    public void getAllFacilities(FirebaseManager.facilityCallback facilityCallback)
+    {
+        firebaseManager.getAllFacilities(new FirebaseManager.facilityCallback() {
+            @Override
+            public void onSuccess(List<Facility> facilities) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+    }
+
+    public void deleteFacility(String facilityName, FirebaseManager.OperationCallback callback) {
+        firebaseManager.deleteFacility(facilityName, callback);
+    }
+
 }

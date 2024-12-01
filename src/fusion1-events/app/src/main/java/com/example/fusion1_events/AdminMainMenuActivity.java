@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -16,10 +17,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class AdminMainMenuActivity extends AppCompatActivity{
@@ -44,9 +48,28 @@ public class AdminMainMenuActivity extends AppCompatActivity{
         Button viewEventButton = findViewById(R.id.btn_view_event);
         Button viewProfilesButton = findViewById(R.id.btn_view_profiles);
         Button viewFacilitiesButton = findViewById(R.id.btn_view_facilities);
+        adminController = new AdminController(new FirebaseManager());
 
         viewProfilesButton.setOnClickListener(v -> show_profiles());
-        viewFacilitiesButton.setOnClickListener(v -> showFacilities());
+
+        viewFacilitiesButton.setOnClickListener(v -> {
+            List<Facility> mockFacilities = new ArrayList<>();
+            setContentView(R.layout.admin_facility_list); // Switch to the facilities layout
+            adminController.getAllFacilities(new FirebaseManager.facilityCallback() {
+                @Override
+                public void onSuccess(List<Facility> facilities) {
+                    populateFacilitiesList(mockFacilities);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e("AdminMainMenuActivity", "Failed to fetch facilities", e);
+                    Toast.makeText(AdminMainMenuActivity.this, "Failed to load facilities.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+
         viewEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,8 +91,57 @@ public class AdminMainMenuActivity extends AppCompatActivity{
 
     }
 
-    private void showFacilities() {
+    private void populateFacilitiesList(List<Facility> facilities) {
+        LinearLayout facilityListLayout = findViewById(R.id.facility_list_layout);
+
+        // Clear any existing views
+        facilityListLayout.removeAllViews();
+
+        for (Facility facility : facilities) {
+            // Inflate the facility item layout
+            View facilityItem = getLayoutInflater().inflate(R.layout.facility_iteam_admin_list, null);
+
+            // Set facility details
+            TextView facilityName = facilityItem.findViewById(R.id.facility_name);
+            TextView facilityLocation = facilityItem.findViewById(R.id.facility_location);
+            facilityName.setText(facility.getName());
+            facilityLocation.setText(facility.getLocation());
+
+            // Set up the delete button
+            ImageButton deleteButton = facilityItem.findViewById(R.id.delete_button);
+            deleteButton.setOnClickListener(v -> {
+                // Confirm deletion (optional)
+                new AlertDialog.Builder(this)
+                        .setTitle("Delete Facility")
+                        .setMessage("Are you sure you want to delete this facility?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            deleteFacility(facility, facilityItem, facilityListLayout);
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+            });
+
+            // Add the facility item to the layout
+            facilityListLayout.addView(facilityItem);
+        }
     }
+
+
+    private void deleteFacility(Facility facility, View facilityItem, LinearLayout facilityListLayout) {
+        adminController.deleteFacility(facility.getName(), new FirebaseManager.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                facilityListLayout.removeView(facilityItem); // Remove the facility view
+                Toast.makeText(AdminMainMenuActivity.this, "Facility deleted successfully", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(AdminMainMenuActivity.this, "Failed to delete facility: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     public void showEvents(ArrayList<Event> events) {
         eventListAdapter = new EventAdapter(events);
@@ -188,6 +260,11 @@ public class AdminMainMenuActivity extends AppCompatActivity{
         profileListLayout.removeView(profileItem);
 
         Toast.makeText(this,"device ID"+ user.getDeviceId(), Toast.LENGTH_SHORT).show() ;
+    }
+
+    private void deleteFacility()
+    {
+
     }
 
     private void removeUserImage(ImageView imageView, String deviceId) {

@@ -215,6 +215,44 @@ public class FirebaseManager {
 
 
     }
+    /**
+     *
+     */
+    public void getAllFacilities(final facilityCallback callback) {
+        db.collection("Facilities").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                List<Facility> facilities = new ArrayList<>();
+                for (DocumentSnapshot document : task.getResult()) {
+                    String name = document.getString("name");
+                    String location = document.getString("location");
+                    facilities.add(new Facility(name, location));
+                }
+                Log.d("FirebaseManager", "Fetched facilities: " + facilities.size());
+                callback.onSuccess(facilities);
+            } else {
+                Log.e("FirebaseManager", "Failed to fetch facilities", task.getException());
+                callback.onFailure(task.getException());
+            }
+        });
+    }
+
+    public void deleteFacility(String facilityName, OperationCallback callback) {
+        db.collection("Facilities").document(facilityName) // Use a unique identifier for each facility
+                .delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
+    }
+
+
+    public interface facilityCallback {
+        void onSuccess(List<Facility> facilities);
+        void onFailure(Exception e);
+    }
+
+    /**
+     *
+     * @param event
+     */
 
     public void deleteEvent(Event event) {
         CollectionReference eventsCollection = db.collection("events");
