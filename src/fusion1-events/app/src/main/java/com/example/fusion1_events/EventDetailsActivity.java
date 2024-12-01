@@ -137,8 +137,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (currentUser != null) {
             if (currentUser.getUserId().equals(event.getOrganizerId().toString())) {
                 // User is the organizer
-                primaryActionButton.setText("Edit Event");
-                primaryActionButton.setOnClickListener(v -> editEvent());
+                primaryActionButton.setText("Manage Event");
+                primaryActionButton.setOnClickListener(v -> manageEvent());
             } else {
                 // User is not the organizer
                 if (event.getWaitlist().getWaitingEntrants().contains(currentUser.getUserId())) {
@@ -155,9 +155,26 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void editEvent() {
-        // TODO: Implement edit event functionality
-        Toast.makeText(this, "Edit Event button clicked", Toast.LENGTH_SHORT).show();
+    private void manageEvent() {
+        Intent intent = new Intent(this, ManageEventActivity.class);
+        Bundle bundle = new Bundle();
+        String tempFileName = "temp_event_poster.jpg";
+
+        try {
+            if (event.getPoster() != null) {
+                FileOutputStream fos = openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                event.getPoster().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        bundle.putParcelable("event", event);
+        bundle.putString("poster_image_path", tempFileName);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        finish();
     }
 
     private void joinWaitlist() {

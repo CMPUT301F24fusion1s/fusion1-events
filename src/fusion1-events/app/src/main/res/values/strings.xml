@@ -34,6 +34,13 @@
     <string name="event_details_max_participants">Max. Participants</string>
     <string name="event_details_description">Lorem ipsum dolor sit amet…</string>
     <string name="event_details_geolocation_required">No</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="run_lottery">Run Lottery</string>
+    <string name="view_entrants">View Entrants</string>
+    <string name="view_map">View Map</string>
+    <string name="send_notification">Send Notification</string>
+    <string name="delete_event">Delete Event</string>
+  
     <string name="scrollable_content">test</string>
 
     <string-array name="am_pm_options">
