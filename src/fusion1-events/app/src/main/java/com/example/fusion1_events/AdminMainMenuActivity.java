@@ -44,7 +44,7 @@ public class AdminMainMenuActivity extends AppCompatActivity{
         Button viewEventButton = findViewById(R.id.btn_view_event);
         Button viewProfilesButton = findViewById(R.id.btn_view_profiles);
         Button viewFacilitiesButton = findViewById(R.id.btn_view_facilities);
-        Button browseImagesButton = findViewById(R.id.btn_browse_images);
+
 
         admincontroller = new AdminController(new FirebaseManager());
 
@@ -77,7 +77,13 @@ public class AdminMainMenuActivity extends AppCompatActivity{
         TextView textView = findViewById(R.id.admin_event_list_page_title);
         eventListView = findViewById(R.id.event_list);
 
-        textView.setText("List of Events");
+        ImageButton event_list_back_arrow = findViewById(R.id.backArrowEvent);
+
+        event_list_back_arrow.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AdminMainMenuActivity.class);
+            startActivity(intent);
+        });
+
         eventListView.setLayoutManager(new LinearLayoutManager(this));
         eventListView.setAdapter(eventListAdapter);
         Context context = this;
@@ -142,6 +148,8 @@ public class AdminMainMenuActivity extends AppCompatActivity{
             deviceIdTextView.setText(user.getDeviceId());
             phoneTextView.setText(user.getPhoneNumber());
 
+            imageView.setOnClickListener(v-> removeUserImage(imageView,user.getDeviceId()) );
+
             if (user.getProfileImage() != null)
                 imageView.setImageBitmap(user.getProfileImage());
 
@@ -163,14 +171,15 @@ public class AdminMainMenuActivity extends AppCompatActivity{
             // Add the profile item to the parent layout
             profileListLayout.addView(profileItem);
 
-            ImageButton back_arrow = findViewById(R.id.backArrow1);
+            ImageButton user_list_back_arrow = findViewById(R.id.backArrowUsers);
 
-            back_arrow.setOnClickListener(v -> {
+            user_list_back_arrow.setOnClickListener(v -> {
                Intent intent = new Intent(this, AdminMainMenuActivity.class);
                startActivity(intent);
             });
         }
     }
+
 
     private void deleteUser(Entrant user, View profileItem, LinearLayout profileListLayout) {
         // Call FirebaseManager to delete the user
@@ -180,6 +189,32 @@ public class AdminMainMenuActivity extends AppCompatActivity{
 
         Toast.makeText(this,"device ID"+ user.getDeviceId(), Toast.LENGTH_SHORT).show() ;
     }
+
+    private void removeUserImage(ImageView imageView, String deviceId) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete user image")
+                .setMessage("Are you sure you want to delete this user image?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // Reset local image
+                    imageView.setImageResource(R.drawable.ic_user); // Reset to placeholder image
+
+                    // Delegate backend operation to AdminController
+                    admincontroller.removeUserImage(deviceId, new FirebaseManager.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(AdminMainMenuActivity.this, "Profile image removed successfully", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(AdminMainMenuActivity.this, "Failed to remove profile image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
