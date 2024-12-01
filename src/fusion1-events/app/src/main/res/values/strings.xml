@@ -42,6 +42,7 @@
     <string name="delete_event">Delete Event</string>
   
     <string name="scrollable_content">test</string>
+    <string name="update_event">Update Event</string>
 
     <string-array name="am_pm_options">
         <item>AM/PM</item>
