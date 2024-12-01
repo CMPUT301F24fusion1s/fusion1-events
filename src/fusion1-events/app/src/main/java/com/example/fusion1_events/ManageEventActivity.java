@@ -134,7 +134,10 @@ public class ManageEventActivity extends AppCompatActivity {
     }
 
     private void runLottery() {
+        event.runLottery();
 
+        Toast toast = Toast.makeText(this, "Lottery has been run", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     private void viewEntrants() {
