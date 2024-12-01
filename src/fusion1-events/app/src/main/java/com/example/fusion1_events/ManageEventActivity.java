@@ -112,14 +112,25 @@ public class ManageEventActivity extends AppCompatActivity {
     }
 
     private void editEvent() {
-        // TODO: Implement edit event functionality
+        Intent intent = new Intent(this, EventUpdateActivity.class);
+        Bundle bundle = new Bundle();
+        String tempFileName = "temp_event_poster.jpg";
 
-        // This is a test to ensure that the event is being passed correctly
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit Event");
-        builder.setMessage(event.getName() + ": TESTING");
-        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
-        builder.show();
+        try {
+            if (event.getPoster() != null) {
+                FileOutputStream fos = openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                event.getPoster().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        bundle.putParcelable("event", event);
+        bundle.putParcelable("user", currentUser);
+        bundle.putString("poster_image_path", tempFileName);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     private void runLottery() {
