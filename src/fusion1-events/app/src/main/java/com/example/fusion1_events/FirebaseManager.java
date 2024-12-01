@@ -196,6 +196,26 @@ public class FirebaseManager {
 
     }
 
+    public void removeUserImage(String deviceID, OperationCallback callback)
+    {
+        db.collection("users").
+                document(deviceID).update("profileImage",null)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseManager", "User image removed successfully from Firestore.");
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseManager", "Error removing user image from Firestore", e);
+                    if (callback != null) {
+                        callback.onFailure(e);
+                    }
+                });
+
+
+    }
+
     public void deleteEvent(Event event) {
         CollectionReference eventsCollection = db.collection("events");
         eventsCollection.document(event.getQrCodeHash()).delete();
@@ -210,6 +230,12 @@ public class FirebaseManager {
 
     // Interface for update callback
     public interface UpdateCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    // Interface for update callback
+    public interface OperationCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
