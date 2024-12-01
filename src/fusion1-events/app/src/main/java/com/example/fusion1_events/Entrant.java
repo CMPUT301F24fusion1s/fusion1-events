@@ -166,4 +166,12 @@ public class Entrant extends User implements Parcelable {
         dest.writeParcelable(location, flags);
         dest.writeByte((byte) (notificationEnabled ? 1 : 0));
     }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
 }
