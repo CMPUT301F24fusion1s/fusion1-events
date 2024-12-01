@@ -58,7 +58,7 @@ public class AdminMainMenuActivity extends AppCompatActivity{
             adminController.getAllFacilities(new FirebaseManager.facilityCallback() {
                 @Override
                 public void onSuccess(List<Facility> facilities) {
-                    populateFacilitiesList(mockFacilities);
+                    populateFacilitiesList(facilities);
                 }
 
                 @Override

@@ -96,7 +96,7 @@ public class AdminController {
         firebaseManager.getAllFacilities(new FirebaseManager.facilityCallback() {
             @Override
             public void onSuccess(List<Facility> facilities) {
-
+                facilityCallback.onSuccess(facilities);
             }
 
             @Override
