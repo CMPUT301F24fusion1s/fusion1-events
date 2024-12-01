@@ -39,6 +39,10 @@ public class ManageEventActivity extends AppCompatActivity {
             finish();
         }
 
+        // Generate QR code for event, since it is not loaded at this point
+        // Also generates the QR code hash
+        event.generateQRCode();
+
         // Load current user first, then setup UI
         loadCurrentUser();
     }
@@ -153,6 +157,30 @@ public class ManageEventActivity extends AppCompatActivity {
     }
 
     private void deleteEvent() {
+        firebaseManager.deleteEvent(event);
 
+        Intent intent = new Intent(this, EventsPageActivity.class);
+
+        // Pass user data
+        if (currentUser != null) {
+            Bundle bundle = new Bundle();
+            String tempFileName = "temp_profile_image.jpg";
+
+            try {
+                if (currentUser.getProfileImage() != null) {
+                    FileOutputStream fos = openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                    currentUser.getProfileImage().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            bundle.putParcelable("user", currentUser);
+            bundle.putString("profile_image_path", tempFileName);
+            intent.putExtras(bundle);
+        }
+
+        navigateUpTo(intent);
     }
 }

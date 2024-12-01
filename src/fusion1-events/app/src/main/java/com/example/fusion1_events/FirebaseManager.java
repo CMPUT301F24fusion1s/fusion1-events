@@ -263,7 +263,7 @@ public class FirebaseManager {
 
     public void deleteEvent(Event event) {
         CollectionReference eventsCollection = db.collection("events");
-        eventsCollection.document(event.getQrCodeHash()).delete();
+        eventsCollection.document(event.getId().toString()).delete();
     }
 
 
