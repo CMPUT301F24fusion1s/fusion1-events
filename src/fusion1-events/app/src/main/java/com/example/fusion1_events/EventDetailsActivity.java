@@ -240,7 +240,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .setNegativeButton("Decline", (dialog, id) -> {
                     // Decline invite
                     event.getWaitlist().cancelInvitedEntrant(currentUser.getUserId());
+
+                    // Run the lottery again to replace the declined entrant
+                    event.reRunLottery();
+
                     firebaseManager.updateExistingEvent(event);
+
                     setupPrimaryActionButton();
                     Toast.makeText(EventDetailsActivity.this, "Invitation Declined", Toast.LENGTH_SHORT).show();
                 })
