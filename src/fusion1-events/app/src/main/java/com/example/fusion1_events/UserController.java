@@ -36,7 +36,7 @@ public class UserController{
             @Override
             public void onSuccess(User user) {
                 // User exists, return the user object to MainActivity
-                callback.onSuccess((Entrant)user);
+                callback.onSuccess(user);
             }
 
             @Override
