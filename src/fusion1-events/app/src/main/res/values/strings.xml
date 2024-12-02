@@ -34,7 +34,25 @@
     <string name="event_details_max_participants">Max. Participants</string>
     <string name="event_details_description">Lorem ipsum dolor sit amet…</string>
     <string name="event_details_geolocation_required">No</string>
+    <string name="manage_event">Manage Event</string>
+    <string name="leave_waitlist">Leave Waitlist</string>
+    <string name="reply_to_invite">Reply to Invite</string>
+    <string name="join_waitlist">Join Waitlist</string>
+    <string name="leave_event">Leave Event</string>
+    <string name="invitation_declined">Invitation Declined</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="run_lottery">Run Lottery</string>
+    <string name="view_entrants">View Entrants</string>
+    <string name="view_map">View Map</string>
+    <string name="send_notification">Send Notification</string>
+    <string name="delete_event">Delete Event</string>
+  
     <string name="scrollable_content">test</string>
+    <string name="update_event">Update Event</string>
+    <string name="list_of_facilities">List of Facilities</string>
+    <string name="view_qr_code">View QR Code</string>
+    <string name="tap_to_dismiss">Tap to Dismiss</string>
+    <string name="qr_code">QR Code</string>
 
     <string-array name="am_pm_options">
         <item>AM/PM</item>

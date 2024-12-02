@@ -99,7 +99,10 @@ public abstract class BaseActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.events) {
                 navigateToActivity(EventsPageActivity.class);
                 return true;
-            }
+            } else if (item.getItemId() == R.id.notifications) {
+                navigateToActivity(NotificationPageActivity.class);
+                return true;
+                }
             return false;
         });
     }

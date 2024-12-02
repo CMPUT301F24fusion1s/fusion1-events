@@ -38,13 +38,13 @@
                 android:id="@+id/tvEventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:layout_marginEnd="32dp"
                 android:gravity="center_vertical"
                 android:text="Create Event"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/btnBack"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/btnBack"
@@ -56,7 +56,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Title *"
+                android:hint="Title*"
                 android:inputType="text"
                 android:minHeight="48dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -77,9 +77,11 @@
                 android:id="@+id/yearInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:hint="Year"
                 android:inputType="number"
                 android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/calendarIcon"
                 app:layout_constraintEnd_toStartOf="@id/monthInput"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@id/calendarIcon"
@@ -92,6 +94,7 @@
                 android:hint="Month"
                 android:inputType="number"
                 android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/calendarIcon"
                 app:layout_constraintEnd_toStartOf="@id/dayInput"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@id/yearInput"
@@ -104,6 +107,7 @@
                 android:hint="Day"
                 android:inputType="number"
                 android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/calendarIcon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@id/monthInput"
@@ -122,9 +126,11 @@
                 android:id="@+id/hourInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:hint="Start Hour"
                 android:inputType="number"
                 android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/timeIcon"
                 app:layout_constraintEnd_toStartOf="@id/minuteInput"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@id/timeIcon"
@@ -137,6 +143,7 @@
                 android:hint="Start Minute"
                 android:inputType="number"
                 android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/timeIcon"
                 app:layout_constraintEnd_toStartOf="@id/ampmSpinner"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@id/hourInput"
@@ -149,54 +156,12 @@
                 android:entries="@array/am_pm_options"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/timeIcon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/minuteInput"
                 app:layout_constraintTop_toTopOf="@id/timeIcon" />
 
             <!-- End Time Section -->
-            <ImageView
-                android:id="@+id/endTimeIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/baseline_access_time_24"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ampmSpinner" />
-
-            <EditText
-                android:id="@+id/endHourInput"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="End Hour"
-                android:inputType="number"
-                android:minHeight="48dp"
-                app:layout_constraintEnd_toStartOf="@id/endMinuteInput"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toEndOf="@id/endTimeIcon"
-                app:layout_constraintTop_toTopOf="@id/endTimeIcon" />
-
-            <EditText
-                android:id="@+id/endMinuteInput"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="End Minute"
-                android:inputType="number"
-                android:minHeight="48dp"
-                app:layout_constraintEnd_toStartOf="@id/endAmpmSpinner"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toEndOf="@id/endHourInput"
-                app:layout_constraintTop_toTopOf="@id/endTimeIcon" />
-
-            <Spinner
-                android:id="@+id/endAmpmSpinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:entries="@array/am_pm_options"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/endMinuteInput"
-                app:layout_constraintTop_toTopOf="@id/endTimeIcon" />
 
             <!-- Location Section -->
             <ImageView
@@ -206,15 +171,17 @@
                 android:layout_marginTop="16dp"
                 android:src="@drawable/baseline_location_on_24"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/endAmpmSpinner" />
+                app:layout_constraintTop_toBottomOf="@+id/minuteInput" />
 
             <EditText
                 android:id="@+id/locationInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Location *"
+                android:layout_marginStart="8dp"
+                android:hint="Location*"
                 android:inputType="text"
                 android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/locationIcon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/locationIcon"
                 app:layout_constraintTop_toTopOf="@id/locationIcon" />
@@ -225,8 +192,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Geo location"
-                app:layout_constraintStart_toStartOf="parent"
+                android:text="Require Geolocation"
+                app:layout_constraintStart_toStartOf="@+id/locationInput"
                 app:layout_constraintTop_toBottomOf="@id/locationInput" />
 
             <!-- Max Winners and Entrants Section -->
@@ -234,26 +201,43 @@
                 android:id="@+id/winnersIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_marginTop="16dp"
                 android:src="@drawable/baseline_star_outline_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/geoLocationCheckbox" />
 
+            <!-- Description -->
             <EditText
                 android:id="@+id/maxWinnersInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Max. Winners *"
+                android:layout_marginStart="8dp"
+                android:hint="Max Winners*"
                 android:inputType="number"
                 android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/winnersIcon"
                 app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toEndOf="@id/winnersIcon"
+                app:layout_constraintStart_toEndOf="@+id/winnersIcon"
                 app:layout_constraintTop_toTopOf="@id/winnersIcon" />
 
-            <!-- Description -->
+            <EditText
+                android:id="@+id/maxEntrantsInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:hint="Max Entrants"
+                android:inputType="number"
+                android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/winnersIcon"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/maxWinnersInput"
+                app:layout_constraintTop_toTopOf="@+id/winnersIcon" />
+
             <EditText
                 android:id="@+id/descriptionInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:gravity="top"
                 android:hint="Description"
                 android:inputType="textMultiLine"
@@ -267,23 +251,25 @@
                 android:id="@+id/addImageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:layout_marginTop="8dp"
-                android:text="+ Add an image"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/descriptionInput" />
+                android:backgroundTint="#00FFFFFF"
+                android:text="+ Add Poster"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@+id/descriptionInput"
+                app:layout_constraintTop_toBottomOf="@id/descriptionInput"
+                app:strokeColor="#000000"
+                app:strokeWidth="2dp" />
 
             <!-- Create Button -->
             <Button
                 android:id="@+id/createButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="10dp"
                 android:backgroundTint="@color/black"
                 android:text="Create"
                 android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/addImageButton" />

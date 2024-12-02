@@ -41,7 +41,7 @@
         android:paddingTop="16dp"
         android:src="@drawable/baseline_image_24_png" />
 
-    <!-- Join Waitlist Button -->
+    <!-- Primary Action Button -->
     <Button
         android:id="@+id/primaryActionButton"
         android:layout_width="match_parent"

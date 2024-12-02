@@ -1,6 +1,8 @@
 package com.example.fusion1_events;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -137,27 +139,55 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (currentUser != null) {
             if (currentUser.getUserId().equals(event.getOrganizerId().toString())) {
                 // User is the organizer
-                primaryActionButton.setText("Edit Event");
-                primaryActionButton.setOnClickListener(v -> editEvent());
+                primaryActionButton.setText(R.string.manage_event);
+                primaryActionButton.setOnClickListener(v -> manageEvent());
             } else {
                 // User is not the organizer
                 if (event.getWaitlist().getWaitingEntrants().contains(currentUser.getUserId())) {
-                    primaryActionButton.setText("Leave Waitlist");
+                    primaryActionButton.setText(R.string.leave_waitlist);
+                    primaryActionButton.setBackgroundColor(getResources().getColor(R.color.orange, null));
                     primaryActionButton.setOnClickListener(v -> leaveWaitlist());
                 } else if (event.getWaitlist().getInvitedEntrants().contains(currentUser.getUserId())) {
-                    primaryActionButton.setText("Reply to Invite");
+                    primaryActionButton.setText(R.string.reply_to_invite);
+                    primaryActionButton.setBackgroundColor(getResources().getColor(R.color.green, null));
                     primaryActionButton.setOnClickListener(v -> replyToInvite());
+                } else if (event.getWaitlist().getEnrolledEntrants().contains(currentUser.getUserId())) {
+                    primaryActionButton.setText(R.string.leave_event);
+                    primaryActionButton.setBackgroundColor(getResources().getColor(R.color.red, null));
+                    primaryActionButton.setOnClickListener(v -> cancelEnrolment());
+                } else if (event.getWaitlist().getCancelledEntrants().contains(currentUser.getUserId())) {
+                    primaryActionButton.setText(R.string.invitation_declined);
+                    primaryActionButton.setBackgroundColor(getResources().getColor(R.color.gray, null));
+                    primaryActionButton.setEnabled(false);
                 } else {
-                    primaryActionButton.setText("Join Waitlist");
+                    primaryActionButton.setText(R.string.join_waitlist);
+                    primaryActionButton.setBackgroundColor(getResources().getColor(R.color.black, null));
                     primaryActionButton.setOnClickListener(v -> joinWaitlist());
                 }
             }
         }
     }
 
-    private void editEvent() {
-        // TODO: Implement edit event functionality
-        Toast.makeText(this, "Edit Event button clicked", Toast.LENGTH_SHORT).show();
+    private void manageEvent() {
+        Intent intent = new Intent(this, ManageEventActivity.class);
+        Bundle bundle = new Bundle();
+        String tempFileName = "temp_event_poster.jpg";
+
+        try {
+            if (event.getPoster() != null) {
+                FileOutputStream fos = openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                event.getPoster().compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                fos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        bundle.putParcelable("event", event);
+        bundle.putString("poster_image_path", tempFileName);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        finish();
     }
 
     private void joinWaitlist() {
@@ -176,8 +206,49 @@ public class EventDetailsActivity extends AppCompatActivity {
                 "Successfully left waitlist", Toast.LENGTH_SHORT).show();
     }
 
+    private void cancelEnrolment() {
+        // Ask for confirmation, noting that this action cannot be undone
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cancel Enrolment")
+                .setMessage("Are you sure you want to leave the event? You cannot rejoin once you leave.")
+                .setPositiveButton("Yes", (dialog, id) -> {
+                    // Cancel enrolment
+                    event.getWaitlist().cancelEnrolledEntrant(currentUser.getUserId());
+                    firebaseManager.updateExistingEvent(event);
+                    setupPrimaryActionButton();
+                    Toast.makeText(EventDetailsActivity.this, "Successfully left event", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("No", (dialog, id) -> {
+                    // Handle cancel logic here
+                    dialog.dismiss();
+                });
+
+        builder.create().show();
+    }
+
     private void replyToInvite() {
-        Toast.makeText(EventDetailsActivity.this,
-                "User clicked Reply to Invite button", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Reply to Invite")
+                .setMessage("Would you like to accept or decline the invitation?")
+                .setPositiveButton("Accept", (dialog, id) -> {
+                    // Accept invite
+                    event.getWaitlist().enrollInvitedEntrant(currentUser.getUserId());
+                    firebaseManager.updateExistingEvent(event);
+                    setupPrimaryActionButton();
+                    Toast.makeText(EventDetailsActivity.this, "Invitation Accepted", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Decline", (dialog, id) -> {
+                    // Decline invite
+                    event.getWaitlist().cancelInvitedEntrant(currentUser.getUserId());
+                    firebaseManager.updateExistingEvent(event);
+                    setupPrimaryActionButton();
+                    Toast.makeText(EventDetailsActivity.this, "Invitation Declined", Toast.LENGTH_SHORT).show();
+                })
+                .setNeutralButton("Cancel", (dialog, id) -> {
+                    // Handle cancel logic here
+                    dialog.dismiss();
+                });
+
+        builder.create().show();
     }
 }
