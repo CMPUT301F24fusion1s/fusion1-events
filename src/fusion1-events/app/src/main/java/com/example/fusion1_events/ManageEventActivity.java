@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.os.Parcelable;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ManageEventActivity extends AppCompatActivity {
     private Event event;
@@ -188,10 +192,41 @@ public class ManageEventActivity extends AppCompatActivity {
     }
 
     private void viewEntrants() {
-
+        Intent intent = new Intent(this, ViewEntrantsListsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("waitlist", event.getWaitlist());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     private void viewMap() {
+        List<String> entrantsID = event.getWaitlist().getAllEntrants();
+        UserController userController = new UserController(new FirebaseManager());
+
+        ArrayList<Entrant> entrants = new ArrayList<>();
+        for(String id : entrantsID)
+        {
+            userController.userLogin(id, new FirebaseManager.UserCallback() {
+                @Override
+                public void onSuccess(User user) {
+                    entrants.add((Entrant) user);
+                    if(entrants.size() == entrantsID.size()) toViewMapActivity(entrants);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast toast = Toast.makeText(ManageEventActivity.this, "Error loading entrants: " + e.getMessage(), Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
+        }
+    }
+
+    private void toViewMapActivity(ArrayList<Entrant> entrants){
+
+        Intent intent = new Intent(this, MapsActivity.class);
+        intent.putParcelableArrayListExtra("entrants", (ArrayList<? extends Parcelable>) entrants);
+        startActivity(intent);
 
     }
 

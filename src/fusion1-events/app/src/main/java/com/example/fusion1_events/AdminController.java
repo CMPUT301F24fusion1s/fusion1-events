@@ -1,7 +1,6 @@
 package com.example.fusion1_events;
 
 import java.util.List;
-import java.util.Map;
 
 public class AdminController {
     // Attributes for FirebaseManager reference
@@ -24,9 +23,9 @@ public class AdminController {
     public void getAllUsers(final FirebaseManager.UsersListCallback callback) {
         firebaseManager.getAllusers(new FirebaseManager.UsersListCallback() {
             @Override
-            public void onScuccess(List<Entrant> users) {
+            public void onSuccess(List<Entrant> users) {
                 // Pass the result to the provided callback
-                callback.onScuccess(users);
+                callback.onSuccess(users);
             }
 
             @Override

@@ -12,7 +12,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +80,7 @@ public class FirebaseManager {
                             User user = createUserFromRole(role, document);
 
                             if (user != null) {
-                                callback.onSuccess(user);
+                                callback.onSuccess((Entrant)user);
                             } else {
                                 callback.onFailure(new Exception("Failed to create user instance from document."));
                             }
@@ -190,7 +189,7 @@ public class FirebaseManager {
 
            }
            //
-           callback.onScuccess(users);
+           callback.onSuccess(users);
        }
        else
            {
@@ -202,6 +201,45 @@ public class FirebaseManager {
 
 
     }
+
+    public void getUsersById(List<String> userIds, UsersListCallback callback) {
+        CollectionReference usersCollection = db.collection("users");
+        List<Entrant> users = new ArrayList<>();
+        int[] completedQueries = {0}; // Using an array to allow modification within the lambda
+
+        for (String userId : userIds) {
+            usersCollection.whereEqualTo("userId", userId)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            QuerySnapshot querySnapshot = task.getResult();
+                            if (!querySnapshot.isEmpty()) {
+                                DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                                Map<String, Object> entrantDocument = document.getData();
+                                assert entrantDocument != null;
+                                users.add(Entrant.extractUser(entrantDocument));
+                            }
+                        } else {
+                            callback.onFailure(task.getException() != null ?
+                                    task.getException() :
+                                    new Exception("Unknown error occurred."));
+                        }
+
+                        // Increment the completed queries count
+                        completedQueries[0]++;
+                        // Check if all queries are completed
+                        if (completedQueries[0] == userIds.size()) {
+                            callback.onSuccess(users);
+                        }
+                    });
+        }
+
+        // If userIds is empty, invoke callback immediately to avoid hanging
+        if (userIds.isEmpty()) {
+            callback.onSuccess(users);
+        }
+    }
+
 
     public void removeUserImage(String deviceID, OperationCallback callback)
     {
@@ -250,7 +288,6 @@ public class FirebaseManager {
                 .addOnFailureListener(callback::onFailure);
     }
 
-
     public interface facilityCallback {
         void onSuccess(List<Facility> facilities);
         void onFailure(Exception e);
@@ -287,7 +324,7 @@ public class FirebaseManager {
 
     // Callback interface for fetching all user profiles
     public interface UsersListCallback{
-        void onScuccess(List<Entrant> users);
+        void onSuccess(List<Entrant> users);
         void onFailure(Exception e);
     }
 
@@ -383,30 +420,30 @@ public class FirebaseManager {
                 });
     }
 
-    public void getUserEvents(UUID userId, final EventsListCallback callback) {
+    public void getUserEvents(String userId, final EventsListCallback callback) {
         CollectionReference eventsCollection = db.collection("events");
         String userIdString = userId.toString();
         List<Event> userEvents = new ArrayList<>();
 
         // Create tasks for different event queries
         Task<QuerySnapshot> organizerTask = eventsCollection
-                .whereEqualTo("organizerId", userIdString)
+                .whereEqualTo("organizerId", userId)
                 .get();
 
         Task<QuerySnapshot> waitlistTask = eventsCollection
-                .whereArrayContains("waitingEntrants", userIdString)
+                .whereArrayContains("waitingEntrants", userId)
                 .get();
 
         Task<QuerySnapshot> invitedTask = eventsCollection
-                .whereArrayContains("invitedEntrants", userIdString)
+                .whereArrayContains("invitedEntrants", userId)
                 .get();
 
         Task<QuerySnapshot> enrolledTask = eventsCollection
-                .whereArrayContains("enrolledEntrants", userIdString)
+                .whereArrayContains("enrolledEntrants", userId)
                 .get();
 
         Task<QuerySnapshot> cancelledTask = eventsCollection
-                .whereArrayContains("cancelledEntrants", userIdString)
+                .whereArrayContains("cancelledEntrants", userId)
                 .get();
 
         // Execute all queries in parallel
@@ -561,4 +598,130 @@ public class FirebaseManager {
     }
 
 
+    /**
+     * Retrieves all facilities from the Firestore database.
+     *
+     * @param callback A callback to return the list of facilities.
+     */
+    public void getAllFacilities(final FacilitiesListCallback callback) {
+        CollectionReference facilitiesCollection = db.collection("Facilities");
+
+        facilitiesCollection.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Facility> facilities = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Facility facility = document.toObject(Facility.class);
+                            facilities.add(facility);
+                        }
+                        callback.onSuccess(facilities);
+                    } else {
+                        Log.e("FirebaseManager", "Error getting facilities: ", task.getException());
+                        callback.onFailure(task.getException());
+                    }
+                });
+    }
+
+
+    /**
+     * Retrieves facilities for a specific user from Firestore.
+     *
+     * @param userId The UUID of the user whose facilities to retrieve.
+     * @param callback A callback to return the list of facilities.
+     */
+    public void getFacilitiesByUserId(UUID userId, final FacilitiesListCallback callback) {
+        CollectionReference facilitiesCollection = db.collection("Facilities");
+
+        // Convert UUID to String for Firestore query
+        String userIdString = userId.toString();
+
+        facilitiesCollection
+                .whereEqualTo("userId", userIdString) // Filter facilities by user ID
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<Facility> facilities = new ArrayList<>();
+                        // QueryDocumentSnapshot
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Facility facility = document.toObject(Facility.class); // Convert document to Facility object
+                            facilities.add(facility);
+                        }
+                        callback.onSuccess(facilities); // Return the fetched facilities
+                    } else {
+                        Log.e("FirebaseManager", "Error getting facilities: ", task.getException());
+                        callback.onFailure(task.getException() != null ?
+                                task.getException() :
+                                new Exception("Unknown error occurred."));
+                    }
+                });
+    }
+
+    /**
+     * Add facilities for a specific user to Firestore.
+     *
+     * @param facility The Facility to add.
+     */
+    public void addFacility(Facility facility, OnFacilityAddedListener listener) {
+        db.collection("Facilities")
+                .add(facility)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("FirebaseManager", "Facility added with ID: " + documentReference.getId());
+                    listener.onFacilityAdded(documentReference.getId());
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("FirebaseManager", "Error adding facility", e);
+                    listener.onFailure(e);
+                });
+    }
+
+    public interface OnFacilityAddedListener {
+        void onFacilityAdded(String facilityId); // Called when facility is added successfully
+        void onFailure(Exception e); // Called when there is an error
+    }
+
+    // Callback interface for retrieving facilities
+    public interface FacilitiesListCallback {
+        void onSuccess(List<Facility> facilities);
+        void onFailure(Exception e);
+    }
+
+    public void deleteFacility(String facilityName, OnFacilityDeletedListener listener) {
+        CollectionReference facilitiesCollection = db.collection("Facilities");
+
+        facilitiesCollection
+                .whereEqualTo("name", facilityName)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        // Assuming there is only one facility with that name
+                        for (DocumentSnapshot document : task.getResult()) {
+                            facilitiesCollection.document(document.getId())
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("FirebaseManager", "Facility deleted successfully.");
+                                        listener.onFacilityDeleted();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("FirebaseManager", "Error deleting facility", e);
+                                        listener.onFailure(e);
+                                    });
+                        }
+                    } else {
+                        Log.e("FirebaseManager", "Facility not found: " + facilityName);
+                        listener.onFailure(new Exception("Facility not found."));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseManager", "Error querying facilities: ", e);
+                    listener.onFailure(e);
+                });
+    }
+
+
+    // Callback interface for deleting facilities
+    public interface OnFacilityDeletedListener {
+        void onFacilityDeleted();
+        void onFailure(Exception e);
+    }
 }
+

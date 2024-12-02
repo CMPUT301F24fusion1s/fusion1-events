@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -32,7 +33,7 @@ import kotlin.NotImplementedError;
 public class Event implements Parcelable {
 
     private final UUID id;
-    private UUID organizerId;
+    private String organizerId;
     private String name;
     private Date date;
     private String location;
@@ -58,7 +59,7 @@ public class Event implements Parcelable {
      * @param capacity            The capacity of the event.
      * @param geolocationRequired Whether geolocation is required for the event.
      */
-    public Event(UUID id, UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, int waitlistLimit, Boolean geolocationRequired) {
+    public Event(UUID id, String organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, int waitlistLimit, Boolean geolocationRequired) {
         this.id = id != null ? id : UUID.randomUUID();
         this.organizerId = organizerId;
         this.name = name;
@@ -81,8 +82,8 @@ public class Event implements Parcelable {
         String idString = in.readString();
         id = idString != null ? UUID.fromString(idString) : null;
 
-        String organizerIdString = in.readString();
-        organizerId = organizerIdString != null ? UUID.fromString(organizerIdString) : null;
+         organizerId = in.readString();
+//        organizerId = (organizerIdString != null) ? organizerId : null;
 
         name = in.readString();
 
@@ -146,7 +147,7 @@ public class Event implements Parcelable {
     public static Event fromFirestoreDocument(DocumentSnapshot document) {
         // Extract data from document
         UUID id = UUID.fromString(document.getString("qrCodeHash"));
-        UUID organizerId = UUID.fromString(document.getString("organizerId"));
+        String organizerId = document.getString("organizerId");
         String name = document.getString("name");
         Date date = document.getDate("date");
         String location = document.getString("location");
@@ -194,11 +195,11 @@ public class Event implements Parcelable {
         return id;
     }
 
-    public UUID getOrganizerId() {
+    public String getOrganizerId() {
         return organizerId;
     }
 
-    public void setOrganizerId(UUID organizerId) {
+    public void setOrganizerId(String organizerId) {
         this.organizerId = organizerId;
     }
 
@@ -297,7 +298,12 @@ public class Event implements Parcelable {
      * Runs a lottery for the event waitlist.
      */
     public void runLottery() {
-        int availableCapacity = this.capacity - this.waitlist.getEnrolledEntrants().size();
+        int availableCapacity = this.capacity - this.waitlist.getEnrolledEntrants().size() - this.waitlist.getInvitedEntrants().size();
+        if (availableCapacity <= 0) {
+            Toast.makeText(null, "No available capacity for lottery.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         List<String> waitingEntrants = new ArrayList<>(this.waitlist.getWaitingEntrants());
 
         // Shuffle the waiting entrants list
@@ -343,7 +349,7 @@ public class Event implements Parcelable {
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeString(this.id != null ? this.id.toString() : null);
-        parcel.writeString(this.organizerId != null ? this.organizerId.toString() : null);
+        parcel.writeString(this.organizerId != null ? this.organizerId : null);
         parcel.writeString(this.name);
         parcel.writeLong(this.date != null ? this.date.getTime() : -1);
         parcel.writeString(this.location);

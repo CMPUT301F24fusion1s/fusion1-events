@@ -2,13 +2,37 @@ package com.example.fusion1_events;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import android.Manifest;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
@@ -24,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
 	private FirebaseManager firebaseManager;
 	private UserController userController;
 	private static Context appContext;
+	LocationRequest locationRequest;
+	private FusedLocationProviderClient fusedLocationClient;
+	private static final int REQUEST_CHECK_SETTINGS = 100;
+	private static final int LOCATION_PERMISSION_REQUEST_CODE = 101;
+	Location userLocation;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
 		initializeManagers();
 		setupInitialLogin();
+
+		fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+		if (checkLocationPermission()) {
+			getLocation(); // Get last known location
+		}
+
 	}
 
 	private void initializeManagers() {
@@ -118,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void registerNewUser(String deviceId, String name, String email, String phoneNumber) {
 		Entrant entrant = new Entrant(email, name, "Entrant", phoneNumber,
-				UUID.randomUUID().toString(), deviceId, null, null, true);
+				UUID.randomUUID().toString(), deviceId, null, userLocation, true);
 //Admin(String email, String name, String role, String phoneNumber, String userId, String deviceId, Bitmap profileImage)
 		userController.signUpUser(entrant);
 		Toast.makeText(this, "User registration in progress", Toast.LENGTH_SHORT).show();
@@ -162,4 +199,97 @@ public class MainActivity extends AppCompatActivity {
 	public static Context getAppContext() {
 		return appContext;
 	}
+
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_CHECK_SETTINGS) {
+			if (resultCode == RESULT_OK) {
+				Toast.makeText(this, "Location settings satisfied", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(this, "Location settings not satisfied", Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
+
+	private boolean checkLocationPermission() {
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+				!= PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this,
+					new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+					LOCATION_PERMISSION_REQUEST_CODE);
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				getLocation();
+			} else {
+				Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
+
+	private void getLocation() {
+		fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+		if (checkLocationPermission()) {
+			fusedLocationClient.getLastLocation()
+					.addOnSuccessListener(this, new OnSuccessListener<Location>() {
+						@Override
+						public void onSuccess(Location location) {
+							if (location != null) {
+								// Use the location object
+								double latitude = location.getLatitude();
+								double longitude = location.getLongitude();
+								Log.d("Location", "Lat: " + latitude + ", Long: " + longitude);
+								Toast.makeText(MainActivity.this,
+										"Lat: " + latitude + ", Long: " + longitude,
+										Toast.LENGTH_SHORT).show();
+								userLocation = location;
+							} else {
+								Toast.makeText(MainActivity.this,
+										"Location unavailable, try again",
+										Toast.LENGTH_SHORT).show();
+							}
+						}
+					})
+					.addOnFailureListener(new OnFailureListener() {
+						@Override
+						public void onFailure(@NonNull Exception e) {
+							startLocationUpdates();
+						}
+					});
+		}
+	}
+
+	private void startLocationUpdates() {
+		if (checkLocationPermission()) {
+			LocationRequest locationRequest = new LocationRequest.Builder(
+					LocationRequest.PRIORITY_HIGH_ACCURACY,
+					10000) // 10 seconds interval
+					.build()
+					.setFastestInterval(5000); // 5 seconds fastest interval;
+
+			fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+				@Override
+				public void onLocationResult(LocationResult locationResult) {
+					if (locationResult != null) {
+						for (Location location : locationResult.getLocations()) {
+							double latitude = location.getLatitude();
+							double longitude = location.getLongitude();
+							Log.d("Location Update", "Lat: " + latitude + ", Long: " + longitude);
+						}
+					}
+				}
+			}, Looper.getMainLooper());
+		}
+	}
+
 }

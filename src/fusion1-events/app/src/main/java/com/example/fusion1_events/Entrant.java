@@ -144,7 +144,24 @@ public class Entrant extends User implements Parcelable {
         }
         else
             convertedImage = UtilityMethods.decodeBase64ToBitmap(image);
-        Entrant user = new Entrant(email, name, role, phone, userID, deviceID, convertedImage, null, true);
+
+        Location userLocation = null;
+        if (userDocument.containsKey("location")) {
+            try {
+                Map<String, Object> locationMap = (Map<String, Object>) userDocument.get("location");
+                if (locationMap != null) {
+                    double latitude = locationMap.containsKey("latitude") ? (double) locationMap.get("latitude") : 0.0;
+                    double longitude = locationMap.containsKey("longitude") ? (double) locationMap.get("longitude") : 0.0;
+
+                    userLocation = new Location("extracted");
+                    userLocation.setLatitude(latitude);
+                    userLocation.setLongitude(longitude);
+                }
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+            }
+        }
+        Entrant user = new Entrant(email, name, role, phone, userID, deviceID, convertedImage, userLocation, true);
 
         return user;
     }
@@ -165,5 +182,13 @@ public class Entrant extends User implements Parcelable {
         dest.writeString(getDeviceId());
         dest.writeParcelable(location, flags);
         dest.writeByte((byte) (notificationEnabled ? 1 : 0));
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 }
