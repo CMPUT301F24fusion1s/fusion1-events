@@ -163,7 +163,6 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Exception e) {
-
                 }
             });
         }

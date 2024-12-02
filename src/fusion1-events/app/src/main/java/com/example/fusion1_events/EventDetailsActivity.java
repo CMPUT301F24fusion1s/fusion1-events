@@ -232,7 +232,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .setMessage("Would you like to accept or decline the invitation?")
                 .setPositiveButton("Accept", (dialog, id) -> {
                     // Accept invite
-                    event.getWaitlist().enrollInvitedEntrant(currentUser.getUserId());
+                    event.getWaitlist().enrollInvitedEntrant(currentUser.getDeviceId());
                     firebaseManager.updateExistingEvent(event);
                     setupPrimaryActionButton();
                     Toast.makeText(EventDetailsActivity.this, "Invitation Accepted", Toast.LENGTH_SHORT).show();
