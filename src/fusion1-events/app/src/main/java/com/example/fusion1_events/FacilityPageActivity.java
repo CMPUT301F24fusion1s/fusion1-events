@@ -3,6 +3,7 @@ package com.example.fusion1_events;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,18 +14,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FacilityPageActivity extends AppCompatActivity implements FacilityAdapter.OnFacilityClickListener {
+public class FacilityPageActivity extends BaseActivity implements FacilityAdapter.OnFacilityClickListener {
 
     private static final int ADD_FACILITY_REQUEST = 1; // Request code for adding facility
     private static final int EDIT_FACILITY_REQUEST = 2; // Request code for editing facility
     private RecyclerView rvFacilities;
     private FacilityAdapter adapter; // Adapter for RecyclerView
     private List<Facility> facilitiesList; // List to hold facilities
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.facility_page);
 
         rvFacilities = findViewById(R.id.rvFacilities);
         FloatingActionButton fabAddFacility = findViewById(R.id.fabAddFacility);
@@ -45,6 +44,20 @@ public class FacilityPageActivity extends AppCompatActivity implements FacilityA
                 startActivityForResult(intent, ADD_FACILITY_REQUEST); // Start FacilityAddActivity for result
             }
         });
+        ImageButton editProfile = findViewById(R.id.btnProfile);
+        editProfile.setOnClickListener(v -> showUserProfileFragment(currentUser));
+
+        setupBottomNavigation();
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.facility_page;
+    }
+
+    @Override
+    protected int getNavigationMenuItemId() {
+        return R.id.events;
     }
 
     @Override
