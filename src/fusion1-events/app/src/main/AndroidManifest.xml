@@ -35,8 +35,8 @@
         <activity android:name=".ScanQRCodeActivity"/>
         <activity android:name=".ManageEventActivity"/>
         <activity android:name=".EventUpdateActivity"/>
-        <activity android:name=".AdminEventActivity"
-            />
+        <activity android:name=".AdminEventActivity"/>
+        <activity android:name=".MapsActivity"/>
     </application>
 
 </manifest>
