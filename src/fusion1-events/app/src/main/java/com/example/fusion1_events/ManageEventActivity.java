@@ -196,7 +196,7 @@ public class ManageEventActivity extends AppCompatActivity {
     }
 
     private void viewMap() {
-        List<String> entrantsID = event.getWaitlist().getEnrolledEntrants();
+        List<String> entrantsID = event.getWaitlist().getAllEntrants();
         UserController userController = new UserController(new FirebaseManager());
 
         ArrayList<Entrant> entrants = new ArrayList<>();
@@ -211,6 +211,8 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Exception e) {
+                    Toast toast = Toast.makeText(ManageEventActivity.this, "Error loading entrants: " + e.getMessage(), Toast.LENGTH_SHORT);
+                    toast.show();
                 }
             });
         }
