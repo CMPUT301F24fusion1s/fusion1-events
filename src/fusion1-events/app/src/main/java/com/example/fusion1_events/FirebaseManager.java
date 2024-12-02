@@ -202,13 +202,13 @@ public class FirebaseManager {
 
     }
 
-    public void getUsersById(List<String> userIds, UsersListCallback callback) {
+    public void getUsersById(List<String> deviceIds, UsersListCallback callback) {
         CollectionReference usersCollection = db.collection("users");
         List<Entrant> users = new ArrayList<>();
         int[] completedQueries = {0}; // Using an array to allow modification within the lambda
 
-        for (String userId : userIds) {
-            usersCollection.whereEqualTo("userId", userId)
+        for (String deviceId : deviceIds) {
+            usersCollection.whereEqualTo("deviceId", deviceId)
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null) {
@@ -228,14 +228,14 @@ public class FirebaseManager {
                         // Increment the completed queries count
                         completedQueries[0]++;
                         // Check if all queries are completed
-                        if (completedQueries[0] == userIds.size()) {
+                        if (completedQueries[0] == deviceIds.size()) {
                             callback.onSuccess(users);
                         }
                     });
         }
 
-        // If userIds is empty, invoke callback immediately to avoid hanging
-        if (userIds.isEmpty()) {
+        // If deviceIds is empty, invoke callback immediately to avoid hanging
+        if (deviceIds.isEmpty()) {
             callback.onSuccess(users);
         }
     }
