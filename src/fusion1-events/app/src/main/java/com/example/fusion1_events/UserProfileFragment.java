@@ -7,7 +7,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -90,6 +93,34 @@ public class UserProfileFragment extends Fragment {
             if (getActivity() instanceof MainMenuActivity) {
                 ((MainMenuActivity) getActivity()).showEditProfileFragment(user);
             }
+        });
+
+        // Save switch positions in user
+        Switch adminNotificationSwitch = view.findViewById(R.id.adminSwitch);
+        adminNotificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (user != null) {
+                Entrant entrant = (Entrant) user;
+                if (isChecked) {
+                    entrant.turnNotificationOn();
+                } else {
+                    entrant.turnNotificationOff();
+                }
+            }
+
+            FirebaseManager firebaseManager = new FirebaseManager();
+            firebaseManager.updateUserProfile(user.getDeviceId(), user, new FirebaseManager.UpdateCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast toast = Toast.makeText(getContext(), "Notification settings updated", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast toast = Toast.makeText(getContext(), "Failed to update notification settings", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
         });
 
         // Set up Back Arrow button to navigate back
