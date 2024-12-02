@@ -53,11 +53,23 @@
     <string name="view_qr_code">View QR Code</string>
     <string name="tap_to_dismiss">Tap to Dismiss</string>
     <string name="qr_code">QR Code</string>
+    <string name="waiting">Waiting</string>
+    <string name="invited">Invited</string>
+    <string name="enrolled">Enrolled</string>
+    <string name="cancelled">Cancelled</string>
 
     <string-array name="am_pm_options">
         <item>AM/PM</item>
         <item>AM</item>
         <item>PM</item>
+    </string-array>
+
+    <string-array name="event_classes">
+        <item>All</item>
+        <item>Waiting</item>
+        <item>Invited</item>
+        <item>Enrolled</item>
+        <item>Cancelled</item>
     </string-array>
 
 </resources>

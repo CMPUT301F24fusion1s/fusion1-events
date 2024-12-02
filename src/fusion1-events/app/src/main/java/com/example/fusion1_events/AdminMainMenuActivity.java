@@ -196,7 +196,7 @@ public class AdminMainMenuActivity extends AppCompatActivity{
 
         adminController.getAllUsers(new FirebaseManager.UsersListCallback() {
             @Override
-            public void onScuccess(List<Entrant> users) {
+            public void onSuccess(List<Entrant> users) {
                 populateProfileList(users);
             }
 
