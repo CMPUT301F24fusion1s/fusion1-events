@@ -38,7 +38,7 @@ public class MapsActivity extends AppCompatActivity {
 
                 // Create a marker
                 ImageView marker = new ImageView(this);
-                marker.setImageResource(R.drawable.ic_pin); // Use your pin icon
+                marker.setImageResource(R.drawable.ic_pin_red); // Use your pin icon
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(48, 48); // Marker size
                 params.leftMargin = position[0]; // Set X position
                 params.topMargin = position[1];  // Set Y position

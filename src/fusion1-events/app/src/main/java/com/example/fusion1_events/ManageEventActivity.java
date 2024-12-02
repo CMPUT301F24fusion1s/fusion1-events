@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ManageEventActivity extends AppCompatActivity {
     private Event event;
@@ -145,7 +147,24 @@ public class ManageEventActivity extends AppCompatActivity {
     }
 
     private void viewMap() {
+        List<String> entrantsID = event.getWaitlist().getEnrolledEntrants();
+        UserController userController = new UserController(new FirebaseManager());
 
+        List<Entrant> entrants = new ArrayList<>();
+        for(String id : entrantsID)
+        {
+            userController.userLogin(id, new FirebaseManager.UserCallback() {
+                @Override
+                public void onSuccess(User user) {
+                    entrants.add((Entrant) user);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+
+                }
+            });
+        }
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
 
