@@ -213,7 +213,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .setMessage("Are you sure you want to leave the event? You cannot rejoin once you leave.")
                 .setPositiveButton("Yes", (dialog, id) -> {
                     // Cancel enrolment
-                    event.getWaitlist().cancelEnrolledEntrant(currentUser.getUserId());
+                    event.getWaitlist().cancelEnrolledEntrant(currentUser.getDeviceId());
                     firebaseManager.updateExistingEvent(event);
                     setupPrimaryActionButton();
                     Toast.makeText(EventDetailsActivity.this, "Successfully left event", Toast.LENGTH_SHORT).show();
@@ -239,7 +239,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Decline", (dialog, id) -> {
                     // Decline invite
-                    event.getWaitlist().cancelInvitedEntrant(currentUser.getUserId());
+                    event.getWaitlist().cancelInvitedEntrant(currentUser.getDeviceId());
                     firebaseManager.updateExistingEvent(event);
                     setupPrimaryActionButton();
                     Toast.makeText(EventDetailsActivity.this, "Invitation Declined", Toast.LENGTH_SHORT).show();
