@@ -474,5 +474,91 @@ public class FirebaseManager {
     }
 
 
+    public void getNotificationsByUserId(UUID userId, final NotificationsListCallback callback) {
+        CollectionReference notificationsCollection = db.collection("notification");
+
+        // Convert UUID to String for Firestore query
+        String userIdString = userId.toString();
+
+        notificationsCollection
+                .whereEqualTo("userid", userIdString) // Filter notifications by user ID
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<Notification> notifications = new ArrayList<>();
+                        // QueryDocumentSnapshot
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Notification notification = new Notification(
+                                    document.getString("Event_title"),
+                                    document.getString("message"),
+                                    document.getTimestamp("time_stamp") != null ?
+                                            document.getTimestamp("time_stamp").toDate().toString() : "No timestamp",
+                                    document.getString("userid"), // Add a comma here
+                                    document.getBoolean("isDelivered") != null ?
+                                            document.getBoolean("isDelivered") : false // Default to false if null
+                            );
+                            notifications.add(notification);
+                        }
+                        callback.onSuccess(notifications); // Return the fetched notifications
+                    } else {
+                        callback.onFailure(task.getException() != null ?
+                                task.getException() :
+                                new Exception("Unknown error occurred."));
+                    }
+                });
+    }
+
+
+
+    // Callback interface for retrieving notifications
+    public interface NotificationsListCallback {
+        void onSuccess(List<Notification> notifications);
+        void onFailure(Exception e);
+    }
+
+    public void checkUserMessages(UUID userId, final MessageCheckCallback callback) {
+        CollectionReference notificationsCollection = db.collection("notification");
+
+        notificationsCollection
+                .whereEqualTo("userid", userId.toString()) // Check for messages for the user
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        boolean hasMessages = !task.getResult().isEmpty(); // Check if there are any messages
+                        callback.onCheckComplete(hasMessages);
+                    } else {
+                        callback.onFailure(task.getException() != null ?
+                                task.getException() :
+                                new Exception("Unknown error occurred."));
+                    }
+                });
+    }
+
+    // Callback interface for checking messages
+    public interface MessageCheckCallback {
+        void onCheckComplete(boolean hasMessages);
+        void onFailure(Exception e);
+    }
+
+    public void updateNotificationsAsDelivered(UUID userId) {
+        CollectionReference notificationsCollection = db.collection("notification");
+        notificationsCollection
+                .whereEqualTo("userid", userId.toString()) // Find all notifications for the user
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (DocumentSnapshot document : task.getResult()) {
+                            // Update each notification's isDelivered status to true
+                            notificationsCollection.document(document.getId())
+                                    .update("isDelivered", true)
+                                    .addOnSuccessListener(aVoid -> Log.d("FirebaseManager", "Notification marked as delivered."))
+                                    .addOnFailureListener(e -> Log.e("FirebaseManager", "Error marking notification as delivered", e));
+                        }
+                    } else {
+                        Log.e("FirebaseManager", "Error fetching notifications: ", task.getException());
+                    }
+                });
+    }
+
 
 }
