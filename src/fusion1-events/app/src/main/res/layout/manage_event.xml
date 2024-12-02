@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:gravity="center_horizontal"
     android:padding="16dp">
 
     <!-- Back Button -->
@@ -12,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center">
 
         <TextView
             android:id="@+id/backText"
@@ -25,17 +26,21 @@
 
     <Button
         android:id="@+id/editEventBtn"
-        android:layout_width="match_parent"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
-        android:text="@string/edit_event"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_background"
         android:backgroundTint="@color/black"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="16dp" />
+        android:text="@string/edit_event"
+        android:textColor="@android:color/white" />
 
     <Button
         android:id="@+id/runLotteryBtn"
-        android:layout_width="match_parent"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_background"
         android:text="@string/run_lottery"
         android:backgroundTint="@color/black"
         android:textColor="@android:color/white"
@@ -43,8 +48,10 @@
 
     <Button
         android:id="@+id/viewEntrantsBtn"
-        android:layout_width="match_parent"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_background"
         android:text="@string/view_entrants"
         android:backgroundTint="@color/black"
         android:textColor="@android:color/white"
@@ -52,8 +59,10 @@
 
     <Button
         android:id="@+id/viewMapBtn"
-        android:layout_width="match_parent"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_background"
         android:text="@string/view_map"
         android:backgroundTint="@color/black"
         android:textColor="@android:color/white"
@@ -61,8 +70,10 @@
 
     <Button
         android:id="@+id/sendNotificationBtn"
-        android:layout_width="match_parent"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_background"
         android:text="@string/send_notification"
         android:backgroundTint="@color/black"
         android:textColor="@android:color/white"
@@ -70,8 +81,10 @@
 
     <Button
         android:id="@+id/deleteEventBtn"
-        android:layout_width="match_parent"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_background"
         android:text="@string/delete_event"
         android:backgroundTint="@color/black"
         android:textColor="@android:color/white"
