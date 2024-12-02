@@ -1,11 +1,15 @@
 package com.example.fusion1_events;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -15,10 +19,14 @@ import android.os.Parcelable;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -190,6 +198,33 @@ public class ManageEventActivity extends AppCompatActivity {
         firebaseManager.updateExistingEvent(event);
         Toast toast = Toast.makeText(this, "Lottery has been run", Toast.LENGTH_SHORT);
         toast.show();
+
+        // Send notification to invited entrants
+        firebaseManager.getUsersById(event.getWaitlist().getInvitedEntrants(), new FirebaseManager.UsersListCallback() {
+            @Override
+            public void onSuccess(List<Entrant> entrants) {
+                for (Entrant entrant : entrants) {
+                    Notification notification = new Notification(event.getName(), "You have been invited to attend!", LocalDateTime.now(ZoneId.of("America/Edmonton")).toString(), entrant.getUserId(), false);
+                    firebaseManager.sendNotification(notification, new FirebaseManager.NotificationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d("ManageEventActivity", "Notification sent to " + entrant.getName());
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.e("ManageEventActivity", "Error sending notification to " + entrant.getName(), e);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast toast = Toast.makeText(ManageEventActivity.this, "Error loading users: " + e.getMessage(), Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
     }
 
     private void viewEntrants() {

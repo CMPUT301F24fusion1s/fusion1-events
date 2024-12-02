@@ -1,7 +1,6 @@
 package com.example.fusion1_events;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,8 +8,6 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.app.NotificationManager;
 import android.app.NotificationChannel;
 
