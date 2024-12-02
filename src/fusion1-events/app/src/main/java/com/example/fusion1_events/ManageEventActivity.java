@@ -152,7 +152,7 @@ public class ManageEventActivity extends AppCompatActivity {
         List<String> entrantsID = event.getWaitlist().getEnrolledEntrants();
         UserController userController = new UserController(new FirebaseManager());
 
-        List<Entrant> entrants = new ArrayList<>();
+        ArrayList<Entrant> entrants = new ArrayList<>();
         for(String id : entrantsID)
         {
             userController.userLogin(id, new FirebaseManager.UserCallback() {

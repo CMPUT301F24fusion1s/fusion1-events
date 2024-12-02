@@ -1,10 +1,14 @@
 package com.example.fusion1_events;
 
+import static androidx.core.content.IntentCompat.getParcelableArrayExtra;
+
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
 
 public class MapsActivity extends AppCompatActivity {
 
@@ -17,19 +21,31 @@ public class MapsActivity extends AppCompatActivity {
         RelativeLayout mapLayout = findViewById(R.id.mapLayout); // The parent layout in activity_maps.xml
         ImageView mapImage = findViewById(R.id.edmontonMap); // Static map image
 
+        ArrayList<Entrant> entrants   = getIntent().getParcelableArrayListExtra("entrants");
         // Mock locations (latitude, longitude)
-        double[][] mockLocations = {
-                {53.5461, -113.4938}, // Edmonton City Center
-                {53.5444, -113.4900}, // Another location in Edmonton
-                {53.5500, -113.4800}  // One more location
-        };
+
+        // TODO Need to extract all the locations and pass to the map
+        // TODO we also need to clear the map
+        double[][] entrantsLocations = new double[entrants.size()][2];
+        int index =0;
+        for(Entrant entrant : entrants)
+        {
+
+            double latitude = entrant.getLocation().getLatitude();
+            double longitude = entrant.getLocation().getLongitude();
+            entrantsLocations[index][0] = latitude;
+            entrantsLocations[index][1] = longitude;
+            index ++;
+        }
+
+
 
         // Add markers after the map image is loaded
         mapImage.post(() -> {
             int imageWidth = mapImage.getWidth();
             int imageHeight = mapImage.getHeight();
 
-            for (double[] location : mockLocations) {
+            for (double[] location : entrantsLocations) {
                 double latitude = location[0];
                 double longitude = location[1];
 
