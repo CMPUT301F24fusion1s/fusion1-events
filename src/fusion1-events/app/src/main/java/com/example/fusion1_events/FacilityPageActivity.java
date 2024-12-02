@@ -13,6 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class FacilityPageActivity extends BaseActivity implements FacilityAdapter.OnFacilityClickListener {
 
@@ -21,12 +22,18 @@ public class FacilityPageActivity extends BaseActivity implements FacilityAdapte
     private RecyclerView rvFacilities;
     private FacilityAdapter adapter; // Adapter for RecyclerView
     private List<Facility> facilitiesList; // List to hold facilities
+    private FirebaseManager firebaseManager; // Firebase manager instance
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.facility_page); // Ensure this matches your layout file name
 
         rvFacilities = findViewById(R.id.rvFacilities);
         FloatingActionButton fabAddFacility = findViewById(R.id.fabAddFacility);
+
+        // Initialize FirebaseManager
+        firebaseManager = new FirebaseManager();
 
         // Initialize the facilities list and adapter
         facilitiesList = new ArrayList<>();
@@ -36,6 +43,10 @@ public class FacilityPageActivity extends BaseActivity implements FacilityAdapte
         rvFacilities.setLayoutManager(new LinearLayoutManager(this)); // Use a vertical layout
         rvFacilities.setAdapter(adapter); // Set the adapter to the RecyclerView
 
+        // Load facilities from Firestore
+        loadFacilities();
+        setupBottomNavigation();
+
         // Set the FAB click listener
         fabAddFacility.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,10 +55,10 @@ public class FacilityPageActivity extends BaseActivity implements FacilityAdapte
                 startActivityForResult(intent, ADD_FACILITY_REQUEST); // Start FacilityAddActivity for result
             }
         });
+
+        // Edit profile button initialization
         ImageButton editProfile = findViewById(R.id.btnProfile);
         editProfile.setOnClickListener(v -> showUserProfileFragment(currentUser));
-
-        setupBottomNavigation();
     }
 
     @Override
@@ -58,6 +69,27 @@ public class FacilityPageActivity extends BaseActivity implements FacilityAdapte
     @Override
     protected int getNavigationMenuItemId() {
         return R.id.events;
+    }
+
+    private void loadFacilities() {
+        UUID userId = UUID.fromString(currentUser.getUserId()); // Get the current user's ID
+        firebaseManager.getFacilitiesByUserId(userId, new FirebaseManager.FacilitiesListCallback() {
+            @Override
+            public void onSuccess(List<Facility> facilities) {
+                runOnUiThread(() -> {
+                    facilitiesList.clear(); // Clear the existing list
+                    facilitiesList.addAll(facilities); // Add all facilities from Firestore
+                    adapter.notifyDataSetChanged(); // Notify the adapter to refresh the RecyclerView
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(FacilityPageActivity.this, "Error loading facilities: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     @Override
@@ -83,8 +115,8 @@ public class FacilityPageActivity extends BaseActivity implements FacilityAdapte
             if (position >= 0 && position < facilitiesList.size()) {
                 // Update the facility in the list
                 Facility facilityToUpdate = facilitiesList.get(position);
-                facilityToUpdate.setName(updatedName);
-                facilityToUpdate.setLocation(updatedLocation);
+                facilityToUpdate.setName(updatedName); // Assuming you have a setter in your Facility class
+                facilityToUpdate.setLocation(updatedLocation); // Assuming you have a setter in your Facility class
 
                 // Notify the adapter to refresh the RecyclerView
                 adapter.notifyItemChanged(position);
@@ -106,9 +138,14 @@ public class FacilityPageActivity extends BaseActivity implements FacilityAdapte
 
     @Override
     public void onDeleteClick(Facility facility) {
-        // Remove the facility from the list
-        facilitiesList.remove(facility);
-        adapter.notifyDataSetChanged(); // Notify the adapter to refresh the RecyclerView
-        Toast.makeText(this, "Facility deleted", Toast.LENGTH_SHORT).show();
+        // Get the position of the facility to remove it
+        int position = facilitiesList.indexOf(facility);
+        if (position != -1) {
+            facilitiesList.remove(position); // Remove the facility from the list
+            adapter.notifyItemRemoved(position); // Notify the adapter to refresh the RecyclerView
+            Toast.makeText(this, "Facility deleted", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Facility not found", Toast.LENGTH_SHORT).show();
+        }
     }
 }

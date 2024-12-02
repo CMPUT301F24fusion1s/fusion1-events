@@ -561,4 +561,86 @@ public class FirebaseManager {
     }
 
 
+    /**
+     * Retrieves all facilities from the Firestore database.
+     *
+     * @param callback A callback to return the list of facilities.
+     */
+    public void getAllFacilities(final FacilitiesListCallback callback) {
+        CollectionReference facilitiesCollection = db.collection("Facilities");
+
+        facilitiesCollection.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Facility> facilities = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Facility facility = document.toObject(Facility.class);
+                            facilities.add(facility);
+                        }
+                        callback.onSuccess(facilities);
+                    } else {
+                        Log.e("FirebaseManager", "Error getting facilities: ", task.getException());
+                        callback.onFailure(task.getException());
+                    }
+                });
+    }
+
+
+    /**
+     * Retrieves facilities for a specific user from Firestore.
+     *
+     * @param userId The UUID of the user whose facilities to retrieve.
+     * @param callback A callback to return the list of facilities.
+     */
+    public void getFacilitiesByUserId(UUID userId, final FacilitiesListCallback callback) {
+        CollectionReference facilitiesCollection = db.collection("Facilities");
+
+        // Convert UUID to String for Firestore query
+        String userIdString = userId.toString();
+
+        facilitiesCollection
+                .whereEqualTo("userid", userIdString) // Filter facilities by user ID
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<Facility> facilities = new ArrayList<>();
+                        // QueryDocumentSnapshot
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Facility facility = document.toObject(Facility.class); // Convert document to Facility object
+                            facilities.add(facility);
+                        }
+                        callback.onSuccess(facilities); // Return the fetched facilities
+                    } else {
+                        Log.e("FirebaseManager", "Error getting facilities: ", task.getException());
+                        callback.onFailure(task.getException() != null ?
+                                task.getException() :
+                                new Exception("Unknown error occurred."));
+                    }
+                });
+    }
+
+    public void addFacility(Facility facility, OnFacilityAddedListener listener) {
+        db.collection("facilities")
+                .add(facility)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("FirebaseManager", "Facility added with ID: " + documentReference.getId());
+                    listener.onFacilityAdded(documentReference.getId());
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("FirebaseManager", "Error adding facility", e);
+                    listener.onFailure(e);
+                });
+    }
+
+    public interface OnFacilityAddedListener {
+        void onFacilityAdded(String facilityId); // Called when facility is added successfully
+        void onFailure(Exception e); // Called when there is an error
+    }
+
+    // Callback interface for retrieving facilities
+    public interface FacilitiesListCallback {
+        void onSuccess(List<Facility> facilities);
+        void onFailure(Exception e);
+    }
 }
+
