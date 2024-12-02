@@ -137,25 +137,25 @@ public class EventDetailsActivity extends AppCompatActivity {
         Button primaryActionButton = findViewById(R.id.primaryActionButton);
 
         if (currentUser != null) {
-            if (currentUser.getUserId().equals(event.getOrganizerId().toString())) {
+            if (currentUser.getDeviceId().equals(event.getOrganizerId())) {
                 // User is the organizer
                 primaryActionButton.setText(R.string.manage_event);
                 primaryActionButton.setOnClickListener(v -> manageEvent());
             } else {
                 // User is not the organizer
-                if (event.getWaitlist().getWaitingEntrants().contains(currentUser.getUserId())) {
+                if (event.getWaitlist().getWaitingEntrants().contains(currentUser.getDeviceId())) {
                     primaryActionButton.setText(R.string.leave_waitlist);
                     primaryActionButton.setBackgroundColor(getResources().getColor(R.color.orange, null));
                     primaryActionButton.setOnClickListener(v -> leaveWaitlist());
-                } else if (event.getWaitlist().getInvitedEntrants().contains(currentUser.getUserId())) {
+                } else if (event.getWaitlist().getInvitedEntrants().contains(currentUser.getDeviceId())) {
                     primaryActionButton.setText(R.string.reply_to_invite);
                     primaryActionButton.setBackgroundColor(getResources().getColor(R.color.green, null));
                     primaryActionButton.setOnClickListener(v -> replyToInvite());
-                } else if (event.getWaitlist().getEnrolledEntrants().contains(currentUser.getUserId())) {
+                } else if (event.getWaitlist().getEnrolledEntrants().contains(currentUser.getDeviceId())) {
                     primaryActionButton.setText(R.string.leave_event);
                     primaryActionButton.setBackgroundColor(getResources().getColor(R.color.red, null));
                     primaryActionButton.setOnClickListener(v -> cancelEnrolment());
-                } else if (event.getWaitlist().getCancelledEntrants().contains(currentUser.getUserId())) {
+                } else if (event.getWaitlist().getCancelledEntrants().contains(currentUser.getDeviceId())) {
                     primaryActionButton.setText(R.string.invitation_declined);
                     primaryActionButton.setBackgroundColor(getResources().getColor(R.color.gray, null));
                     primaryActionButton.setEnabled(false);
@@ -191,7 +191,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void joinWaitlist() {
-        event.getWaitlist().addWaitingEntrant(currentUser.getUserId());
+        event.getWaitlist().addWaitingEntrant(currentUser.getDeviceId());
         firebaseManager.updateExistingEvent(event);
         setupPrimaryActionButton(); // Refresh button state
         Toast.makeText(EventDetailsActivity.this,
@@ -199,7 +199,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void leaveWaitlist() {
-        event.getWaitlist().removeWaitingEntrant(currentUser.getUserId());
+        event.getWaitlist().removeWaitingEntrant(currentUser.getDeviceId());
         firebaseManager.updateExistingEvent(event);
         setupPrimaryActionButton(); // Refresh button state
         Toast.makeText(EventDetailsActivity.this,
@@ -213,7 +213,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .setMessage("Are you sure you want to leave the event? You cannot rejoin once you leave.")
                 .setPositiveButton("Yes", (dialog, id) -> {
                     // Cancel enrolment
-                    event.getWaitlist().cancelEnrolledEntrant(currentUser.getUserId());
+                    event.getWaitlist().cancelEnrolledEntrant(currentUser.getDeviceId());
                     firebaseManager.updateExistingEvent(event);
                     setupPrimaryActionButton();
                     Toast.makeText(EventDetailsActivity.this, "Successfully left event", Toast.LENGTH_SHORT).show();
@@ -232,14 +232,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .setMessage("Would you like to accept or decline the invitation?")
                 .setPositiveButton("Accept", (dialog, id) -> {
                     // Accept invite
-                    event.getWaitlist().enrollInvitedEntrant(currentUser.getUserId());
+                    event.getWaitlist().enrollInvitedEntrant(currentUser.getDeviceId());
                     firebaseManager.updateExistingEvent(event);
                     setupPrimaryActionButton();
                     Toast.makeText(EventDetailsActivity.this, "Invitation Accepted", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Decline", (dialog, id) -> {
                     // Decline invite
-                    event.getWaitlist().cancelInvitedEntrant(currentUser.getUserId());
+                    event.getWaitlist().cancelInvitedEntrant(currentUser.getDeviceId());
 
                     // Run the lottery again to replace the declined entrant
                     event.reRunLottery();

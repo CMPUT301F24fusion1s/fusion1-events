@@ -82,7 +82,7 @@ public class EventCreationActivity extends EventCreateUpdateBase {
         // Convert to Date object
         Date date = new Date(year - 1900, month - 1, day, hour, minute);
 
-        UUID organizerId = UUID.fromString(currentUser.getUserId());
+        String organizerId = currentUser.getDeviceId();
 
         // Create a new event
         return eventController.createEvent(null, organizerId, title, date, location, description,

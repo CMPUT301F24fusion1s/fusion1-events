@@ -12,6 +12,8 @@ zxingAndroidEmbedded = "4.3.0"
 rules = "1.6.1"
 espressoIntents = "3.6.1"
 fragmentTesting = "1.8.5"
+espressoContrib = "3.6.1"
+playServicesMaps = "19.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -27,6 +29,8 @@ zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", ve
 rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
 espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "espressoIntents" }
 fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentTesting" }
+espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espressoContrib" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

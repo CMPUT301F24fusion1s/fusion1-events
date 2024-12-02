@@ -14,7 +14,7 @@ public class EventController {
         this.firebaseManager = firebaseManager;
     }
 
-    public Event createEvent(UUID eventId, UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, int waitlistLimit, Boolean geolocationRequired) {
+    public Event createEvent(UUID eventId, String organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, int waitlistLimit, Boolean geolocationRequired) {
         return new Event(eventId, organizerId, name, date, location, description, poster, capacity, waitlistLimit, geolocationRequired);
     }
 

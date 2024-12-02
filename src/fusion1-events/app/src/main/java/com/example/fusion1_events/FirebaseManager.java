@@ -80,7 +80,7 @@ public class FirebaseManager {
                             User user = createUserFromRole(role, document);
 
                             if (user != null) {
-                                callback.onSuccess(user);
+                                callback.onSuccess((Entrant)user);
                             } else {
                                 callback.onFailure(new Exception("Failed to create user instance from document."));
                             }
@@ -420,30 +420,30 @@ public class FirebaseManager {
                 });
     }
 
-    public void getUserEvents(UUID userId, final EventsListCallback callback) {
+    public void getUserEvents(String userId, final EventsListCallback callback) {
         CollectionReference eventsCollection = db.collection("events");
         String userIdString = userId.toString();
         List<Event> userEvents = new ArrayList<>();
 
         // Create tasks for different event queries
         Task<QuerySnapshot> organizerTask = eventsCollection
-                .whereEqualTo("organizerId", userIdString)
+                .whereEqualTo("organizerId", userId)
                 .get();
 
         Task<QuerySnapshot> waitlistTask = eventsCollection
-                .whereArrayContains("waitingEntrants", userIdString)
+                .whereArrayContains("waitingEntrants", userId)
                 .get();
 
         Task<QuerySnapshot> invitedTask = eventsCollection
-                .whereArrayContains("invitedEntrants", userIdString)
+                .whereArrayContains("invitedEntrants", userId)
                 .get();
 
         Task<QuerySnapshot> enrolledTask = eventsCollection
-                .whereArrayContains("enrolledEntrants", userIdString)
+                .whereArrayContains("enrolledEntrants", userId)
                 .get();
 
         Task<QuerySnapshot> cancelledTask = eventsCollection
-                .whereArrayContains("cancelledEntrants", userIdString)
+                .whereArrayContains("cancelledEntrants", userId)
                 .get();
 
         // Execute all queries in parallel
