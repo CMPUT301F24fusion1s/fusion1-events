@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,7 +167,9 @@ public class ManageEventActivity extends AppCompatActivity {
                 }
             });
         }
+
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.putParcelableArrayListExtra("entrants", (ArrayList<? extends Parcelable>) entrants);
         startActivity(intent);
 
 
