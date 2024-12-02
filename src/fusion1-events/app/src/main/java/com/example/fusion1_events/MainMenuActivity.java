@@ -17,8 +17,17 @@ import android.app.NotificationChannel;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The MainMenuActivity class represents the main menu screen of the application.
+ * It provides functionalities for navigating to user profile and editing profile information.
+ */
 public class MainMenuActivity extends BaseActivity {
 
+    /**
+     * Called when the activity is first created. Initializes the user interface components and sets up the event listeners.
+     *
+     * @param savedInstancesState If the activity is being re-initialized after previously being shut down, this Bundle contains the data it most recently supplied.
+     */
     private FirebaseManager firebaseManager;
 
     @Override
@@ -99,11 +108,17 @@ public class MainMenuActivity extends BaseActivity {
         Log.d("MainMenuActivity", "Notification sent: " + title + " - " + message);
     }
 
+    /**
+     * @return The layout resource ID for the current activity.
+     */
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_main_menu;
     }
 
+    /**
+     * @return The navigation menu item ID for the current activity.
+     */
     @Override
     protected int getNavigationMenuItemId() {
         return R.id.home;
