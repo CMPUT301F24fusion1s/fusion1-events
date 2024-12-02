@@ -597,6 +597,26 @@ public class FirebaseManager {
                 });
     }
 
+    public void sendNotification(Notification notification, final NotificationCallback callback) {
+        // Assuming you have a collection for notifications
+        db.collection("notification")
+                .add(notification) // Add the notification object to Firestore
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("FirebaseManager", "Notification sent with ID: " + documentReference.getId());
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseManager", "Error sending notification", e);
+                    callback.onFailure(e);
+                });
+    }
+
+    // Callback interface for notification sending
+    public interface NotificationCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
 
     /**
      * Retrieves all facilities from the Firestore database.
