@@ -5,9 +5,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.FileInputStream;
@@ -108,6 +115,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
     private void setupListeners() {
         findViewById(R.id.editEventBtn).setOnClickListener(v -> editEvent());
+        findViewById(R.id.viewQRCodeBtn).setOnClickListener(v -> viewQrCode());
         findViewById(R.id.runLotteryBtn).setOnClickListener(v -> runLottery());
         findViewById(R.id.viewEntrantsBtn).setOnClickListener(v -> viewEntrants());
         findViewById(R.id.viewMapBtn).setOnClickListener(v -> viewMap());
@@ -136,6 +144,41 @@ public class ManageEventActivity extends AppCompatActivity {
         intent.putExtras(bundle);
         startActivity(intent);
     }
+
+    private void viewQrCode() {
+        // Inflate the popup layout
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        ViewGroup container = (ViewGroup) inflater.inflate(R.layout.qr_code_view_popup, null);
+
+        // Get the screen width
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+
+        // Calculate 75% of the screen width for the popup size
+        int popupSize = (int) (screenWidth * 0.75);
+
+        // Create the popup window
+        boolean focusable = true; // Lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(container, popupSize, ViewGroup.LayoutParams.WRAP_CONTENT, focusable);
+
+        // Set up the QR code image
+        ImageView qrCodeImageView = container.findViewById(R.id.qrCodeImageView);
+        qrCodeImageView.setImageBitmap(event.getQrCode());
+
+        // Set the ImageView size programmatically to fill the popup
+        ViewGroup.LayoutParams layoutParams = qrCodeImageView.getLayoutParams();
+        layoutParams.width = popupSize;
+        layoutParams.height = popupSize; // Ensure it is a square
+        qrCodeImageView.setLayoutParams(layoutParams);
+
+        // Tap to dismiss
+        container.setOnClickListener(v -> popupWindow.dismiss());
+
+        // Show the popup window
+        popupWindow.showAtLocation(findViewById(R.id.viewQRCodeBtn), Gravity.CENTER, 0, 0);
+    }
+
 
     private void runLottery() {
         event.runLottery();
