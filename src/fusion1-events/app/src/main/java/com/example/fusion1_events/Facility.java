@@ -1,14 +1,26 @@
 package com.example.fusion1_events;
 
-public class Facility {
+import java.io.Serializable;
+
+public class Facility implements Serializable {
     private String name;
     private String location;
+    private String userId;
 
+    public Facility() {
+        // Required for Firestore deserialization
+    }
 
-    // Constructor
+    // Constructor with parameters
     public Facility(String name, String location) {
         this.name = name;
         this.location = location;
+    }
+
+    public Facility(String name, String location, String userId) {
+        this.name = name;
+        this.location = location;
+        this.userId = userId; // Initialize userId
     }
 
     // Getters
@@ -20,12 +32,20 @@ public class Facility {
         return location;
     }
 
-    //setters
+    public String getuserId() {
+        return userId;
+    }
+
+    // Setters
     public void setName(String name) {
         this.name = name;
     }
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void setuserId(String userId) {
+        this.userId = userId;
     }
 }
