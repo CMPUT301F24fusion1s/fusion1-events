@@ -11,7 +11,7 @@ mockitoCore = "5.5.0"
 zxingAndroidEmbedded = "4.3.0"
 rules = "1.6.1"
 espressoIntents = "3.6.1"
-espressoContrib = "3.6.1"
+fragmentTesting = "1.8.5"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -26,7 +26,7 @@ mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
 rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
 espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "espressoIntents" }
-espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espressoContrib" }
+fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentTesting" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
