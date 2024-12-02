@@ -143,19 +143,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                 primaryActionButton.setOnClickListener(v -> manageEvent());
             } else {
                 // User is not the organizer
-                if (event.getWaitlist().getWaitingEntrants().contains(currentUser.getUserId())) {
+                if (event.getWaitlist().getWaitingEntrants().contains(currentUser.getDeviceId())) {
                     primaryActionButton.setText(R.string.leave_waitlist);
                     primaryActionButton.setBackgroundColor(getResources().getColor(R.color.orange, null));
                     primaryActionButton.setOnClickListener(v -> leaveWaitlist());
-                } else if (event.getWaitlist().getInvitedEntrants().contains(currentUser.getUserId())) {
+                } else if (event.getWaitlist().getInvitedEntrants().contains(currentUser.getDeviceId())) {
                     primaryActionButton.setText(R.string.reply_to_invite);
                     primaryActionButton.setBackgroundColor(getResources().getColor(R.color.green, null));
                     primaryActionButton.setOnClickListener(v -> replyToInvite());
-                } else if (event.getWaitlist().getEnrolledEntrants().contains(currentUser.getUserId())) {
+                } else if (event.getWaitlist().getEnrolledEntrants().contains(currentUser.getDeviceId())) {
                     primaryActionButton.setText(R.string.leave_event);
                     primaryActionButton.setBackgroundColor(getResources().getColor(R.color.red, null));
                     primaryActionButton.setOnClickListener(v -> cancelEnrolment());
-                } else if (event.getWaitlist().getCancelledEntrants().contains(currentUser.getUserId())) {
+                } else if (event.getWaitlist().getCancelledEntrants().contains(currentUser.getDeviceId())) {
                     primaryActionButton.setText(R.string.invitation_declined);
                     primaryActionButton.setBackgroundColor(getResources().getColor(R.color.gray, null));
                     primaryActionButton.setEnabled(false);

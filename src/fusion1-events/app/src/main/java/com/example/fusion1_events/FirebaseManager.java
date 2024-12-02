@@ -383,7 +383,7 @@ public class FirebaseManager {
                 });
     }
 
-    public void getUserEvents(UUID userId, final EventsListCallback callback) {
+    public void getUserEvents(String userId, final EventsListCallback callback) {
         CollectionReference eventsCollection = db.collection("events");
         String userIdString = userId.toString();
         List<Event> userEvents = new ArrayList<>();

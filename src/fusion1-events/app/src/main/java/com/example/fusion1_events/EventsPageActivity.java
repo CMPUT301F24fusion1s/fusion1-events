@@ -87,7 +87,7 @@ public class EventsPageActivity extends BaseActivity {
             return;
         }
 
-        firebaseManager.getUserEvents(UUID.fromString(currentUser.getUserId()),
+        firebaseManager.getUserEvents(currentUser.getDeviceId(),
                 new FirebaseManager.EventsListCallback() {
                     @Override
                     public void onSuccess(List<Event> events) {
