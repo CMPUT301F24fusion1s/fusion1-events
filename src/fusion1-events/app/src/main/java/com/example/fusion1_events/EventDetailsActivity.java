@@ -199,7 +199,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void leaveWaitlist() {
-        event.getWaitlist().removeWaitingEntrant(currentUser.getUserId());
+        event.getWaitlist().removeWaitingEntrant(currentUser.getDeviceId());
         firebaseManager.updateExistingEvent(event);
         setupPrimaryActionButton(); // Refresh button state
         Toast.makeText(EventDetailsActivity.this,
