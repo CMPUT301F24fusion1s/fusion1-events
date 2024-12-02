@@ -4,7 +4,6 @@ import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.widget.Toast;
@@ -14,7 +13,6 @@ import androidx.annotation.NonNull;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.zxing.WriterException;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -23,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-
-import kotlin.NotImplementedError;
 
 /**
  * Event class represents an event in the application, with properties such as name, date, location, description, etc.
@@ -300,7 +296,6 @@ public class Event implements Parcelable {
     public void runLottery() {
         int availableCapacity = this.capacity - this.waitlist.getEnrolledEntrants().size() - this.waitlist.getInvitedEntrants().size();
         if (availableCapacity <= 0) {
-            Toast.makeText(null, "No available capacity for lottery.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -323,17 +318,6 @@ public class Event implements Parcelable {
      */
     public void reRunLottery() {
         this.runLottery();
-    }
-
-    /**
-     * Sends a notification with the specified message.
-     *
-     * @param message The message to be sent.
-     * @throws NotImplementedError as the logic is not yet implemented.
-     */
-    public void sendNotification(String message) {
-        // TODO: Implement notification logic
-        throw new NotImplementedError("Method not implemented.");
     }
 
     /**
