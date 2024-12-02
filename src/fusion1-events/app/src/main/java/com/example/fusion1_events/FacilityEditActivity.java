@@ -8,6 +8,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * FacilityEditActivity is an activity that allows the user to edit the name and location of a facility.
+ */
 public class FacilityEditActivity extends AppCompatActivity {
 
     private EditText etFacilityName;

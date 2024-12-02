@@ -1,5 +1,8 @@
 package com.example.fusion1_events;
 
+/**
+ * Model class for a Notification object.
+ */
 public class Notification {
     private String eventTitle; // Corresponds to "Event_title"
     private String message;     // Corresponds to "message"

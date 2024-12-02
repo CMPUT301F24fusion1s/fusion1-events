@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/**
+ * Adapter class for the RecyclerView to display facilities
+ */
 public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.FacilityViewHolder> {
 
     private List<Facility> facilities; // List to hold facilities
@@ -65,7 +68,9 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
         }
     }
 
-    // Interface for handling edit and delete clicks
+    /**
+     * Interface for handling edit and delete clicks
+     */
     public interface OnFacilityClickListener {
         void onEditClick(Facility facility);
         void onDeleteClick(Facility facility);

@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Activity for creating a new event, handles user input and saves the event to the database
+ */
 public class EventCreationActivity extends EventCreateUpdateBase {
 
     @Override
@@ -64,6 +67,11 @@ public class EventCreationActivity extends EventCreateUpdateBase {
         finish();
     }
 
+    /**
+     * Create a new event object from user inputs
+     *
+     * @return the new event object
+     */
     private Event getNewEvent() {
         // Get user inputs
         String title = titleInput.getText().toString();

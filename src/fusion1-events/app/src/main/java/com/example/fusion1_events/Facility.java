@@ -2,6 +2,9 @@ package com.example.fusion1_events;
 
 import java.io.Serializable;
 
+/**
+ * Facility model class to store facility details
+ */
 public class Facility implements Serializable {
     private String name;
     private String location;

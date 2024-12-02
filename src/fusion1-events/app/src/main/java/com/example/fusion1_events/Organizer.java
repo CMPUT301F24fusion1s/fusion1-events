@@ -9,6 +9,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * Organizer class is a subclass of Entrant class. It has a facility and a list of events.
+ */
 public class Organizer extends Entrant{
     private Facility facility;
     private ArrayList<Event> eventList;

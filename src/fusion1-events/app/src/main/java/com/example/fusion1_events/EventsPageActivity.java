@@ -23,6 +23,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The EventsPageActivity class is responsible for displaying the events page.
+ * This page displays all events a user is involved with, either as organiser or entrant.
+ */
 public class EventsPageActivity extends BaseActivity {
 
     private RecyclerView rvEvents;
@@ -69,6 +73,9 @@ public class EventsPageActivity extends BaseActivity {
         loadUserEvents();
     }
 
+    /**
+     * Initializes the RecyclerView and its adapter.
+     */
     private void setupRecyclerView() {
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
         eventAdapter = new EventAdapter(new ArrayList<>());
@@ -78,6 +85,9 @@ public class EventsPageActivity extends BaseActivity {
         rvEvents.setAdapter(eventAdapter);
     }
 
+    /**
+     * Loads the events for the current user from Firebase.
+     */
     private void loadUserEvents() {
         // Make sure we have a current user
         if (currentUser == null) {

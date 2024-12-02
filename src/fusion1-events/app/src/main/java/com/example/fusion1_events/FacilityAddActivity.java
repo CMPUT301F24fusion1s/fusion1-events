@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fusion1_events.R;
 
+/**
+ * Activity for adding a new facility
+ */
 public class FacilityAddActivity extends AppCompatActivity {
 
     private EditText etFacilityName;

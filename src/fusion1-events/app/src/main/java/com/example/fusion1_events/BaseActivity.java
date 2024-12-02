@@ -1,16 +1,12 @@
 package com.example.fusion1_events;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationBarView;
@@ -19,6 +15,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * BaseActivity is an abstract class that serves as the base class for all main activities in the app.
+ * This simplifies the process of setting up the navigation bar, and provides common methods for use withing the activities.
+ *
+ * Two methods must be implemented by child activities:
+ * - getLayoutResourceId(): Returns the layout resource ID for the activity.
+ * - getNavigationMenuItemId(): Returns the ID of the navigation menu item that corresponds to the activity.
+ *
+ * This ensures that the correct navigation item is selected in the bottom navigation bar when the activity is resumed, and the correct activity is launched when a navigation item is selected.
+ */
 public abstract class BaseActivity extends AppCompatActivity {
     protected User currentUser;
     protected NavigationBarView bottomNavigationView;
@@ -70,6 +76,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    /**
+     * Load the user's profile image from internal storage and set it in the User object.
+     *
+     * @param imagePath The file path of the user's profile image in internal storage.
+     */
     private void loadUserProfileImage(String imagePath) {
         if (imagePath != null && currentUser != null) {
             try {
@@ -83,6 +94,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Setup the bottom navigation bar and handle item selection.
+     */
     protected void setupBottomNavigation() {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -107,6 +121,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Navigate to the specified activity class, passing the current user data.
+     *
+     * @param activityClass Target activity class to navigate to.
+     */
     protected void navigateToActivity(Class<?> activityClass) {
         if (this.getClass() != activityClass) {
             Intent intent = new Intent(this, activityClass);
@@ -146,9 +165,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    // Abstract method to be implemented by child activities
+    /**
+     * Get the layout resource ID for the activity.
+     *
+      * @return The layout resource ID.
+     */
     protected abstract int getLayoutResourceId();
 
-    // Abstract method to be implemented by child activities
+    /**
+     * Set the navigation menu item ID that corresponds to the activity.
+     *
+     * @return The navigation menu item ID.
+     */
     protected abstract int getNavigationMenuItemId();
 }

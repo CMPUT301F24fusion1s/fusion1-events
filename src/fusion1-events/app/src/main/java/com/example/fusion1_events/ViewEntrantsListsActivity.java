@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity to view the entrants lists for an event
+ */
 public class ViewEntrantsListsActivity extends AppCompatActivity {
     private Event.WaitList waitList;
     private Spinner entrantClassSpinner;
@@ -40,6 +43,9 @@ public class ViewEntrantsListsActivity extends AppCompatActivity {
         setupUI();
     }
 
+    /**
+     * Set up the UI elements
+     */
     private void setupUI() {
         // Set up back button with user data passing
         findViewById(R.id.backText).setOnClickListener(v -> finish());
@@ -62,12 +68,20 @@ public class ViewEntrantsListsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initialize the recycler view and its adapter
+     */
     private void setupRecyclerView() {
         waitlistRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         waitlistAdapter = new WaitlistAdapter(new ArrayList<>());
         waitlistRecyclerView.setAdapter(waitlistAdapter);
     }
 
+    /**
+     * Filter the entrants based on the selected status
+     *
+     * @param status The status to filter by
+     */
     private void filterEntrantsByStatus(String status) {
         // Filter the entrants based on the selected status
         ArrayList<String> filteredEntrants = new ArrayList<>();

@@ -8,7 +8,6 @@ import android.provider.ContactsContract;
 /**
  *  Each user can user one device because we are
  */
-// TODO maybe change the email type so user does not input any value
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.Serializable;

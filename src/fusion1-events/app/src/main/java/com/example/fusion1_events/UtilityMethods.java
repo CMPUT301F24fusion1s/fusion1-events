@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * A class containing utility methods for general functions not tied to a specific class.
+ */
 public class UtilityMethods {
     /**
      * Encodes a Bitmap image to a Base64 string. This allows the image to be stored as a string in Firestore.
