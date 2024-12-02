@@ -204,7 +204,7 @@ public class ManageEventActivity extends AppCompatActivity {
             @Override
             public void onSuccess(List<Entrant> entrants) {
                 for (Entrant entrant : entrants) {
-                    Notification notification = new Notification(event.getName(), "You have been invited to attend!", LocalDateTime.now(ZoneId.of("America/Edmonton")).toString(), entrant.getUserId(), false);
+                    Notification notification = new Notification(event.getName(), "You have been invited to attend " + event.getName() + "!", LocalDateTime.now(ZoneId.of("America/Edmonton")).toString(), entrant.getUserId(), false);
                     firebaseManager.sendNotification(notification, new FirebaseManager.NotificationCallback() {
                         @Override
                         public void onSuccess() {

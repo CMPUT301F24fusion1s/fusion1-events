@@ -538,7 +538,7 @@ public class FirebaseManager {
         String userIdString = userId.toString();
 
         notificationsCollection
-                .whereEqualTo("userid", userIdString) // Filter notifications by user ID
+                .whereEqualTo("userId", userIdString) // Filter notifications by user ID
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
@@ -654,7 +654,7 @@ public class FirebaseManager {
         String userIdString = userId.toString();
 
         facilitiesCollection
-                .whereEqualTo("userId", userIdString) // Filter facilities by user ID
+                .whereEqualTo("userid", userIdString) // Filter facilities by user ID
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
