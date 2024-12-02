@@ -159,6 +159,7 @@ public class ManageEventActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(User user) {
                     entrants.add((Entrant) user);
+                    if(entrants.size() == entrantsID.size()) toViewMapActivity(entrants);
                 }
 
                 @Override
@@ -167,11 +168,17 @@ public class ManageEventActivity extends AppCompatActivity {
             });
         }
 
+
+
+
+
+    }
+
+    private void toViewMapActivity(ArrayList<Entrant> entrants){
+
         Intent intent = new Intent(this, MapsActivity.class);
         intent.putParcelableArrayListExtra("entrants", (ArrayList<? extends Parcelable>) entrants);
         startActivity(intent);
-
-
 
     }
 

@@ -81,7 +81,7 @@ public class FirebaseManager {
                             User user = createUserFromRole(role, document);
 
                             if (user != null) {
-                                callback.onSuccess(user);
+                                callback.onSuccess((Entrant)user);
                             } else {
                                 callback.onFailure(new Exception("Failed to create user instance from document."));
                             }
