@@ -16,7 +16,11 @@ public class AdminController {
         this.firebaseManager = firebaseManager;
     }
 
-    public void getallusers(final FirebaseManager.UsersListCallback callback) {
+    /**
+     * User methods fetching, deleting user and finally removing a user image
+     * @param callback
+     */
+    public void getAllUsers(final FirebaseManager.UsersListCallback callback) {
         firebaseManager.getAllusers(new FirebaseManager.UsersListCallback() {
             @Override
             public void onScuccess(List<Entrant> users) {
@@ -36,4 +40,49 @@ public class AdminController {
         firebaseManager.deleteUser(deviceId);
     }
 
+    public void removeUserImage(String userId, FirebaseManager.OperationCallback callback) {
+        firebaseManager.removeUserImage(userId, new FirebaseManager.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                if (callback != null) {
+                    callback.onFailure(e);
+                }
+            }
+        });
+    }
+
+
+    /**
+     * Event methods of fetching, updating and deleting
+     * @param eventsListCallback
+     */
+    public void getAllEvents(FirebaseManager.EventsListCallback eventsListCallback) {
+        firebaseManager.getAllEvents(new FirebaseManager.EventsListCallback() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                eventsListCallback.onSuccess(events);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+
+    }
+
+    public void deleteEvent(Event event) {
+        firebaseManager.deleteEvent(event);
+    }
+
+    public void updateEvent(Event event) {
+        firebaseManager.updateExistingEvent(event);
+    }
 }

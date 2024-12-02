@@ -19,7 +19,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -32,6 +31,8 @@
         <activity android:name=".FacilityAddActivity"/>
         <activity android:name=".FacilityEditActivity"/>
         <activity android:name=".ScanQRCodeActivity"/>
+        <activity android:name=".AdminEventActivity"
+            />
     </application>
 
 </manifest>

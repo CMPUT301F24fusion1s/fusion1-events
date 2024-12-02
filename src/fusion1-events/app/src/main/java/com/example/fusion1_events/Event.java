@@ -4,6 +4,7 @@ import static com.example.fusion1_events.UtilityMethods.decodeBase64ToBitmap;
 import static com.example.fusion1_events.UtilityMethods.encodeBitmapToBase64;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -40,7 +41,7 @@ public class Event implements Parcelable {
     private String qrCodeHash;
     private Integer capacity;
     private Boolean geolocationRequired;
-    private List<String> waitlist;
+    private WaitList waitlist;
 
     /**
      * Constructor for creating a new Event instance.
@@ -64,6 +65,7 @@ public class Event implements Parcelable {
         this.poster = poster;
         this.capacity = capacity;
         this.geolocationRequired = geolocationRequired;
+        this.waitlist = new WaitList();
     }
 
     /**
@@ -89,6 +91,7 @@ public class Event implements Parcelable {
         this.poster = poster;
         this.capacity = capacity;
         this.geolocationRequired = geolocationRequired;
+        this.waitlist = new WaitList();
     }
 
     /**
@@ -97,17 +100,29 @@ public class Event implements Parcelable {
      * @param in Parcel containing the serialized event data.
      */
     protected Event(Parcel in) {
-        id = UUID.fromString(in.readString());
-        organizerId = UUID.fromString(in.readString());
+        String idString = in.readString();
+        id = idString != null ? UUID.fromString(idString) : null;
+
+        String organizerIdString = in.readString();
+        organizerId = organizerIdString != null ? UUID.fromString(organizerIdString) : null;
+
         name = in.readString();
-        date = new Date(in.readLong());
+
+        long dateLong = in.readLong();
+        date = (dateLong != -1) ? new Date(dateLong) : null;
+
         location = in.readString();
         description = in.readString();
         qrCode = in.readParcelable(Bitmap.class.getClassLoader());
         qrCodeHash = in.readString();
-        capacity = in.readInt();
+
+        int capacityValue = in.readInt();
+        capacity = (capacityValue != -1) ? capacityValue : null;
+
         geolocationRequired = in.readByte() != 0;
+        waitlist = in.readParcelable(WaitList.class.getClassLoader());
     }
+
 
 
     /**
@@ -132,7 +147,10 @@ public class Event implements Parcelable {
         eventData.put("poster", posterBase64);
         eventData.put("capacity", this.getCapacity());
         eventData.put("geolocationRequired", this.geolocationRequired);
-        eventData.put("waitlist", this.getWaitlist());
+        eventData.put("waitingEntrants", this.waitlist.getWaitingEntrants());
+        eventData.put("invitedEntrants", this.waitlist.getInvitedEntrants());
+        eventData.put("cancelledEntrants", this.waitlist.getCancelledEntrants());
+        eventData.put("enrolledEntrants", this.waitlist.getEnrolledEntrants());
 
         return eventData;
     }
@@ -154,7 +172,12 @@ public class Event implements Parcelable {
         String posterBase64 = document.getString("poster");
         int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
         Boolean geolocationRequired = document.getBoolean("geolocationRequired");
-        List<String> waitlistStrings = (ArrayList<String>) document.get("waitlist");
+
+        // Extract waitlist data
+        List<String> waitingEntrants = document.get("waitingEntrants") != null ? (List<String>) document.get("waitingEntrants") : new ArrayList<>();
+        List<String> invitedEntrants = document.get("invitedEntrants") != null ? (List<String>) document.get("invitedEntrants") : new ArrayList<>();
+        List<String> cancelledEntrants = document.get("cancelledEntrants") != null ? (List<String>) document.get("cancelledEntrants") : new ArrayList<>();
+        List<String> enrolledEntrants = document.get("enrolledEntrants") != null ? (List<String>) document.get("enrolledEntrants") : new ArrayList<>();
 
         // Convert Base64 string back to Bitmap
         Bitmap poster = null;
@@ -164,7 +187,7 @@ public class Event implements Parcelable {
 
         // Create Event object
         Event event = new Event(id, organizerId, name, date, location, description, poster, capacity, geolocationRequired);
-        event.setWaitlist(waitlistStrings);
+        event.intializeWaitlist(waitingEntrants, invitedEntrants, cancelledEntrants, enrolledEntrants);
 
         return event;
     }
@@ -271,26 +294,12 @@ public class Event implements Parcelable {
         this.geolocationRequired = geolocationRequired;
     }
 
-    public List<String> getWaitlist() {
-        if (waitlist == null) {
-            waitlist = List.of();
-        }
-
+    public WaitList getWaitlist() {
         return waitlist;
     }
 
-    public void setWaitlist(List<String> waitlist) {
+    public void setWaitlist(WaitList waitlist) {
         this.waitlist = waitlist;
-    }
-
-    public void addToWaitlist(String userId) {
-        if (this.waitlist == null || this.waitlist instanceof AbstractList) {
-            this.waitlist = new ArrayList<>();
-        }
-
-        if (!this.waitlist.contains(userId)) {
-            this.waitlist.add(userId);
-        }
     }
 
     /**
@@ -334,18 +343,19 @@ public class Event implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeString(this.id.toString());
-        parcel.writeString(this.organizerId.toString());
+        parcel.writeString(this.id != null ? this.id.toString() : null);
+        parcel.writeString(this.organizerId != null ? this.organizerId.toString() : null);
         parcel.writeString(this.name);
-        parcel.writeLong(this.date.getTime());
+        parcel.writeLong(this.date != null ? this.date.getTime() : -1);
         parcel.writeString(this.location);
         parcel.writeString(this.description);
         parcel.writeParcelable(this.qrCode, i);
         parcel.writeString(this.qrCodeHash);
-        parcel.writeInt(this.capacity);
-        parcel.writeByte((byte) (this.geolocationRequired ? 1 : 0));
-        parcel.writeStringList(this.waitlist);
+        parcel.writeInt(this.capacity != null ? this.capacity : -1);
+        parcel.writeByte((byte) (this.geolocationRequired != null && this.geolocationRequired ? 1 : 0));
+        parcel.writeParcelable(this.waitlist != null ? this.waitlist : new WaitList(),i);
     }
+
 
     /**
      * Writes the Event data to a Parcel.
@@ -364,7 +374,126 @@ public class Event implements Parcelable {
             return new Event[size];
         }
     };
+
+    private void intializeWaitlist(List<String> waitingEntrants, List<String> invitedEntrants, List<String> cancelledEntrants, List<String> enrolledEntrants) {
+        this.waitlist = new WaitList(waitingEntrants, invitedEntrants, cancelledEntrants, enrolledEntrants);
+    }
+
+    protected static class WaitList implements Parcelable {
+        private final List<String> waitingEntrants;
+        private final List<String> invitedEntrants;
+        private final List<String> cancelledEntrants;
+        private final List<String> enrolledEntrants;
+
+        public WaitList() {
+            this.waitingEntrants = new ArrayList<>();
+            this.invitedEntrants = new ArrayList<>();
+            this.cancelledEntrants = new ArrayList<>();
+            this.enrolledEntrants = new ArrayList<>();
+        }
+
+        public WaitList(List<String> waitingEntrants, List<String> invitedEntrants, List<String> cancelledEntrants, List<String> enrolledEntrants) {
+            this.waitingEntrants = waitingEntrants;
+            this.invitedEntrants = invitedEntrants;
+            this.cancelledEntrants = cancelledEntrants;
+            this.enrolledEntrants = enrolledEntrants;
+        }
+
+        protected WaitList(Parcel in) {
+            waitingEntrants = in.createStringArrayList();
+            invitedEntrants = in.createStringArrayList();
+            cancelledEntrants = in.createStringArrayList();
+            enrolledEntrants = in.createStringArrayList();
+        }
+
+        public static final Creator<WaitList> CREATOR = new Creator<WaitList>() {
+            @Override
+            public WaitList createFromParcel(Parcel in) {
+                return new WaitList(in);
+            }
+
+            @Override
+            public WaitList[] newArray(int size) {
+                return new WaitList[size];
+            }
+        };
+
+        public List<String> getWaitingEntrants() {
+            return waitingEntrants;
+        }
+
+        public List<String> getInvitedEntrants() {
+            return invitedEntrants;
+        }
+
+        public List<String> getCancelledEntrants() {
+            return cancelledEntrants;
+        }
+
+        public List<String> getEnrolledEntrants() {
+            return enrolledEntrants;
+        }
+
+        public void addWaitingEntrant(String userId) {
+            if (userId == null) return;
+            if (!getAllEntrants().contains(userId)) {
+                waitingEntrants.add(userId);
+            }
+        }
+
+        public void removeWaitingEntrant(String userId) {
+            if (userId == null) return;
+            waitingEntrants.remove(userId);
+        }
+
+        public void inviteWaitingEntrant(String userId) {
+            if (userId == null) return;
+            if (waitingEntrants.contains(userId)) {
+                waitingEntrants.remove(userId);
+                invitedEntrants.add(userId);
+            }
+        }
+
+        public void cancelInvitedEntrant(String userId) {
+            if (userId == null) return;
+            if (invitedEntrants.contains(userId)) {
+                invitedEntrants.remove(userId);
+                cancelledEntrants.add(userId);
+            }
+        }
+
+        public void enrollInvitedEntrant(String userId) {
+            if (userId == null) return;
+            if (invitedEntrants.contains(userId)) {
+                invitedEntrants.remove(userId);
+                enrolledEntrants.add(userId);
+            }
+        }
+
+        public List<String> getAllEntrants() {
+            List<String> allEntrants = new ArrayList<>();
+            allEntrants.addAll(waitingEntrants);
+            allEntrants.addAll(invitedEntrants);
+            allEntrants.addAll(cancelledEntrants);
+            allEntrants.addAll(enrolledEntrants);
+            return allEntrants;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull Parcel parcel, int i) {
+            parcel.writeStringList(waitingEntrants);
+            parcel.writeStringList(invitedEntrants);
+            parcel.writeStringList(cancelledEntrants);
+            parcel.writeStringList(enrolledEntrants);
+        }
+    }
 }
+
 
 /**
  * Summary:

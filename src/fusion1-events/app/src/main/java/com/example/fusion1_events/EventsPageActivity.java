@@ -114,7 +114,7 @@ public class EventsPageActivity extends BaseActivity {
 
                             Toast.makeText(EventsPageActivity.this,
                                     "Error loading events: " + e.getMessage(),
-                                    Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_LONG).show();
                         });
                     }
                 });

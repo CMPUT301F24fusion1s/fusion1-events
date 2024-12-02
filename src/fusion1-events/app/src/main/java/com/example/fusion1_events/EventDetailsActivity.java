@@ -141,9 +141,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                 primaryActionButton.setOnClickListener(v -> editEvent());
             } else {
                 // User is not the organizer
-                if (event.getWaitlist().contains(currentUser.getUserId())) {
+                if (event.getWaitlist().getWaitingEntrants().contains(currentUser.getUserId())) {
                     primaryActionButton.setText("Leave Waitlist");
                     primaryActionButton.setOnClickListener(v -> leaveWaitlist());
+                } else if (event.getWaitlist().getInvitedEntrants().contains(currentUser.getUserId())) {
+                    primaryActionButton.setText("Reply to Invite");
+                    primaryActionButton.setOnClickListener(v -> replyToInvite());
                 } else {
                     primaryActionButton.setText("Join Waitlist");
                     primaryActionButton.setOnClickListener(v -> joinWaitlist());
@@ -158,7 +161,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void joinWaitlist() {
-        event.addToWaitlist(currentUser.getUserId());
+        event.getWaitlist().addWaitingEntrant(currentUser.getUserId());
         firebaseManager.updateExistingEvent(event);
         setupPrimaryActionButton(); // Refresh button state
         Toast.makeText(EventDetailsActivity.this,
@@ -166,10 +169,15 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void leaveWaitlist() {
-        event.getWaitlist().remove(currentUser.getUserId());
+        event.getWaitlist().removeWaitingEntrant(currentUser.getUserId());
         firebaseManager.updateExistingEvent(event);
         setupPrimaryActionButton(); // Refresh button state
         Toast.makeText(EventDetailsActivity.this,
                 "Successfully left waitlist", Toast.LENGTH_SHORT).show();
+    }
+
+    private void replyToInvite() {
+        Toast.makeText(EventDetailsActivity.this,
+                "User clicked Reply to Invite button", Toast.LENGTH_SHORT).show();
     }
 }

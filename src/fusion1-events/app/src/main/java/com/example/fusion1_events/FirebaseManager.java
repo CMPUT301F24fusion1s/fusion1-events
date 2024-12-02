@@ -3,6 +3,8 @@ package com.example.fusion1_events;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -11,11 +13,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The FirebaseManager class manages all interactions with Firebase Firestore, including user and event management.
@@ -194,6 +196,31 @@ public class FirebaseManager {
 
     }
 
+    public void removeUserImage(String deviceID, OperationCallback callback)
+    {
+        db.collection("users").
+                document(deviceID).update("profileImage",null)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseManager", "User image removed successfully from Firestore.");
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseManager", "Error removing user image from Firestore", e);
+                    if (callback != null) {
+                        callback.onFailure(e);
+                    }
+                });
+
+
+    }
+
+    public void deleteEvent(Event event) {
+        CollectionReference eventsCollection = db.collection("events");
+        eventsCollection.document(event.getQrCodeHash()).delete();
+    }
+
 
     // Callback interface for asynchronous user retrieval
     public interface UserCallback {
@@ -203,6 +230,12 @@ public class FirebaseManager {
 
     // Interface for update callback
     public interface UpdateCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    // Interface for update callback
+    public interface OperationCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
@@ -225,8 +258,10 @@ public class FirebaseManager {
         Map<String, Object> eventData =  event.toMap();
 
         // Add the event to Firestore
-        eventsCollection.add(eventData)
-                .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + documentReference.getId()))
+        eventsCollection
+                .document(event.getQrCodeHash())
+                .set(eventData)
+                .addOnSuccessListener(documentReference -> Log.d("FirebaseManager", "Event added with ID: " + event.getQrCodeHash()))
                 .addOnFailureListener(e -> Log.e("FirebaseManager", "Error adding event", e));
     }
 
@@ -242,23 +277,9 @@ public class FirebaseManager {
         Map<String, Object> eventData = event.toMap();
 
         // Update the event in Firestore
-        eventsCollection.whereEqualTo("qrCodeHash", event.getId().toString())
-                .get()
+        eventsCollection.document(event.getQrCodeHash())
+                .update(eventData)
                 .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
-                        // Get the first (and should be only) matching document
-                        DocumentSnapshot document = querySnapshot.getDocuments().get(0);
-
-                        // Update the document using its ID
-                        eventsCollection.document(document.getId())
-                                .update(eventData)
-                                .addOnSuccessListener(aVoid ->
-                                        Log.d("FirebaseManager", "Event updated with ID: " + event.getId()))
-                                .addOnFailureListener(e ->
-                                        Log.e("FirebaseManager", "Error updating event", e));
-                    } else {
-                        Log.e("FirebaseManager", "No event found with QR hash: " + event.getId());
-                    }
                 })
                 .addOnFailureListener(e ->
                         Log.e("FirebaseManager", "Error querying for event", e));
@@ -319,49 +340,58 @@ public class FirebaseManager {
 
     public void getUserEvents(UUID userId, final EventsListCallback callback) {
         CollectionReference eventsCollection = db.collection("events");
+        String userIdString = userId.toString();
+        List<Event> userEvents = new ArrayList<>();
 
-        // First, get events where user is the organizer
-        eventsCollection
-                .whereEqualTo("organizerId", userId.toString())
-                .get()
-                .addOnCompleteListener(organizerTask -> {
-                    if (organizerTask.isSuccessful()) {
-                        List<Event> userEvents = new ArrayList<>();
+        // Create tasks for different event queries
+        Task<QuerySnapshot> organizerTask = eventsCollection
+                .whereEqualTo("organizerId", userIdString)
+                .get();
 
-                        // Add events where user is organizer
-                        for (DocumentSnapshot doc : organizerTask.getResult()) {
-                            userEvents.add(Event.fromFirestoreDocument(doc));
+        Task<QuerySnapshot> waitlistTask = eventsCollection
+                .whereArrayContains("waitingEntrants", userIdString)
+                .get();
+
+        Task<QuerySnapshot> invitedTask = eventsCollection
+                .whereArrayContains("invitedEntrants", userIdString)
+                .get();
+
+        // Execute all queries in parallel
+        Tasks.whenAllComplete(organizerTask, waitlistTask, invitedTask)
+                .addOnSuccessListener(tasks -> {
+                    try {
+                        // Process organizer events
+                        if (organizerTask.isSuccessful()) {
+                            addEventsFromSnapshot(organizerTask.getResult(), userEvents);
                         }
 
-                        // Now get events where user is in waitlist
-                        eventsCollection
-                                .whereArrayContains("waitlist", userId.toString())
-                                .get()
-                                .addOnCompleteListener(waitlistTask -> {
-                                    if (waitlistTask.isSuccessful()) {
-                                        // Add events where user is in waitlist
-                                        for (DocumentSnapshot doc : waitlistTask.getResult()) {
-                                            userEvents.add(Event.fromFirestoreDocument(doc));
-                                        }
+                        // Process waitlist events
+                        if (waitlistTask.isSuccessful()) {
+                            addEventsFromSnapshot(waitlistTask.getResult(), userEvents);
+                        }
 
-                                        // Sort events by date
-                                        Collections.sort(userEvents, (e1, e2) -> e1.getDate().compareTo(e2.getDate()));
+                        // Process invited events
+                        if (invitedTask.isSuccessful()) {
+                            addEventsFromSnapshot(invitedTask.getResult(), userEvents);
+                        }
 
-                                        callback.onSuccess(userEvents);
-                                    } else {
-                                        callback.onFailure(waitlistTask.getException() != null ?
-                                                waitlistTask.getException() :
-                                                new Exception("Error fetching waitlist events"));
-                                    }
-                                });
-                    } else {
-                        callback.onFailure(organizerTask.getException() != null ?
-                                organizerTask.getException() :
-                                new Exception("Error fetching organized events"));
+                        // Sort events by date and return
+                        userEvents.sort(Comparator.comparing(Event::getDate));
+                        callback.onSuccess(userEvents);
+
+                    } catch (Exception e) {
+                        callback.onFailure(new Exception("Error processing events", e));
                     }
-                });
+                })
+                .addOnFailureListener(e -> callback.onFailure(new Exception("Error fetching events", e)));
     }
 
+    // Helper method to process QuerySnapshot and add events to the list
+    private void addEventsFromSnapshot(QuerySnapshot snapshot, List<Event> eventsList) {
+        for (DocumentSnapshot doc : snapshot) {
+            eventsList.add(Event.fromFirestoreDocument(doc));
+        }
+    }
 
     public void deleteUser(String deviceId){
         CollectionReference usersCollection = db.collection("users");
