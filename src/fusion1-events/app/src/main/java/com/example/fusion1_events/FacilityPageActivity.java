@@ -52,6 +52,7 @@ public class FacilityPageActivity extends BaseActivity implements FacilityAdapte
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(FacilityPageActivity.this, FacilityAddActivity.class);
+                intent.putExtra("user", currentUser);
                 startActivityForResult(intent, ADD_FACILITY_REQUEST); // Start FacilityAddActivity for result
             }
         });
@@ -138,14 +139,23 @@ public class FacilityPageActivity extends BaseActivity implements FacilityAdapte
 
     @Override
     public void onDeleteClick(Facility facility) {
-        // Get the position of the facility to remove it
-        int position = facilitiesList.indexOf(facility);
-        if (position != -1) {
-            facilitiesList.remove(position); // Remove the facility from the list
-            adapter.notifyItemRemoved(position); // Notify the adapter to refresh the RecyclerView
-            Toast.makeText(this, "Facility deleted", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Facility not found", Toast.LENGTH_SHORT).show();
-        }
-    }
-}
+        String facilityName = facility.getName();
+
+        // Remove the facility from the list
+        facilitiesList.remove(facility);
+        adapter.notifyDataSetChanged(); // Notify the adapter to refresh the RecyclerView
+        Toast.makeText(this, "Facility deleted", Toast.LENGTH_SHORT).show();
+
+        // Delete the facility from Firestore by name
+        firebaseManager.deleteFacility(facilityName, new FirebaseManager.OnFacilityDeletedListener() {
+            @Override
+            public void onFacilityDeleted() {
+                Toast.makeText(FacilityPageActivity.this, "Facility deleted from database", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(FacilityPageActivity.this, "Error deleting facility: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }}

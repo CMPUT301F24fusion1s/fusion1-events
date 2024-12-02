@@ -1,13 +1,12 @@
-package com.example.fusion1_events; // Change to your actual package name
+package com.example.fusion1_events;
 
 import java.io.Serializable;
 
 public class Facility implements Serializable {
     private String name;
     private String location;
-    private String userID; // Optional: Include this if you need to store the user ID
+    private String userId;
 
-    // No-argument constructor required for Firebase deserialization
     public Facility() {
         // Required for Firestore deserialization
     }
@@ -18,10 +17,10 @@ public class Facility implements Serializable {
         this.location = location;
     }
 
-    public Facility(String name, String location, String userID) {
+    public Facility(String name, String location, String userId) {
         this.name = name;
         this.location = location;
-        this.userID = userID; // Initialize userID
+        this.userId = userId; // Initialize userId
     }
 
     // Getters
@@ -33,8 +32,8 @@ public class Facility implements Serializable {
         return location;
     }
 
-    public String getUserID() {
-        return userID; // Getter for userID
+    public String getuserId() {
+        return userId;
     }
 
     // Setters
@@ -46,7 +45,7 @@ public class Facility implements Serializable {
         this.location = location;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID; // Setter for userID
+    public void setuserId(String userId) {
+        this.userId = userId;
     }
 }

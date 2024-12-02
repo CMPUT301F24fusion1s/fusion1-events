@@ -599,7 +599,7 @@ public class FirebaseManager {
         String userIdString = userId.toString();
 
         facilitiesCollection
-                .whereEqualTo("userid", userIdString) // Filter facilities by user ID
+                .whereEqualTo("userId", userIdString) // Filter facilities by user ID
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
@@ -619,8 +619,13 @@ public class FirebaseManager {
                 });
     }
 
+    /**
+     * Add facilities for a specific user to Firestore.
+     *
+     * @param facility The Facility to add.
+     */
     public void addFacility(Facility facility, OnFacilityAddedListener listener) {
-        db.collection("facilities")
+        db.collection("Facilities")
                 .add(facility)
                 .addOnSuccessListener(documentReference -> {
                     Log.d("FirebaseManager", "Facility added with ID: " + documentReference.getId());
@@ -640,6 +645,45 @@ public class FirebaseManager {
     // Callback interface for retrieving facilities
     public interface FacilitiesListCallback {
         void onSuccess(List<Facility> facilities);
+        void onFailure(Exception e);
+    }
+
+    public void deleteFacility(String facilityName, OnFacilityDeletedListener listener) {
+        CollectionReference facilitiesCollection = db.collection("Facilities");
+
+        facilitiesCollection
+                .whereEqualTo("name", facilityName)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        // Assuming there is only one facility with that name
+                        for (DocumentSnapshot document : task.getResult()) {
+                            facilitiesCollection.document(document.getId())
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("FirebaseManager", "Facility deleted successfully.");
+                                        listener.onFacilityDeleted();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("FirebaseManager", "Error deleting facility", e);
+                                        listener.onFailure(e);
+                                    });
+                        }
+                    } else {
+                        Log.e("FirebaseManager", "Facility not found: " + facilityName);
+                        listener.onFailure(new Exception("Facility not found."));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseManager", "Error querying facilities: ", e);
+                    listener.onFailure(e);
+                });
+    }
+
+
+    // Callback interface for deleting facilities
+    public interface OnFacilityDeletedListener {
+        void onFacilityDeleted();
         void onFailure(Exception e);
     }
 }
