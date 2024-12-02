@@ -60,5 +60,13 @@
         <item>PM</item>
     </string-array>
 
+    <!-- Recipients Array for notification to selected entrants-->
+    <string-array name="recipients_array">
+        <item>All</item>
+        <item>Accepted</item>
+        <item>Declined</item>
+        <item>Wait list</item>
+    </string-array>
+
 </resources>
 
