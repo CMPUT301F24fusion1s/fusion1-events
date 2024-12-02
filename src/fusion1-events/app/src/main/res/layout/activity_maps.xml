@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mapLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Static Edmonton Map -->
+    <ImageView
+        android:id="@+id/edmontonMap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/edmonton_map"
+    android:scaleType="centerCrop" />
+
+    <!-- Example Marker -->
+    <!-- You can add dynamic markers programmatically, but here's an example static one -->
+    <ImageView
+        android:id="@+id/exampleMarker"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_pin"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="300dp" />
+</RelativeLayout>

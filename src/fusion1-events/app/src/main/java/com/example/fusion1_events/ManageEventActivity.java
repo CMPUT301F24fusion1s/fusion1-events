@@ -146,9 +146,8 @@ public class ManageEventActivity extends AppCompatActivity {
 
     private void viewMap() {
 
-        // get the list of entrant regentsted in this event
-        // extract their location
-        // go to the map and display the entrant locations with a pin
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
 
 
 
