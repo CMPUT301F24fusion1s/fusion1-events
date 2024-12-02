@@ -36,6 +36,7 @@
         <activity android:name=".NotificationPageActivity"/>
         <activity android:name=".ManageEventActivity"/>
         <activity android:name=".EventUpdateActivity"/>
+        <activity android:name=".ViewEntrantsListsActivity"/>
         <activity android:name=".AdminEventActivity"
             />
     </application>

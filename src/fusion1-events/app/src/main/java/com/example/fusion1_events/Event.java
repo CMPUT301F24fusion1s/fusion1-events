@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -297,7 +298,12 @@ public class Event implements Parcelable {
      * Runs a lottery for the event waitlist.
      */
     public void runLottery() {
-        int availableCapacity = this.capacity - this.waitlist.getEnrolledEntrants().size();
+        int availableCapacity = this.capacity - this.waitlist.getEnrolledEntrants().size() - this.waitlist.getInvitedEntrants().size();
+        if (availableCapacity <= 0) {
+            Toast.makeText(null, "No available capacity for lottery.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         List<String> waitingEntrants = new ArrayList<>(this.waitlist.getWaitingEntrants());
 
         // Shuffle the waiting entrants list
