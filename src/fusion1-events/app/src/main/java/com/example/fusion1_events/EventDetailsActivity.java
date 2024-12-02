@@ -191,7 +191,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void joinWaitlist() {
-        event.getWaitlist().addWaitingEntrant(currentUser.getUserId());
+        event.getWaitlist().addWaitingEntrant(currentUser.getDeviceId());
         firebaseManager.updateExistingEvent(event);
         setupPrimaryActionButton(); // Refresh button state
         Toast.makeText(EventDetailsActivity.this,
