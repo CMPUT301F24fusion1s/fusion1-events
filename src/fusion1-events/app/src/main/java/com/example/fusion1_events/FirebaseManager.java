@@ -390,23 +390,23 @@ public class FirebaseManager {
 
         // Create tasks for different event queries
         Task<QuerySnapshot> organizerTask = eventsCollection
-                .whereEqualTo("organizerId", userIdString)
+                .whereEqualTo("organizerId", userId)
                 .get();
 
         Task<QuerySnapshot> waitlistTask = eventsCollection
-                .whereArrayContains("waitingEntrants", userIdString)
+                .whereArrayContains("waitingEntrants", userId)
                 .get();
 
         Task<QuerySnapshot> invitedTask = eventsCollection
-                .whereArrayContains("invitedEntrants", userIdString)
+                .whereArrayContains("invitedEntrants", userId)
                 .get();
 
         Task<QuerySnapshot> enrolledTask = eventsCollection
-                .whereArrayContains("enrolledEntrants", userIdString)
+                .whereArrayContains("enrolledEntrants", userId)
                 .get();
 
         Task<QuerySnapshot> cancelledTask = eventsCollection
-                .whereArrayContains("cancelledEntrants", userIdString)
+                .whereArrayContains("cancelledEntrants", userId)
                 .get();
 
         // Execute all queries in parallel

@@ -137,7 +137,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         Button primaryActionButton = findViewById(R.id.primaryActionButton);
 
         if (currentUser != null) {
-            if (currentUser.getUserId().equals(event.getOrganizerId().toString())) {
+            if (currentUser.getDeviceId().equals(event.getOrganizerId())) {
                 // User is the organizer
                 primaryActionButton.setText(R.string.manage_event);
                 primaryActionButton.setOnClickListener(v -> manageEvent());
