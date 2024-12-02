@@ -12,7 +12,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -190,7 +189,7 @@ public class FirebaseManager {
 
            }
            //
-           callback.onScuccess(users);
+           callback.onSuccess(users);
        }
        else
            {
@@ -202,6 +201,45 @@ public class FirebaseManager {
 
 
     }
+
+    public void getUsersById(List<String> userIds, UsersListCallback callback) {
+        CollectionReference usersCollection = db.collection("users");
+        List<Entrant> users = new ArrayList<>();
+        int[] completedQueries = {0}; // Using an array to allow modification within the lambda
+
+        for (String userId : userIds) {
+            usersCollection.whereEqualTo("userId", userId)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            QuerySnapshot querySnapshot = task.getResult();
+                            if (!querySnapshot.isEmpty()) {
+                                DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                                Map<String, Object> entrantDocument = document.getData();
+                                assert entrantDocument != null;
+                                users.add(Entrant.extractUser(entrantDocument));
+                            }
+                        } else {
+                            callback.onFailure(task.getException() != null ?
+                                    task.getException() :
+                                    new Exception("Unknown error occurred."));
+                        }
+
+                        // Increment the completed queries count
+                        completedQueries[0]++;
+                        // Check if all queries are completed
+                        if (completedQueries[0] == userIds.size()) {
+                            callback.onSuccess(users);
+                        }
+                    });
+        }
+
+        // If userIds is empty, invoke callback immediately to avoid hanging
+        if (userIds.isEmpty()) {
+            callback.onSuccess(users);
+        }
+    }
+
 
     public void removeUserImage(String deviceID, OperationCallback callback)
     {
@@ -250,7 +288,6 @@ public class FirebaseManager {
                 .addOnFailureListener(callback::onFailure);
     }
 
-
     public interface facilityCallback {
         void onSuccess(List<Facility> facilities);
         void onFailure(Exception e);
@@ -287,7 +324,7 @@ public class FirebaseManager {
 
     // Callback interface for fetching all user profiles
     public interface UsersListCallback{
-        void onScuccess(List<Entrant> users);
+        void onSuccess(List<Entrant> users);
         void onFailure(Exception e);
     }
 

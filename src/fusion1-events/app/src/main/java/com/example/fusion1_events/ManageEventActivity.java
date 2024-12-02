@@ -192,7 +192,11 @@ public class ManageEventActivity extends AppCompatActivity {
     }
 
     private void viewEntrants() {
-
+        Intent intent = new Intent(this, ViewEntrantsListsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("waitlist", event.getWaitlist());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     private void viewMap() {
