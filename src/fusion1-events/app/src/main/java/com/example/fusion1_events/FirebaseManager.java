@@ -120,6 +120,13 @@ public class FirebaseManager {
         }
     }
 
+    public void addFacility(Facility facility, FirebaseManager.OperationCallback callback) {
+        db.collection("Facilities")
+                .document(facility.getName()) // Use name as document ID, or use UUID.randomUUID().toString()
+                .set(facility)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
+    }
     /**
      * Updates a user's profile information in Firebase Firestore.
      *
@@ -196,9 +203,67 @@ public class FirebaseManager {
 
     }
 
+    public void removeUserImage(String deviceID, OperationCallback callback)
+    {
+        db.collection("users").
+                document(deviceID).update("profileImage",null)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseManager", "User image removed successfully from Firestore.");
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseManager", "Error removing user image from Firestore", e);
+                    if (callback != null) {
+                        callback.onFailure(e);
+                    }
+                });
+
+
+    }
+    /**
+     *
+     */
+    public void getAllFacilities(final facilityCallback callback) {
+        db.collection("Facilities").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                List<Facility> facilities = new ArrayList<>();
+                for (DocumentSnapshot document : task.getResult()) {
+                    String name = document.getString("name");
+                    String location = document.getString("location");
+                    facilities.add(new Facility(name, location));
+                }
+                Log.d("FirebaseManager", "Fetched facilities: " + facilities.size());
+                callback.onSuccess(facilities);
+            } else {
+                Log.e("FirebaseManager", "Failed to fetch facilities", task.getException());
+                callback.onFailure(task.getException());
+            }
+        });
+    }
+
+    public void deleteFacility(String facilityName, OperationCallback callback) {
+        db.collection("Facilities").document(facilityName) // Use a unique identifier for each facility
+                .delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
+    }
+
+
+    public interface facilityCallback {
+        void onSuccess(List<Facility> facilities);
+        void onFailure(Exception e);
+    }
+
+    /**
+     *
+     * @param event
+     */
+
     public void deleteEvent(Event event) {
         CollectionReference eventsCollection = db.collection("events");
-        eventsCollection.document(event.getQrCodeHash()).delete();
+        eventsCollection.document(event.getId().toString()).delete();
     }
 
 
@@ -210,6 +275,12 @@ public class FirebaseManager {
 
     // Interface for update callback
     public interface UpdateCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    // Interface for update callback
+    public interface OperationCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
@@ -330,6 +401,14 @@ public class FirebaseManager {
                 .whereArrayContains("invitedEntrants", userIdString)
                 .get();
 
+        Task<QuerySnapshot> enrolledTask = eventsCollection
+                .whereArrayContains("enrolledEntrants", userIdString)
+                .get();
+
+        Task<QuerySnapshot> cancelledTask = eventsCollection
+                .whereArrayContains("cancelledEntrants", userIdString)
+                .get();
+
         // Execute all queries in parallel
         Tasks.whenAllComplete(organizerTask, waitlistTask, invitedTask)
                 .addOnSuccessListener(tasks -> {
@@ -347,6 +426,16 @@ public class FirebaseManager {
                         // Process invited events
                         if (invitedTask.isSuccessful()) {
                             addEventsFromSnapshot(invitedTask.getResult(), userEvents);
+                        }
+
+                        // Process enrolled events
+                        if (enrolledTask.isSuccessful()) {
+                            addEventsFromSnapshot(enrolledTask.getResult(), userEvents);
+                        }
+
+                        // Process cancelled events
+                        if (cancelledTask.isSuccessful()) {
+                            addEventsFromSnapshot(cancelledTask.getResult(), userEvents);
                         }
 
                         // Sort events by date and return

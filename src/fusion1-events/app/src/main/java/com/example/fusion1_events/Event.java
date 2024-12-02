@@ -15,6 +15,7 @@ import com.google.zxing.WriterException;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,36 +41,12 @@ public class Event implements Parcelable {
     private Bitmap qrCode;
     private String qrCodeHash;
     private Integer capacity;
+    private Integer waitlistLimit;
     private Boolean geolocationRequired;
     private WaitList waitlist;
 
     /**
      * Constructor for creating a new Event instance.
-     *
-     * @param organizerId         The UUID of the organizer.
-     * @param name                The name of the event.
-     * @param date                The date of the event.
-     * @param location            The location of the event.
-     * @param description         The description of the event.
-     * @param poster              The poster image for the event.
-     * @param capacity            The capacity of the event.
-     * @param geolocationRequired Whether geolocation is required for the event.
-     */
-    public Event(UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, Boolean geolocationRequired) {
-        this.id = UUID.randomUUID();
-        this.organizerId = organizerId;
-        this.name = name;
-        this.date = date;
-        this.location = location;
-        this.description = description;
-        this.poster = poster;
-        this.capacity = capacity;
-        this.geolocationRequired = geolocationRequired;
-        this.waitlist = new WaitList();
-    }
-
-    /**
-     * Constructor for creating a new Event instance with an existing ID.
      *
      * @param id                  The UUID of the event.
      * @param organizerId         The UUID of the organizer.
@@ -81,8 +58,8 @@ public class Event implements Parcelable {
      * @param capacity            The capacity of the event.
      * @param geolocationRequired Whether geolocation is required for the event.
      */
-    public Event(UUID id, UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, Boolean geolocationRequired) {
-        this.id = id;
+    public Event(UUID id, UUID organizerId, String name, Date date, String location, String description, Bitmap poster, int capacity, int waitlistLimit, Boolean geolocationRequired) {
+        this.id = id != null ? id : UUID.randomUUID();
         this.organizerId = organizerId;
         this.name = name;
         this.date = date;
@@ -90,6 +67,7 @@ public class Event implements Parcelable {
         this.description = description;
         this.poster = poster;
         this.capacity = capacity;
+        this.waitlistLimit = waitlistLimit;
         this.geolocationRequired = geolocationRequired;
         this.waitlist = new WaitList();
     }
@@ -119,6 +97,9 @@ public class Event implements Parcelable {
         int capacityValue = in.readInt();
         capacity = (capacityValue != -1) ? capacityValue : null;
 
+        int waitlistLimitValue = in.readInt();
+        waitlistLimit = (waitlistLimitValue != -1) ? waitlistLimitValue : null;
+
         geolocationRequired = in.readByte() != 0;
         waitlist = in.readParcelable(WaitList.class.getClassLoader());
     }
@@ -146,6 +127,7 @@ public class Event implements Parcelable {
         eventData.put("qrCodeHash", this.getQrCodeHash());
         eventData.put("poster", posterBase64);
         eventData.put("capacity", this.getCapacity());
+        eventData.put("waitlistLimit", this.waitlistLimit);
         eventData.put("geolocationRequired", this.geolocationRequired);
         eventData.put("waitingEntrants", this.waitlist.getWaitingEntrants());
         eventData.put("invitedEntrants", this.waitlist.getInvitedEntrants());
@@ -171,6 +153,7 @@ public class Event implements Parcelable {
         String description = document.getString("description");
         String posterBase64 = document.getString("poster");
         int capacity = document.getLong("capacity") != null ? Objects.requireNonNull(document.getLong("capacity")).intValue() : 0;
+        int waitlistLimit = document.getLong("waitlistLimit") != null ? Objects.requireNonNull(document.getLong("waitlistLimit")).intValue() : 0;
         Boolean geolocationRequired = document.getBoolean("geolocationRequired");
 
         // Extract waitlist data
@@ -186,7 +169,7 @@ public class Event implements Parcelable {
         }
 
         // Create Event object
-        Event event = new Event(id, organizerId, name, date, location, description, poster, capacity, geolocationRequired);
+        Event event = new Event(id, organizerId, name, date, location, description, poster, capacity, waitlistLimit, geolocationRequired);
         event.intializeWaitlist(waitingEntrants, invitedEntrants, cancelledEntrants, enrolledEntrants);
 
         return event;
@@ -195,7 +178,7 @@ public class Event implements Parcelable {
     /**
      * Generates a QR code for the event.
      */
-    private void generateQRCode() {
+    protected void generateQRCode() {
         try {
             QRCode.QRCodeResult qrCodeResult = QRCode.generateQRCode(this.getId());
             this.setQrCode(qrCodeResult.getBitmap());
@@ -286,6 +269,14 @@ public class Event implements Parcelable {
         this.capacity = capacity;
     }
 
+    public Integer getWaitlistLimit() {
+        return waitlistLimit;
+    }
+
+    public void setWaitlistLimit(Integer waitlistLimit) {
+        this.waitlistLimit = waitlistLimit;
+    }
+
     public Boolean getGeolocationRequired() {
         return geolocationRequired;
     }
@@ -304,13 +295,21 @@ public class Event implements Parcelable {
 
     /**
      * Runs a lottery for the event waitlist.
-     *
-     * @return List of selected users.
-     * @throws NotImplementedError as the logic is not yet implemented.
      */
-    public List<User> runLottery() {
-        // TODO: Implement lottery logic
-        throw new NotImplementedError("Method not implemented.");
+    public void runLottery() {
+        int availableCapacity = this.capacity - this.waitlist.getEnrolledEntrants().size();
+        List<String> waitingEntrants = new ArrayList<>(this.waitlist.getWaitingEntrants());
+
+        // Shuffle the waiting entrants list
+        Collections.shuffle(waitingEntrants);
+
+        if (availableCapacity > waitingEntrants.size()) {
+            waitlist.inviteWaitingEntrants(waitingEntrants);
+            return;
+        }
+
+        List<String> selectedEntrants = waitingEntrants.subList(0, availableCapacity);
+        waitlist.inviteWaitingEntrants(selectedEntrants);
     }
 
     /**
@@ -352,6 +351,7 @@ public class Event implements Parcelable {
         parcel.writeParcelable(this.qrCode, i);
         parcel.writeString(this.qrCodeHash);
         parcel.writeInt(this.capacity != null ? this.capacity : -1);
+        parcel.writeInt(this.waitlistLimit != null ? this.waitlistLimit : -1);
         parcel.writeByte((byte) (this.geolocationRequired != null && this.geolocationRequired ? 1 : 0));
         parcel.writeParcelable(this.waitlist != null ? this.waitlist : new WaitList(),i);
     }
@@ -454,6 +454,13 @@ public class Event implements Parcelable {
             }
         }
 
+        public void inviteWaitingEntrants(List<String> userIds) {
+            if (userIds == null) return;
+            for (String userId : userIds) {
+                inviteWaitingEntrant(userId);
+            }
+        }
+
         public void cancelInvitedEntrant(String userId) {
             if (userId == null) return;
             if (invitedEntrants.contains(userId)) {
@@ -467,6 +474,14 @@ public class Event implements Parcelable {
             if (invitedEntrants.contains(userId)) {
                 invitedEntrants.remove(userId);
                 enrolledEntrants.add(userId);
+            }
+        }
+
+        public void cancelEnrolledEntrant(String userId) {
+            if (userId == null) return;
+            if (enrolledEntrants.contains(userId)) {
+                enrolledEntrants.remove(userId);
+                cancelledEntrants.add(userId);
             }
         }
 

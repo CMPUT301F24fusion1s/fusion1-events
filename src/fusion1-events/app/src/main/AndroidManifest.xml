@@ -32,8 +32,11 @@
         <activity android:name=".FacilityAddActivity"/>
         <activity android:name=".FacilityEditActivity"/>
         <activity android:name=".ScanQRCodeActivity"/>
-        <activity android:name=".AdminEventActivity"/>
         <activity android:name=".NotificationPageActivity"/>
+        <activity android:name=".ManageEventActivity"/>
+        <activity android:name=".EventUpdateActivity"/>
+        <activity android:name=".AdminEventActivity"
+            />
     </application>
 
 </manifest>
