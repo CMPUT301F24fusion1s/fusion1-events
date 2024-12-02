@@ -200,13 +200,6 @@ public class MainActivity extends AppCompatActivity {
 		return appContext;
 	}
 
-//	protected void createLocationRequest() {
-//		LocationRequest locationRequest = new LocationRequest.Builder(
-//				LocationRequest.PRIORITY_HIGH_ACCURACY,
-//				10000).
-//				build().
-//				setFastestInterval(5000);
-//	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
