@@ -178,7 +178,7 @@ public class Event implements Parcelable {
     /**
      * Generates a QR code for the event.
      */
-    private void generateQRCode() {
+    protected void generateQRCode() {
         try {
             QRCode.QRCodeResult qrCodeResult = QRCode.generateQRCode(this.getId());
             this.setQrCode(qrCodeResult.getBitmap());

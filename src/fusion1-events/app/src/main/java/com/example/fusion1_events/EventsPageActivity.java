@@ -58,9 +58,7 @@ public class EventsPageActivity extends BaseActivity {
         tvManageFacility.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an Intent to start the FacilityPageActivity
-                Intent intent = new Intent(EventsPageActivity.this, FacilityPageActivity.class);
-                startActivity(intent); // Start the FacilityPageActivity
+                navigateToActivity(FacilityPageActivity.class);
             }
         });
 

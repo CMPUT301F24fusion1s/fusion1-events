@@ -3,6 +3,7 @@ package com.example.fusion1_events;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,22 +13,27 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public class FacilityPageActivity extends AppCompatActivity implements FacilityAdapter.OnFacilityClickListener {
+public class FacilityPageActivity extends BaseActivity implements FacilityAdapter.OnFacilityClickListener {
 
     private static final int ADD_FACILITY_REQUEST = 1; // Request code for adding facility
     private static final int EDIT_FACILITY_REQUEST = 2; // Request code for editing facility
     private RecyclerView rvFacilities;
     private FacilityAdapter adapter; // Adapter for RecyclerView
     private List<Facility> facilitiesList; // List to hold facilities
+    private FirebaseManager firebaseManager; // Firebase manager instance
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.facility_page);
+        setContentView(R.layout.facility_page); // Ensure this matches your layout file name
 
         rvFacilities = findViewById(R.id.rvFacilities);
         FloatingActionButton fabAddFacility = findViewById(R.id.fabAddFacility);
+
+        // Initialize FirebaseManager
+        firebaseManager = new FirebaseManager();
 
         // Initialize the facilities list and adapter
         facilitiesList = new ArrayList<>();
@@ -37,12 +43,52 @@ public class FacilityPageActivity extends AppCompatActivity implements FacilityA
         rvFacilities.setLayoutManager(new LinearLayoutManager(this)); // Use a vertical layout
         rvFacilities.setAdapter(adapter); // Set the adapter to the RecyclerView
 
+        // Load facilities from Firestore
+        loadFacilities();
+        setupBottomNavigation();
+
         // Set the FAB click listener
         fabAddFacility.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(FacilityPageActivity.this, FacilityAddActivity.class);
+                intent.putExtra("user", currentUser);
                 startActivityForResult(intent, ADD_FACILITY_REQUEST); // Start FacilityAddActivity for result
+            }
+        });
+
+        // Edit profile button initialization
+        ImageButton editProfile = findViewById(R.id.btnProfile);
+        editProfile.setOnClickListener(v -> showUserProfileFragment(currentUser));
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.facility_page;
+    }
+
+    @Override
+    protected int getNavigationMenuItemId() {
+        return R.id.events;
+    }
+
+    private void loadFacilities() {
+        UUID userId = UUID.fromString(currentUser.getUserId()); // Get the current user's ID
+        firebaseManager.getFacilitiesByUserId(userId, new FirebaseManager.FacilitiesListCallback() {
+            @Override
+            public void onSuccess(List<Facility> facilities) {
+                runOnUiThread(() -> {
+                    facilitiesList.clear(); // Clear the existing list
+                    facilitiesList.addAll(facilities); // Add all facilities from Firestore
+                    adapter.notifyDataSetChanged(); // Notify the adapter to refresh the RecyclerView
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(FacilityPageActivity.this, "Error loading facilities: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
         });
     }
@@ -70,8 +116,8 @@ public class FacilityPageActivity extends AppCompatActivity implements FacilityA
             if (position >= 0 && position < facilitiesList.size()) {
                 // Update the facility in the list
                 Facility facilityToUpdate = facilitiesList.get(position);
-                facilityToUpdate.setName(updatedName);
-                facilityToUpdate.setLocation(updatedLocation);
+                facilityToUpdate.setName(updatedName); // Assuming you have a setter in your Facility class
+                facilityToUpdate.setLocation(updatedLocation); // Assuming you have a setter in your Facility class
 
                 // Notify the adapter to refresh the RecyclerView
                 adapter.notifyItemChanged(position);
@@ -93,9 +139,23 @@ public class FacilityPageActivity extends AppCompatActivity implements FacilityA
 
     @Override
     public void onDeleteClick(Facility facility) {
+        String facilityName = facility.getName();
+
         // Remove the facility from the list
         facilitiesList.remove(facility);
         adapter.notifyDataSetChanged(); // Notify the adapter to refresh the RecyclerView
         Toast.makeText(this, "Facility deleted", Toast.LENGTH_SHORT).show();
-    }
-}
+
+        // Delete the facility from Firestore by name
+        firebaseManager.deleteFacility(facilityName, new FirebaseManager.OnFacilityDeletedListener() {
+            @Override
+            public void onFacilityDeleted() {
+                Toast.makeText(FacilityPageActivity.this, "Facility deleted from database", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(FacilityPageActivity.this, "Error deleting facility: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }}
