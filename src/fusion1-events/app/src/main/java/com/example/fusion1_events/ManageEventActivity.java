@@ -10,9 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.os.Parcelable;
 import android.widget.Toast;
 
@@ -21,10 +19,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The ManageEventActivity class represents a user interface for managing an event.
+ * It provides functionality for editing, viewing QR code, running lottery, viewing entrants, viewing map, sending notification, and deleting an event.
+ */
 public class ManageEventActivity extends AppCompatActivity {
     private Event event;
     private User currentUser;

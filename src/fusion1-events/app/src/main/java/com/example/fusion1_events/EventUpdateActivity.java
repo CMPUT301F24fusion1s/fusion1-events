@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Activity for editing/updating and existing event.
+ */
 public class EventUpdateActivity extends EventCreateUpdateBase {
     private Event event;
 
@@ -39,6 +42,11 @@ public class EventUpdateActivity extends EventCreateUpdateBase {
         setupUI();
     }
 
+    /**
+     * Load event poster from internal storage.
+     *
+     * @param imagePath
+     */
     private void loadEventPoster(String imagePath) {
         if (imagePath != null && event != null) {
             try {
@@ -52,6 +60,9 @@ public class EventUpdateActivity extends EventCreateUpdateBase {
         }
     }
 
+    /**
+     * Setup UI with existing event data.
+     */
     private void setupUI() {
         Button updateButton = findViewById(R.id.createButton);
         updateButton.setText(R.string.update_event);
@@ -120,7 +131,9 @@ public class EventUpdateActivity extends EventCreateUpdateBase {
         finish();
     }
 
-
+    /**
+     * Update event details with new user inputs.
+     */
     private void updateEventDetails() {
         // Get user inputs
         String title = titleInput.getText().toString();
@@ -142,7 +155,9 @@ public class EventUpdateActivity extends EventCreateUpdateBase {
         String organizerId = currentUser.getDeviceId();
 
         // Create a new event
+        Event.WaitList waitList = event.getWaitlist();
         event = eventController.createEvent(event.getId(), organizerId, title, date, location, description,
                 selectedPoster, maxWinners, waitlistLimit, geoLocationRequired);
+        event.setWaitlist(waitList);
     }
 }

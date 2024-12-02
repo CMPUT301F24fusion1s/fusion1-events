@@ -1,7 +1,5 @@
 package com.example.fusion1_events;
 
-import static androidx.core.content.IntentCompat.getParcelableArrayExtra;
-
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -10,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
+/**
+ * Displays a map with markers at the locations of the entrants.
+ */
 public class MapsActivity extends AppCompatActivity {
 
     @Override
@@ -63,7 +64,15 @@ public class MapsActivity extends AppCompatActivity {
         });
     }
 
-    // Convert latitude and longitude to x, y pixel coordinates
+    /**
+     * Convert latitude and longitude to x, y pixel coordinates on the map image.
+     *
+     * @param latitude Latitude of the location
+     * @param longitude Longitude of the location
+     * @param imageWidth Width of the map image
+     * @param imageHeight Height of the map image
+     * @return Pixel coordinates [x, y]w
+     */
     private int[] convertLatLngToPixels(double latitude, double longitude, int imageWidth, int imageHeight) {
         double imageTopLat = 53.7000;
         double imageBottomLat = 53.4000;

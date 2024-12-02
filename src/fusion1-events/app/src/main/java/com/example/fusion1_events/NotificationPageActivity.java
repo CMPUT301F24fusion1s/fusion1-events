@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Activity for notifications page which displays all of the notifications for the current user.
+ */
 public class NotificationPageActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
@@ -43,6 +46,9 @@ public class NotificationPageActivity extends BaseActivity {
         fetchNotifications();
     }
 
+    /**
+     * Fetches notifications from Firestore based on the current user's ID.
+     */
     private void fetchNotifications() {
         if (currentUser == null || currentUser.getUserId() == null) {
             Toast.makeText(this, "Current user not found", Toast.LENGTH_LONG).show();

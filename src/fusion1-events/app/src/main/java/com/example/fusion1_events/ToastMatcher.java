@@ -9,6 +9,9 @@ import androidx.test.espresso.matcher.BoundedMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
+/**
+ * Custom matcher to check if the view is a toast, used for testing toast messages
+ */
 public class ToastMatcher extends BoundedMatcher<Root, Root> {
 
     public ToastMatcher() {

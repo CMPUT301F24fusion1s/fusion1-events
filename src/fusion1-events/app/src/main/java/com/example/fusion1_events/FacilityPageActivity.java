@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The page for displaying the user's facility.
+ */
 public class FacilityPageActivity extends BaseActivity implements FacilityAdapter.OnFacilityClickListener {
 
     private static final int ADD_FACILITY_REQUEST = 1; // Request code for adding facility

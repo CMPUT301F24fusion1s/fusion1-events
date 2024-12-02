@@ -18,6 +18,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * Activity for displaying event details and allowing users to do actions based on their role.
+ */
 public class EventDetailsActivity extends AppCompatActivity {
     private Event event;
     private User currentUser;
@@ -44,6 +47,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         loadCurrentUser();
     }
 
+    /**
+     * Load the current user from Firebase using the device ID.
+     */
     private void loadCurrentUser() {
         firebaseManager.getUserByDeviceId(deviceManager.getOrCreateDeviceId(), new FirebaseManager.UserCallback() {
             @Override
@@ -62,6 +68,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Set up the basic UI elements and their actions.
+     */
     private void setupUI() {
         // Set up back button with user data passing
         findViewById(R.id.backText).setOnClickListener(v -> navigateToEventsPage());
@@ -69,6 +78,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         setupPrimaryActionButton();
     }
 
+    /**
+     * Navigate back to the events page.
+     */
     private void navigateToEventsPage() {
         Intent intent = new Intent(this, EventsPageActivity.class);
 
@@ -96,6 +108,11 @@ public class EventDetailsActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Load the event poster image from the internal storage.
+     *
+     * @param imagePath The path to the image file.
+     */
     private void loadEventPoster(String imagePath) {
         if (imagePath != null && event != null) {
             try {
@@ -109,6 +126,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Populate the event details on the screen.
+     */
     private void setupEventDetails() {
         if (event == null) return;
 
@@ -133,6 +153,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Set up the primary action button based on the user's role in the event.
+     */
     private void setupPrimaryActionButton() {
         Button primaryActionButton = findViewById(R.id.primaryActionButton);
 
@@ -168,6 +191,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Perform the manage event action.
+     * Used when the user is the organizer of the event.
+     */
     private void manageEvent() {
         Intent intent = new Intent(this, ManageEventActivity.class);
         Bundle bundle = new Bundle();
@@ -190,6 +217,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Join the waitlist for the event.
+     * This action is only available to users who are not the organizer, and are not already on the waitlist.
+     */
     private void joinWaitlist() {
         event.getWaitlist().addWaitingEntrant(currentUser.getDeviceId());
         firebaseManager.updateExistingEvent(event);
@@ -198,6 +229,10 @@ public class EventDetailsActivity extends AppCompatActivity {
                 "Successfully joined waitlist", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Leave the waitlist for the event.
+     * This action is only available to users who are on the waitlist.
+     */
     private void leaveWaitlist() {
         event.getWaitlist().removeWaitingEntrant(currentUser.getDeviceId());
         firebaseManager.updateExistingEvent(event);
@@ -206,6 +241,10 @@ public class EventDetailsActivity extends AppCompatActivity {
                 "Successfully left waitlist", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Cancel enrolment for the event after previously accepting an invitation.
+     * This action is only available to users who are enrolled in the event.
+     */
     private void cancelEnrolment() {
         // Ask for confirmation, noting that this action cannot be undone
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -226,6 +265,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    /**
+     * Reply to an invitation to the event. Allows user to accept or decline the invitation.
+     * This action is only available to users who have been invited to the event.
+     */
     private void replyToInvite() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Reply to Invite")

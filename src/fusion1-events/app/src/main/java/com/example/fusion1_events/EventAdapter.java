@@ -14,6 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Adapter class for the RecyclerView on the Events Page Activity.
+ * Handles the binding of event data to the RecyclerView, where the holder is a custom card view for each event.
+ */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
     private List<Event> eventList;
     private Context context;
@@ -62,7 +66,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         }
     }
 
-    // Add setter for listener
     public void setOnEventClickListener(OnEventClickListener listener) {
         this.listener = listener;
     }
@@ -77,6 +80,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         notifyDataSetChanged();
     }
 
+    /**
+     * ViewHolder class for the RecyclerView.
+     * Contains the views for the event card, which are populated with event data.
+     */
     class EventViewHolder extends RecyclerView.ViewHolder {
         ImageView eventImage;
         TextView eventTitle;

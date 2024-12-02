@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/**
+ * Adapter for the waitlist recycler view used on the view entrants page.
+ */
 public class WaitlistAdapter extends RecyclerView.Adapter<WaitlistAdapter.WaitListViewHolder> {
     private List<String> entrants;
 
